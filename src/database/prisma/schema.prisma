@@ -1,0 +1,581 @@
+generator client {
+  provider = "prisma-client"
+  output   = "generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Fiche {
+  id                Int                @id @default(autoincrement())
+  slug              String             @unique
+  prenom            String
+  nom               String             @default("")
+  fonction          String?
+  entreprise        String?
+  photo             String?
+  logo              String?
+  telephone         String?
+  whatsapp          String?
+  email             String?
+  site              String?
+  adresse           String?
+  googlePlaceId     String?
+  premierBouton     PremierBouton      @default(WHATSAPP)
+  messageWhatsapp   String?
+  statut            StatutFiche        @default(ACTIVE)
+  enLigneSeule      Boolean            @default(false)
+  scansTotal        Int                @default(0)
+  userId            Int?
+  claimCode         String?            @unique
+  secteur           Secteur?
+  presentation      String?
+  rdvLabel          String?
+  rdvUrl            String?
+  enteteDisposition Disposition        @default(PORTRAIT)
+  enteteTaille      Taille             @default(M)
+  enteteTheme       Theme?
+  enteteCouverture  String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  biens             Bien[]
+  catalogueSections CatalogueSection[]
+  horaires          FicheHoraire[]
+  liens             FicheLien[]
+  medias            FicheMedia[]
+  onglets           FicheOnglet[]
+  reseaux           FicheReseau[]
+  user              User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  menuSections      MenuSection[]
+  printJobs         PrintJob[]
+  stickers          StickerOrder[]
+  subscriptions     Subscription[]
+  payments          Payment[]
+  passages          FichePassage[]
+  demandeRappels    DemandeRappel[]
+
+  @@index([userId])
+  @@index([statut])
+  @@map("fiches")
+}
+
+model FicheOnglet {
+  id       String  @id @default(cuid())
+  ficheId  Int
+  type     TabType
+  titre    String?
+  contenu  String?
+  visible  Boolean @default(true)
+  position Int
+  fiche    Fiche   @relation(fields: [ficheId], references: [id], onDelete: Cascade)
+
+  @@index([ficheId, position])
+  @@map("fiche_onglets")
+}
+
+model FicheReseau {
+  id       Int    @id @default(autoincrement())
+  ficheId  Int
+  label    String
+  url      String
+  position Int    @default(0)
+  fiche    Fiche  @relation(fields: [ficheId], references: [id], onDelete: Cascade)
+
+  @@index([ficheId])
+  @@map("fiche_reseaux")
+}
+
+model FicheLien {
+  id       Int    @id @default(autoincrement())
+  ficheId  Int
+  label    String
+  url      String
+  position Int    @default(0)
+  fiche    Fiche  @relation(fields: [ficheId], references: [id], onDelete: Cascade)
+
+  @@index([ficheId])
+  @@map("fiche_liens")
+}
+
+model FicheHoraire {
+  id      Int    @id @default(autoincrement())
+  ficheId Int
+  jour    Int
+  horaire String
+  fiche   Fiche  @relation(fields: [ficheId], references: [id], onDelete: Cascade)
+
+  @@unique([ficheId, jour])
+  @@map("fiche_horaires")
+}
+
+model FicheMedia {
+  id       Int       @id @default(autoincrement())
+  ficheId  Int
+  type     MediaType @default(IMAGE)
+  url      String
+  alt      String?
+  position Int       @default(0)
+  fiche    Fiche     @relation(fields: [ficheId], references: [id], onDelete: Cascade)
+
+  @@index([ficheId, position])
+  @@map("fiche_medias")
+}
+
+model CatalogueSection {
+  id       Int                @id @default(autoincrement())
+  ficheId  Int
+  titre    String
+  position Int                @default(0)
+  articles CatalogueArticle[]
+  fiche    Fiche              @relation(fields: [ficheId], references: [id], onDelete: Cascade)
+
+  @@index([ficheId, position])
+  @@map("catalogue_sections")
+}
+
+model CatalogueArticle {
+  id          Int              @id @default(autoincrement())
+  sectionId   Int
+  nom         String
+  description String?
+  photo       String?
+  prix        Int?
+  badge       String?
+  position    Int              @default(0)
+  section     CatalogueSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@index([sectionId, position])
+  @@map("catalogue_articles")
+}
+
+model MenuSection {
+  id       Int        @id @default(autoincrement())
+  ficheId  Int
+  titre    String
+  position Int        @default(0)
+  plats    MenuPlat[]
+  fiche    Fiche      @relation(fields: [ficheId], references: [id], onDelete: Cascade)
+
+  @@index([ficheId, position])
+  @@map("menu_sections")
+}
+
+model MenuPlat {
+  id          Int         @id @default(autoincrement())
+  sectionId   Int
+  nom         String
+  prix        Int?
+  description String?
+  image       String?
+  video       String?
+  videoWebm   String?
+  badge       String?
+  position    Int         @default(0)
+  section     MenuSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@index([sectionId, position])
+  @@map("menu_plats")
+}
+
+model Bien {
+  id          Int         @id @default(autoincrement())
+  ficheId     Int
+  titre       String
+  type        BienType
+  prix        Int?
+  periode     String?
+  ville       String?
+  surface     Int?
+  terrain     Int?
+  chambres    Int?
+  sdb         Int?
+  atouts      String[]
+  description String?
+  position    Int         @default(0)
+  photos      BienPhoto[]
+  fiche       Fiche       @relation(fields: [ficheId], references: [id], onDelete: Cascade)
+
+  @@index([ficheId, position])
+  @@map("biens")
+}
+
+model BienPhoto {
+  id       Int    @id @default(autoincrement())
+  bienId   Int
+  url      String
+  position Int    @default(0)
+  bien     Bien   @relation(fields: [bienId], references: [id], onDelete: Cascade)
+
+  @@index([bienId, position])
+  @@map("bien_photos")
+}
+
+model User {
+  id              Int         @id @default(autoincrement())
+  email           String      @unique
+  passwordHash    String
+  role            Role        @default(CLIENT)
+  nom             String?
+  emailVerifiedAt DateTime?
+  createdAt       DateTime    @default(now())
+  tokens          AuthToken[]
+  fiches          Fiche[]
+
+  @@map("users")
+}
+
+model AuthToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  type      String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("auth_tokens")
+}
+
+model Plan {
+  id            Int            @id @default(autoincrement())
+  type          PlanType       @unique
+  nom           String
+  themeDefaut   Theme
+  prixFcfa      Int?
+  dureeMois     Int?
+  actif         Boolean        @default(true)
+  limits        PlanLimit?
+  subscriptions Subscription[]
+  payments      Payment[]
+
+  @@map("plans")
+}
+
+model PlanLimit {
+  planId                       Int           @id
+  tabsAutorises                TabType[]
+  headerLayouts                Disposition[]
+  themes                       Theme[]
+  canReorder                   Boolean       @default(false)
+  canHide                      Boolean       @default(false)
+  canAdd                       Boolean       @default(false)
+  canRename                    Boolean       @default(false)
+  maxCustomTabs                Int           @default(0)
+  maxPresentation              Int
+  maxSocial                    Int
+  maxLinks                     Int
+  maxPhotos                    Int
+  maxVideos                    Int
+  maxCatalogSections           Int           @default(0)
+  maxCatalogArticlesPerSection Int           @default(0)
+  catalogPrices                Boolean       @default(false)
+  maxMenuSections              Int           @default(0)
+  maxMenuItemsPerSection       Int           @default(0)
+  menuVideoPerItem             Boolean       @default(false)
+  maxMenuVideoSeconds          Int           @default(0)
+  maxBiens                     Int           @default(0)
+  maxPhotosPerBien             Int           @default(0)
+  hasCatalog                   Boolean       @default(false)
+  hasMenu                      Boolean       @default(false)
+  hasBiens                     Boolean       @default(false)
+  hasGoogleReview              Boolean       @default(false)
+  hasStats                     Boolean       @default(false)
+  hasForm                      Boolean       @default(false)
+  hasDashboard                 Boolean       @default(false)
+  plan                         Plan          @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@map("plan_limits")
+}
+
+model Subscription {
+  id         Int                @id @default(autoincrement())
+  ficheId    Int
+  planId     Int
+  status     SubscriptionStatus @default(ACTIVE)
+  startsAt   DateTime           @default(now())
+  endsAt     DateTime?
+  canceledAt DateTime?
+  amountFcfa Int?
+  paymentRef String?
+  createdAt  DateTime           @default(now())
+  fiche      Fiche              @relation(fields: [ficheId], references: [id], onDelete: Cascade)
+  plan       Plan               @relation(fields: [planId], references: [id])
+  payments   Payment[]
+
+  @@index([ficheId, status])
+  @@index([endsAt])
+  @@map("subscriptions")
+}
+
+model Payment {
+  id                Int             @id @default(autoincrement())
+  ficheId           Int
+  subscriptionId    Int?
+  planId            Int
+  provider          PaymentProvider @default(SIMULATION)
+  status            PaymentStatus   @default(PENDING)
+  amountFcfa        Int
+  currency          String          @default("XOF")
+  providerReference String?         @unique
+  failureReason     String?
+  paidAt            DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  fiche             Fiche           @relation(fields: [ficheId], references: [id], onDelete: Cascade)
+  plan              Plan            @relation(fields: [planId], references: [id])
+  subscription      Subscription?   @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  @@index([ficheId, status, createdAt])
+  @@map("payments")
+}
+
+// Demande de rappel envoyée depuis la fiche publique (onglet RAPPEL).
+model DemandeRappel {
+  id        Int      @id @default(autoincrement())
+  ficheId   Int
+  nom       String
+  telephone String
+  createdAt DateTime @default(now())
+  fiche     Fiche    @relation(fields: [ficheId], references: [id], onDelete: Cascade)
+
+  @@index([ficheId, createdAt])
+}
+
+// Événement individuel d'ouverture publique d'une fiche (QR, NFC ou lien direct).
+model FichePassage {
+  id             Int                @id @default(autoincrement())
+  ficheId        Int
+  source         FichePassageSource
+  idempotencyKey String             @unique @db.VarChar(64)
+  createdAt      DateTime           @default(now())
+  fiche          Fiche              @relation(fields: [ficheId], references: [id], onDelete: Cascade)
+
+  @@index([ficheId, createdAt])
+  @@index([ficheId, source, createdAt])
+  @@map("fiche_passages")
+}
+
+enum PlanType {
+  ESSENTIELLE
+  PRO
+  SIGNATURE
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+}
+
+enum SubscriptionStatus {
+  PENDING
+  ACTIVE
+  EXPIRED
+  CANCELED
+}
+
+enum PaymentProvider {
+  SIMULATION
+  WAVE
+  ORANGE_MONEY
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
+enum FichePassageSource {
+  QR
+  NFC
+  DIRECT
+}
+
+enum StatutFiche {
+  ACTIVE
+  SUSPENDUE
+}
+
+enum Secteur {
+  RESTAURANT
+  IMMOBILIER
+  COMMERCE
+  HOTEL
+  INDEPENDANT
+  BEAUTE
+}
+
+enum PremierBouton {
+  WHATSAPP
+  APPEL
+  EMAIL
+}
+
+enum Disposition {
+  PORTRAIT
+  LOGO
+  BANNIERE
+  DUO
+}
+
+enum Taille {
+  S
+  M
+  L
+}
+
+enum Theme {
+  OR
+  CLAIR
+  BLEU
+  NUIT
+}
+
+enum TabType {
+  PRESENTATION
+  MENU
+  BIENS
+  CATALOGUE
+  GALERIE
+  VIDEOS
+  LIENS
+  RENDEZVOUS
+  RAPPEL
+  HORAIRES
+  AVIS
+  RESEAUX
+  LOCALISATION
+  TEXTE
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+enum BienType {
+  VENTE
+  LOCATION
+}
+
+enum PrintStatus {
+  A_IMPRIMER
+  IMPRIMEE
+  ENCODEE
+  TESTEE
+  LIVREE
+  ANNULEE
+}
+
+enum StickerKind {
+  FONCTION
+  TELEPHONE
+}
+
+enum StickerFonction {
+  AVIS
+  WIFI
+  MENU
+  RESEAUX
+  CONTACT
+  RDV
+  LIEN
+}
+
+enum StickerStatus {
+  A_PARAMETRER
+  PARAMETRE
+  TESTE
+  IMPRIME
+  LIVRE
+  ANNULE
+}
+
+enum QrMode {
+  DYNAMIQUE
+  WIFI
+  FICHE
+}
+
+// Carte NFC à imprimer (Evolis, CR80) : l'adresse écrite dans la puce est figée à la création.
+model PrintJob {
+  id               Int         @id @default(autoincrement())
+  ficheId          Int?
+  tier             PlanType?
+  formule          String?
+  slug             String?
+  nfcUrl           String
+  design           Json?
+  rectoPath        String?
+  versoPath        String?
+  statut           PrintStatus @default(A_IMPRIMER)
+  clientNom        String?
+  clientEntreprise String?
+  clientTelephone  String?
+  clientEmail      String?
+  clientFonction   String?
+  printedAt        DateTime?
+  testedAt         DateTime?
+  notes            String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  fiche            Fiche?      @relation(fields: [ficheId], references: [id], onDelete: SetNull)
+   rectoUrl    String?
+   versoUrl    String?
+   encodedAt   DateTime?
+   deliveredAt DateTime?
+  @@index([statut, createdAt])
+  @@index([ficheId])
+  @@map("print_jobs")
+}
+
+// Sticker « fonction » (80/120/170 mm) ou « téléphone » (30 mm, copie du QR de la fiche).
+model StickerOrder {
+  id               Int              @id @default(autoincrement())
+  ficheId          Int?
+  kind             StickerKind
+  fonction         StickerFonction?
+  tailleMm         Int
+  forme            String?
+  theme            String?
+  quantite         Int              @default(1)
+  options          Json?
+  parametres       Json?
+  personnalisation Json?
+  qrMode           QrMode
+  qrCode           String?
+  ficheSlug        String?
+  statut           StickerStatus    @default(A_PARAMETRER)
+  clientNom        String?
+  clientEntreprise String?
+  clientTelephone  String?
+  clientEmail      String?
+  clientFonction   String?
+  notes            String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  fiche            Fiche?           @relation(fields: [ficheId], references: [id], onDelete: SetNull)
+  qrLinks          QrLink[]
+
+  @@index([kind, statut, createdAt])
+  @@index([qrCode])
+  @@map("sticker_orders")
+}
+
+// QR dynamique : /q/<code> redirige vers une cible modifiable à distance.
+model QrLink {
+  code       String        @id
+  targetUrl  String?
+  label      String?
+  actif      Boolean       @default(true)
+  scans      Int           @default(0)
+  lastScanAt DateTime?
+  createdAt  DateTime      @default(now())
+  stickerId  Int?
+  sticker    StickerOrder? @relation(fields: [stickerId], references: [id], onDelete: SetNull)
+
+  @@index([stickerId])
+  @@map("qr_links")
+}

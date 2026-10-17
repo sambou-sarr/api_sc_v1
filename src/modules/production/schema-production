@@ -1,0 +1,108 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// À AJOUTER À LA FIN DE schema.prisma, puis :  npx prisma migrate dev --name production
+//
+// ET, dans le modèle Fiche existant, ajouter ces 3 lignes de relation
+// (elles ne créent AUCUNE colonne dans la table fiches, seulement le lien côté Prisma) :
+//     printJobs PrintJob[]
+//     stickers  StickerOrder[]
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum PrintStatus {
+  A_IMPRIMER
+  IMPRIMEE
+  ENCODEE
+  TESTEE
+  LIVREE
+  ANNULEE
+}
+
+enum StickerKind {
+  FONCTION
+  TELEPHONE
+}
+
+enum StickerFonction {
+  AVIS
+  WIFI
+  MENU
+  RESEAUX
+  CONTACT
+  RDV
+  LIEN
+}
+
+enum StickerStatus {
+  A_PARAMETRER
+  PARAMETRE
+  TESTE
+  IMPRIME
+  LIVRE
+  ANNULE
+}
+
+enum QrMode {
+  DYNAMIQUE
+  WIFI
+  FICHE
+}
+
+// Carte NFC à imprimer (Evolis, CR80) : l'adresse écrite dans la puce est figée à la création.
+model PrintJob {
+  id        Int         @id @default(autoincrement())
+  ficheId   Int
+  tier      PlanType
+  nfcUrl    String
+  design    Json?
+  statut    PrintStatus @default(A_IMPRIMER)
+  printedAt DateTime?
+  testedAt  DateTime?
+  notes     String?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  fiche     Fiche       @relation(fields: [ficheId], references: [id], onDelete: Cascade)
+
+  @@index([statut, createdAt])
+  @@index([ficheId])
+  @@map("print_jobs")
+}
+
+// Sticker « fonction » (80/120/170 mm) ou « téléphone » (30 mm, copie du QR de la fiche).
+model StickerOrder {
+  id               Int              @id @default(autoincrement())
+  ficheId          Int?
+  kind             StickerKind
+  fonction         StickerFonction?
+  tailleMm         Int
+  forme            String?
+  theme            String?
+  quantite         Int              @default(1)
+  options          Json?
+  parametres       Json?
+  personnalisation Json?
+  qrMode           QrMode
+  qrCode           String?          @unique
+  ficheSlug        String?
+  statut           StickerStatus    @default(A_PARAMETRER)
+  notes            String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  fiche            Fiche?           @relation(fields: [ficheId], references: [id], onDelete: SetNull)
+  qrLink           QrLink?          @relation(fields: [qrCode], references: [code], onDelete: SetNull)
+
+  @@index([kind, statut, createdAt])
+  @@map("sticker_orders")
+}
+
+// QR dynamique : /q/<code> redirige vers une cible modifiable à distance.
+model QrLink {
+  code       String        @id
+  targetUrl  String?
+  label      String?
+  actif      Boolean       @default(true)
+  scans      Int           @default(0)
+  lastScanAt DateTime?
+  createdAt  DateTime      @default(now())
+  sticker    StickerOrder?
+
+  @@map("qr_links")
+}
