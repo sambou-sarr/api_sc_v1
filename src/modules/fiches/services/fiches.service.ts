@@ -1,5 +1,5 @@
 import { randomBytes } from "crypto";
-import { env } from "../../config/env";
+import { env } from "../../../config/env";
 import type {
   Disposition,
   PremierBouton,
@@ -8,25 +8,30 @@ import type {
   TabType,
   Taille,
   Theme,
-} from "../../database/prisma/generated/prisma/client";
-import { prisma } from "../../database/prisma/prisma-client";
-import { HttpError, conflict, forbidden, notFound } from "../../lib/httpError";
-import { logger } from "../../lib/logger";
+} from "../../../database/prisma/generated/prisma/client";
+import { prisma } from "../../../database/prisma/prisma-client";
+import {
+  HttpError,
+  conflict,
+  forbidden,
+  notFound,
+} from "../../../lib/httpError";
+import { logger } from "../../../lib/logger";
+import { normalizeMediaReferences } from "../../../lib/media";
+import { AuthUser } from "../../../types/user";
+import { MediaService } from "../../media/media.service";
+import { collectStoredMediaKeys } from "../../media/media.validation";
 import {
   getEffectiveSubscription,
   type EffectiveSubscription,
-} from "../subscriptions/subscriptions.service";
-import { ficheInclude, toFicheDto, type FicheFull } from "./fiches.dto";
-import { enforcePlanLimits } from "./fiches.limits";
+} from "../../subscriptions/subscriptions.service";
+import { ficheInclude, toFicheDto, type FicheFull } from "../fiches.dto";
+import { enforcePlanLimits } from "../fiches.limits";
 import {
   JOURS,
   type CreateFicheInput,
   type UpdateFicheInput,
-} from "./fiches.schemas";
-import { AuthUser } from "../../types/user";
-import { MediaService } from "../media/media.service";
-import { collectStoredMediaKeys } from "../media/media.validation";
-
+} from "../fiches.schemas";
 
 const isAdmin = (u: AuthUser) => u.role === "ADMIN";
 const up = <T extends string>(v: string) => v.toUpperCase() as T;
@@ -37,56 +42,6 @@ const nullIfEmpty = (v: string | undefined) =>
 function assertAccess(user: AuthUser, fiche: { userId: number | null }) {
   if (!isAdmin(user) && fiche.userId !== user.id)
     throw notFound("Fiche introuvable");
-}
-
-// Les URL de l'API ne sont jamais persistées : seule la référence relative /api/media/... est stockée.
-function normalizeMediaUrl(value: string | undefined) {
-  if (!value) return value;
-  const apiOrigin = env.SERVER.replace(/\/api\/?$/, "").replace(/\/$/, "");
-  const prefix = `${apiOrigin}/api/media/`;
-  return value.startsWith(prefix) ? value.slice(apiOrigin.length) : value;
-}
-
-function normalizeMediaReferences(input: UpdateFicheInput): UpdateFicheInput {
-  const d = input.data;
-  return {
-    ...input,
-    photo: normalizeMediaUrl(input.photo),
-    logo: normalizeMediaUrl(input.logo),
-    ...(d ? {
-      data: {
-        ...d,
-        galerie: d.galerie?.map(m => ({ ...m, url: normalizeMediaUrl(m.url)! })),
-        sections: d.sections?.map(section => ({
-          ...section,
-          articles: section.articles.map(article => ({
-            ...article,
-            photo: normalizeMediaUrl(article.photo),
-          })),
-        })),
-        menu: d.menu ? {
-          ...d.menu,
-          sections: d.menu.sections.map(section => ({
-            ...section,
-            plats: section.plats.map(plat => ({
-              ...plat,
-              image: normalizeMediaUrl(plat.image),
-              video: normalizeMediaUrl(plat.video),
-              videoWebm: normalizeMediaUrl(plat.videoWebm),
-            })),
-          })),
-        } : undefined,
-        biens: d.biens?.map(bien => ({
-          ...bien,
-          photos: bien.photos.map(photo => normalizeMediaUrl(photo)!),
-        })),
-        entete: d.entete ? {
-          ...d.entete,
-          couverture: normalizeMediaUrl(d.entete.couverture),
-        } : undefined,
-      },
-    } : {}),
-  };
 }
 
 export const FicheService = {
@@ -100,14 +55,26 @@ export const FicheService = {
     const subs = await effectiveByFiche(fiches.map(f => f.id));
     return fiches.map(f => toFicheDto(f, subs.get(f.id) ?? null));
   },
+
+  // Create fiche
   createFiche: async (user: AuthUser, input: CreateFicheInput) => {
     if (!isAdmin(user)) {
       const count = await prisma.fiche.count({ where: { userId: user.id } });
-      if (count >= env.MAX_FICHES_PER_USER)
+      if (count >= env.MAX_FICHES_PER_USER) {
+
+        console.log(input)
+      /** Check formule , 
+       * isEssentiel ? call subscrption
+       */
+
+
+        // Pay for a new emplacement
         throw forbidden(
           "LIMITE_FICHES",
           `Tu ne peux pas créer plus de ${env.MAX_FICHES_PER_USER} fiches`
         );
+      }
+
     }
 
     const slug = await uniqueSlug(
@@ -150,9 +117,6 @@ export const FicheService = {
     return dtoFor(fiche);
   },
 
-
-
-  
   getFiche: async (user: AuthUser, id: number) => {
     const fiche = await loadFull(id);
     if (!fiche) throw notFound("Fiche introuvable");
@@ -209,10 +173,15 @@ export const FicheService = {
         "L'abonnement de cette fiche a expiré : la modification est bloquée"
       );
 
-    const input = enforcePlanLimits(sub.plan.limits, normalizeMediaReferences(rawInput)); // 422 si dépassement
+    const input = enforcePlanLimits(
+      sub.plan.limits,
+      normalizeMediaReferences(rawInput)
+    ); // 422 si dépassement
     const previousSnapshot = await loadFull(id);
     const d = input.data;
-    const baseVersion = rawInput.baseUpdatedAt ? new Date(rawInput.baseUpdatedAt) : null;
+    const baseVersion = rawInput.baseUpdatedAt
+      ? new Date(rawInput.baseUpdatedAt)
+      : null;
 
     await prisma.$transaction(
       async tx => {
@@ -398,7 +367,9 @@ export const FicheService = {
     if (previousSnapshot && updated) {
       const previousKeys = collectStoredMediaKeys(previousSnapshot, id);
       const currentKeys = collectStoredMediaKeys(updated, id);
-      const removedKeys = [...previousKeys].filter(key => !currentKeys.has(key));
+      const removedKeys = [...previousKeys].filter(
+        key => !currentKeys.has(key)
+      );
       for (const key of removedKeys) {
         try {
           await MediaService.deleteStoredMedia(id, key);

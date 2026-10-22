@@ -1,7 +1,7 @@
-import { Prisma } from "../../database/prisma/generated/prisma/client";
-import { prisma } from "../../database/prisma/prisma-client";
-import { badRequest, conflict, notFound } from "../../lib/httpError";
-import type { AuthUser } from "../../types/user";
+import { Prisma } from "../../../database/prisma/generated/prisma/client";
+import { prisma } from "../../../database/prisma/prisma-client";
+import { badRequest, conflict, notFound } from "../../../lib/httpError";
+import type { AuthUser } from "../../../types/user";
 
 export type PassageSource = "QR" | "NFC" | "DIRECT";
 export type PassageGranularity = "day" | "month";
@@ -16,12 +16,18 @@ const emptyTotals = () => ({ qr: 0, nfc: 0, direct: 0, total: 0 });
 
 function getRange(filters: PassageFilters) {
   if (filters.date && filters.month) {
-    throw badRequest("FILTRES_INCOMPATIBLES", "Choisissez une date ou un mois, pas les deux.");
+    throw badRequest(
+      "FILTRES_INCOMPATIBLES",
+      "Choisissez une date ou un mois, pas les deux."
+    );
   }
 
   if (filters.date) {
     const start = new Date(`${filters.date}T00:00:00.000Z`);
-    if (Number.isNaN(start.getTime()) || start.toISOString().slice(0, 10) !== filters.date) {
+    if (
+      Number.isNaN(start.getTime()) ||
+      start.toISOString().slice(0, 10) !== filters.date
+    ) {
       throw badRequest("DATE_INVALIDE", "La date demandée est invalide.");
     }
     return { start, end: new Date(start.getTime() + 86_400_000) };
@@ -29,7 +35,10 @@ function getRange(filters: PassageFilters) {
 
   if (filters.month) {
     if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(filters.month)) {
-      throw badRequest("MOIS_INVALIDE", "Le mois doit respecter le format AAAA-MM.");
+      throw badRequest(
+        "MOIS_INVALIDE",
+        "Le mois doit respecter le format AAAA-MM."
+      );
     }
     const [year, month] = filters.month.split("-").map(Number);
     const start = new Date(Date.UTC(year, month - 1, 1));
@@ -44,7 +53,7 @@ export const PassageService = {
     slug: string,
     source: PassageSource,
     idempotencyKey: string,
-    user?: AuthUser,
+    user?: AuthUser
   ) {
     const fiche = await prisma.fiche.findUnique({
       where: { slug },
@@ -60,38 +69,51 @@ export const PassageService = {
       return { recorded: false };
     }
 
-    const existing = await prisma.$queryRaw<Array<{ ficheId: number; source: string }>>(
+    const existing = await prisma.$queryRaw<
+      Array<{ ficheId: number; source: string }>
+    >(
       Prisma.sql`SELECT "ficheId", "source"::text AS source
         FROM "fiche_passages"
         WHERE "idempotencyKey" = ${idempotencyKey}
-        LIMIT 1`,
+        LIMIT 1`
     );
     if (existing[0]) {
       if (existing[0].ficheId !== fiche.id || existing[0].source !== source) {
-        throw conflict("CLE_PASSAGE_REUTILISEE", "Cette clé de passage a déjà été utilisée.");
+        throw conflict(
+          "CLE_PASSAGE_REUTILISEE",
+          "Cette clé de passage a déjà été utilisée."
+        );
       }
       return { recorded: false };
     }
 
-    return prisma.$transaction(async (tx) => {
+    return prisma.$transaction(async tx => {
       const inserted = await tx.$queryRaw<Array<{ id: number }>>(
         Prisma.sql`INSERT INTO "fiche_passages" ("ficheId", "source", "idempotencyKey")
           VALUES (${fiche.id}, ${source}::"FichePassageSource", ${idempotencyKey})
           ON CONFLICT ("idempotencyKey") DO NOTHING
-          RETURNING "id"`,
+          RETURNING "id"`
       );
 
       if (inserted.length === 0) {
-        const duplicate = await tx.$queryRaw<Array<{ ficheId: number; source: string }>>(
+        const duplicate = await tx.$queryRaw<
+          Array<{ ficheId: number; source: string }>
+        >(
           Prisma.sql`SELECT "ficheId", "source"::text AS source
             FROM "fiche_passages"
             WHERE "idempotencyKey" = ${idempotencyKey}
-            LIMIT 1`,
+            LIMIT 1`
         );
-        if (duplicate[0]?.ficheId === fiche.id && duplicate[0]?.source === source) {
+        if (
+          duplicate[0]?.ficheId === fiche.id &&
+          duplicate[0]?.source === source
+        ) {
           return { recorded: false };
         }
-        throw conflict("CLE_PASSAGE_REUTILISEE", "Cette clé de passage a déjà été utilisée.");
+        throw conflict(
+          "CLE_PASSAGE_REUTILISEE",
+          "Cette clé de passage a déjà été utilisée."
+        );
       }
 
       await tx.fiche.update({
@@ -116,13 +138,15 @@ export const PassageService = {
       ? Prisma.sql`AND "createdAt" >= ${range.start} AND "createdAt" < ${range.end}`
       : Prisma.empty;
 
-    const totalsRows = await prisma.$queryRaw<Array<{ source: string; total: number }>>(
+    const totalsRows = await prisma.$queryRaw<
+      Array<{ source: string; total: number }>
+    >(
       Prisma.sql`
         SELECT "source"::text AS source, COUNT(*)::int AS total
         FROM "fiche_passages"
         WHERE "ficheId" = ${ficheId} ${rangeClause}
         GROUP BY "source"
-      `,
+      `
     );
 
     // Use a fixed SQL expression for both SELECT and GROUP BY.
@@ -133,7 +157,9 @@ export const PassageService = {
         ? Prisma.sql`date_trunc('day', "createdAt")`
         : Prisma.sql`date_trunc('month', "createdAt")`;
     const format = filters.granularity === "day" ? "YYYY-MM-DD" : "YYYY-MM";
-    const historyRows = await prisma.$queryRaw<Array<{ period: string; source: string; total: number }>>(
+    const historyRows = await prisma.$queryRaw<
+      Array<{ period: string; source: string; total: number }>
+    >(
       Prisma.sql`
         SELECT
           to_char(${periodExpression}, ${format}) AS period,
@@ -143,7 +169,7 @@ export const PassageService = {
         WHERE "ficheId" = ${ficheId} ${rangeClause}
         GROUP BY ${periodExpression}, "source"
         ORDER BY period ASC
-      `,
+      `
     );
 
     const totals = emptyTotals();
@@ -169,7 +195,10 @@ export const PassageService = {
       granularity: filters.granularity,
       filters: { date: filters.date ?? null, month: filters.month ?? null },
       totals,
-      history: [...periods.entries()].map(([period, values]) => ({ period, ...values })),
+      history: [...periods.entries()].map(([period, values]) => ({
+        period,
+        ...values,
+      })),
     };
   },
 };
