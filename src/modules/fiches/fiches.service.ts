@@ -110,6 +110,8 @@ export const FicheService = {
         );
     }
 
+    // 
+
     const slug = await uniqueSlug(
       slugify(`${input.prenom} ${input.nom ?? ""}`)
     );
