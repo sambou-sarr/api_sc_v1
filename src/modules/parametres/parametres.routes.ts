@@ -4,6 +4,7 @@ import { validate } from "../../middlewares/validate";
 import { ParametresController } from "./parametres.controller";
 import {
   commandeTarifSchema,
+  formuleAbonnementParams,
   formuleParams,
   patchEmplacementsSchema,
   patchFormuleSchema,
@@ -31,14 +32,16 @@ parametresRouter.patch(
 );
 
 // GET   /api/admin/parametres/formules/:formule/tarif?dureeMois=12&quantite=3
+//       formule = pro | signature (l'Essentielle n'a pas d'abonnement)
 parametresRouter.get(
   "/formules/:formule/tarif",
-  validate({ params: formuleParams, query: tarifQuery }),
+  validate({ params: formuleAbonnementParams, query: tarifQuery }),
   ParametresController.tarif
 );
 
 // PATCH /api/admin/parametres/emplacements
-//       { "prixUnitaireFcfa"?: 1500, "packs"?: [{ "quantite": 3, "prixFcfa": 3500 }] }
+//       { "prixUnitaireFcfa"?: 1500, "fichesGratuites"?: 3, "packs"?: [{ "quantite": 3, "prixFcfa": 3500 }] }
+//       fichesGratuites : fiches Essentielle gratuites par compte ; au-delà, emplacement à paiement unique
 parametresRouter.patch(
   "/emplacements",
   validate({ body: patchEmplacementsSchema }),
@@ -54,6 +57,7 @@ parametresRouter.get(
 
 // POST  /api/admin/parametres/commande/tarif
 //       { "lignes": [{ "formule": "pro", "dureeMois": 12, "quantite": 5 }], "emplacements": 4 }
+//       Pas de ligne « essentielle » ; `lignes` peut être [] si on n'achète que des emplacements.
 parametresRouter.post(
   "/commande/tarif",
   validate({ body: commandeTarifSchema }),

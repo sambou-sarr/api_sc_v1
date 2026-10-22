@@ -12,14 +12,26 @@ import type {
 import {
   calculerEmplacements,
   calculerTarif,
+  emplacementsManquants,
+  peutCreerEssentielle,
+  quotaEssentielle,
   remiseDuree,
   remiseQuantite,
-} from "./parametres.tarifs";
+} from "./parametres.tarifs (1)";
 
 // Les réglages vivent dans `plans` (+ `plan_durees`, `plan_remises`) et dans
 // `emplacement_config` / `emplacement_packs`. Ils servent de VALEURS PAR DÉFAUT :
 // les abonnements déjà créés ne changent jamais.
 const ORDRE: PlanType[] = ["ESSENTIELLE", "PRO", "SIGNATURE"];
+const FICHES_GRATUITES_PAR_DEFAUT = 3;
+
+// L'Essentielle n'a pas d'abonnement : ni prix, ni durée, ni remise. Elle se limite à
+// `fichesGratuites` fiches par compte, puis à des emplacements payés une seule fois.
+const ESSENTIELLE_SANS_ABONNEMENT = () =>
+  unprocessable(
+    "ESSENTIELLE_SANS_ABONNEMENT",
+    "L'Essentielle n'a pas d'abonnement : seuls les emplacements supplémentaires sont payants (paiement unique)"
+  );
 
 const SELECT = {
   type: true,
@@ -62,7 +74,11 @@ async function lireEmplacements(db: Db = prisma) {
       orderBy: { quantite: "asc" },
     }),
   ]);
-  return { prixUnitaireFcfa: config?.prixUnitaireFcfa ?? null, packs };
+  return {
+    prixUnitaireFcfa: config?.prixUnitaireFcfa ?? null,
+    fichesGratuites: config?.fichesGratuites ?? FICHES_GRATUITES_PAR_DEFAUT,
+    packs,
+  };
 }
 
 // Prix d'une ligne d'abonnement, avec les contrôles métier.
@@ -73,6 +89,7 @@ function tarifLigne(
   quantiteFormule: number,
   exigerActif: boolean
 ) {
+  if (plan.type === "ESSENTIELLE") throw ESSENTIELLE_SANS_ABONNEMENT();
   if (exigerActif && !plan.actif)
     throw unprocessable("FORMULE_INACTIVE", `La formule ${plan.nom} est désactivée`);
   if (plan.prixMensuelFcfa === null)
@@ -97,6 +114,31 @@ function tarifLigne(
 }
 
 export const ParametresService = {
+  // ───────── Quota de fiches Essentielle d'un compte ─────────
+  // À utiliser par le module fiches (création) et le module paiement (achat d'emplacements) :
+  //   const { quota, peutCreer, emplacementsManquants } =
+  //     await ParametresService.quotaEssentielle(tx, { existantes, emplacementsPayes });
+  async quotaEssentielle(
+    db: Db,
+    i: { existantes: number; emplacementsPayes: number; voulues?: number }
+  ) {
+    const { fichesGratuites } = await lireEmplacements(db);
+    return {
+      fichesGratuites,
+      quota: quotaEssentielle(fichesGratuites, i.emplacementsPayes),
+      peutCreer: peutCreerEssentielle(
+        i.existantes,
+        fichesGratuites,
+        i.emplacementsPayes
+      ),
+      emplacementsManquants: emplacementsManquants(
+        i.voulues ?? i.existantes + 1,
+        fichesGratuites,
+        i.emplacementsPayes
+      ),
+    };
+  },
+
   // ───────── Lecture : tout l'onglet Paramètres en un appel ─────────
   async get() {
     const [plans, emplacements] = await Promise.all([
@@ -114,6 +156,12 @@ export const ParametresService = {
   async grille() {
     const { formules, emplacements } = await ParametresService.get();
     return {
+      // Essentielle : pas d'abonnement, à afficher comme « N fiches gratuites, puis emplacement
+      // à paiement unique » (prix et packs dans `emplacements`).
+      essentielle: {
+        fichesGratuites: emplacements.fichesGratuites,
+        paiementUnique: true,
+      },
       formules: formules
         .filter(f => f.actif && f.prixMensuelFcfa !== null)
         .map(f => ({
@@ -130,6 +178,16 @@ export const ParametresService = {
   // ───────── Formule : prix, durée par défaut, actif, remises durée, remises quantité ─────────
   async updateFormule(formule: string, input: PatchFormuleInput) {
     const type = toType(formule);
+
+    if (
+      type === "ESSENTIELLE" &&
+      (input.prixMensuelFcfa !== undefined ||
+        input.prixFcfa !== undefined ||
+        input.dureeMois !== undefined ||
+        input.durees !== undefined ||
+        input.remises !== undefined)
+    )
+      throw ESSENTIELLE_SANS_ABONNEMENT();
 
     const plan = await prisma.$transaction(async tx => {
       const existe = await tx.plan.findUnique({
@@ -183,11 +241,19 @@ export const ParametresService = {
   // ───────── Emplacements supplémentaires : prix unitaire + packs ─────────
   async updateEmplacements(input: PatchEmplacementsInput) {
     return prisma.$transaction(async tx => {
-      if (input.prixUnitaireFcfa !== undefined)
+      const config = {
+        ...(input.prixUnitaireFcfa !== undefined && {
+          prixUnitaireFcfa: input.prixUnitaireFcfa,
+        }),
+        ...(input.fichesGratuites !== undefined && {
+          fichesGratuites: input.fichesGratuites,
+        }),
+      };
+      if (Object.keys(config).length > 0)
         await tx.emplacementConfig.upsert({
           where: { id: 1 },
-          create: { id: 1, prixUnitaireFcfa: input.prixUnitaireFcfa },
-          update: { prixUnitaireFcfa: input.prixUnitaireFcfa },
+          create: { id: 1, ...config },
+          update: config,
         });
 
       if (input.packs !== undefined) {
@@ -266,6 +332,7 @@ export const ParametresService = {
     let emplacements: Awaited<ReturnType<typeof calculerEmplacements>> | null =
       null;
     if (input.emplacements) {
+      // Emplacements = fiches Essentielle au-delà du quota gratuit, paiement unique.
       const cfg = await lireEmplacements();
       if (cfg.prixUnitaireFcfa === null)
         throw unprocessable(
