@@ -80,12 +80,12 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.10.0
- * Query Engine version: 0edf323efd1d98336f3f0a68684b56f689b900d3
+ * Prisma Client JS version: 7.10.1
+ * Query Engine version: d1b3f377ca835d73fd50954a5e22128b9ebdd6b8
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.10.0",
-  engine: "0edf323efd1d98336f3f0a68684b56f689b900d3"
+  client: "7.10.1",
+  engine: "d1b3f377ca835d73fd50954a5e22128b9ebdd6b8"
 }
 
 /**
@@ -419,7 +419,11 @@ export const ModelName = {
   FichePassage: 'FichePassage',
   PrintJob: 'PrintJob',
   StickerOrder: 'StickerOrder',
-  QrLink: 'QrLink'
+  QrLink: 'QrLink',
+  PlanDuree: 'PlanDuree',
+  PlanRemise: 'PlanRemise',
+  EmplacementConfig: 'EmplacementConfig',
+  EmplacementPack: 'EmplacementPack'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -435,7 +439,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "fiche" | "ficheOnglet" | "ficheReseau" | "ficheLien" | "ficheHoraire" | "ficheMedia" | "catalogueSection" | "catalogueArticle" | "menuSection" | "menuPlat" | "bien" | "bienPhoto" | "user" | "authToken" | "plan" | "planLimit" | "subscription" | "payment" | "demandeRappel" | "fichePassage" | "printJob" | "stickerOrder" | "qrLink"
+    modelProps: "fiche" | "ficheOnglet" | "ficheReseau" | "ficheLien" | "ficheHoraire" | "ficheMedia" | "catalogueSection" | "catalogueArticle" | "menuSection" | "menuPlat" | "bien" | "bienPhoto" | "user" | "authToken" | "plan" | "planLimit" | "subscription" | "payment" | "demandeRappel" | "fichePassage" | "printJob" | "stickerOrder" | "qrLink" | "planDuree" | "planRemise" | "emplacementConfig" | "emplacementPack"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2141,6 +2145,302 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PlanDuree: {
+      payload: Prisma.$PlanDureePayload<ExtArgs>
+      fields: Prisma.PlanDureeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PlanDureeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanDureePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PlanDureeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanDureePayload>
+        }
+        findFirst: {
+          args: Prisma.PlanDureeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanDureePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PlanDureeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanDureePayload>
+        }
+        findMany: {
+          args: Prisma.PlanDureeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanDureePayload>[]
+        }
+        create: {
+          args: Prisma.PlanDureeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanDureePayload>
+        }
+        createMany: {
+          args: Prisma.PlanDureeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PlanDureeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanDureePayload>[]
+        }
+        delete: {
+          args: Prisma.PlanDureeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanDureePayload>
+        }
+        update: {
+          args: Prisma.PlanDureeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanDureePayload>
+        }
+        deleteMany: {
+          args: Prisma.PlanDureeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PlanDureeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PlanDureeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanDureePayload>[]
+        }
+        upsert: {
+          args: Prisma.PlanDureeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanDureePayload>
+        }
+        aggregate: {
+          args: Prisma.PlanDureeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePlanDuree>
+        }
+        groupBy: {
+          args: Prisma.PlanDureeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PlanDureeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PlanDureeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PlanDureeCountAggregateOutputType> | number
+        }
+      }
+    }
+    PlanRemise: {
+      payload: Prisma.$PlanRemisePayload<ExtArgs>
+      fields: Prisma.PlanRemiseFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PlanRemiseFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanRemisePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PlanRemiseFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanRemisePayload>
+        }
+        findFirst: {
+          args: Prisma.PlanRemiseFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanRemisePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PlanRemiseFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanRemisePayload>
+        }
+        findMany: {
+          args: Prisma.PlanRemiseFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanRemisePayload>[]
+        }
+        create: {
+          args: Prisma.PlanRemiseCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanRemisePayload>
+        }
+        createMany: {
+          args: Prisma.PlanRemiseCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PlanRemiseCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanRemisePayload>[]
+        }
+        delete: {
+          args: Prisma.PlanRemiseDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanRemisePayload>
+        }
+        update: {
+          args: Prisma.PlanRemiseUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanRemisePayload>
+        }
+        deleteMany: {
+          args: Prisma.PlanRemiseDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PlanRemiseUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PlanRemiseUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanRemisePayload>[]
+        }
+        upsert: {
+          args: Prisma.PlanRemiseUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlanRemisePayload>
+        }
+        aggregate: {
+          args: Prisma.PlanRemiseAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePlanRemise>
+        }
+        groupBy: {
+          args: Prisma.PlanRemiseGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PlanRemiseGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PlanRemiseCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PlanRemiseCountAggregateOutputType> | number
+        }
+      }
+    }
+    EmplacementConfig: {
+      payload: Prisma.$EmplacementConfigPayload<ExtArgs>
+      fields: Prisma.EmplacementConfigFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EmplacementConfigFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementConfigPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EmplacementConfigFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementConfigPayload>
+        }
+        findFirst: {
+          args: Prisma.EmplacementConfigFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementConfigPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EmplacementConfigFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementConfigPayload>
+        }
+        findMany: {
+          args: Prisma.EmplacementConfigFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementConfigPayload>[]
+        }
+        create: {
+          args: Prisma.EmplacementConfigCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementConfigPayload>
+        }
+        createMany: {
+          args: Prisma.EmplacementConfigCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EmplacementConfigCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementConfigPayload>[]
+        }
+        delete: {
+          args: Prisma.EmplacementConfigDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementConfigPayload>
+        }
+        update: {
+          args: Prisma.EmplacementConfigUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementConfigPayload>
+        }
+        deleteMany: {
+          args: Prisma.EmplacementConfigDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EmplacementConfigUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EmplacementConfigUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementConfigPayload>[]
+        }
+        upsert: {
+          args: Prisma.EmplacementConfigUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementConfigPayload>
+        }
+        aggregate: {
+          args: Prisma.EmplacementConfigAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEmplacementConfig>
+        }
+        groupBy: {
+          args: Prisma.EmplacementConfigGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmplacementConfigGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EmplacementConfigCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmplacementConfigCountAggregateOutputType> | number
+        }
+      }
+    }
+    EmplacementPack: {
+      payload: Prisma.$EmplacementPackPayload<ExtArgs>
+      fields: Prisma.EmplacementPackFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EmplacementPackFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementPackPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EmplacementPackFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementPackPayload>
+        }
+        findFirst: {
+          args: Prisma.EmplacementPackFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementPackPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EmplacementPackFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementPackPayload>
+        }
+        findMany: {
+          args: Prisma.EmplacementPackFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementPackPayload>[]
+        }
+        create: {
+          args: Prisma.EmplacementPackCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementPackPayload>
+        }
+        createMany: {
+          args: Prisma.EmplacementPackCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EmplacementPackCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementPackPayload>[]
+        }
+        delete: {
+          args: Prisma.EmplacementPackDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementPackPayload>
+        }
+        update: {
+          args: Prisma.EmplacementPackUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementPackPayload>
+        }
+        deleteMany: {
+          args: Prisma.EmplacementPackDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EmplacementPackUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EmplacementPackUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementPackPayload>[]
+        }
+        upsert: {
+          args: Prisma.EmplacementPackUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmplacementPackPayload>
+        }
+        aggregate: {
+          args: Prisma.EmplacementPackAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEmplacementPack>
+        }
+        groupBy: {
+          args: Prisma.EmplacementPackGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmplacementPackGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EmplacementPackCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmplacementPackCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2384,6 +2684,7 @@ export const PlanScalarFieldEnum = {
   type: 'type',
   nom: 'nom',
   themeDefaut: 'themeDefaut',
+  prixMensuelFcfa: 'prixMensuelFcfa',
   prixFcfa: 'prixFcfa',
   dureeMois: 'dureeMois',
   actif: 'actif'
@@ -2556,6 +2857,43 @@ export const QrLinkScalarFieldEnum = {
 } as const
 
 export type QrLinkScalarFieldEnum = (typeof QrLinkScalarFieldEnum)[keyof typeof QrLinkScalarFieldEnum]
+
+
+export const PlanDureeScalarFieldEnum = {
+  id: 'id',
+  planId: 'planId',
+  dureeMois: 'dureeMois',
+  remisePct: 'remisePct'
+} as const
+
+export type PlanDureeScalarFieldEnum = (typeof PlanDureeScalarFieldEnum)[keyof typeof PlanDureeScalarFieldEnum]
+
+
+export const PlanRemiseScalarFieldEnum = {
+  id: 'id',
+  planId: 'planId',
+  quantiteMin: 'quantiteMin',
+  remisePct: 'remisePct'
+} as const
+
+export type PlanRemiseScalarFieldEnum = (typeof PlanRemiseScalarFieldEnum)[keyof typeof PlanRemiseScalarFieldEnum]
+
+
+export const EmplacementConfigScalarFieldEnum = {
+  id: 'id',
+  prixUnitaireFcfa: 'prixUnitaireFcfa'
+} as const
+
+export type EmplacementConfigScalarFieldEnum = (typeof EmplacementConfigScalarFieldEnum)[keyof typeof EmplacementConfigScalarFieldEnum]
+
+
+export const EmplacementPackScalarFieldEnum = {
+  id: 'id',
+  quantite: 'quantite',
+  prixFcfa: 'prixFcfa'
+} as const
+
+export type EmplacementPackScalarFieldEnum = (typeof EmplacementPackScalarFieldEnum)[keyof typeof EmplacementPackScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -3135,6 +3473,10 @@ export type GlobalOmitConfig = {
   printJob?: Prisma.PrintJobOmit
   stickerOrder?: Prisma.StickerOrderOmit
   qrLink?: Prisma.QrLinkOmit
+  planDuree?: Prisma.PlanDureeOmit
+  planRemise?: Prisma.PlanRemiseOmit
+  emplacementConfig?: Prisma.EmplacementConfigOmit
+  emplacementPack?: Prisma.EmplacementPackOmit
 }
 
 /* Types for Logging */

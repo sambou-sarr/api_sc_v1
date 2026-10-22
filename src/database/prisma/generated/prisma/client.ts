@@ -154,3 +154,23 @@ export type StickerOrder = Prisma.StickerOrderModel
  * 
  */
 export type QrLink = Prisma.QrLinkModel
+/**
+ * Model PlanDuree
+ * 
+ */
+export type PlanDuree = Prisma.PlanDureeModel
+/**
+ * Model PlanRemise
+ * 
+ */
+export type PlanRemise = Prisma.PlanRemiseModel
+/**
+ * Model EmplacementConfig
+ * 
+ */
+export type EmplacementConfig = Prisma.EmplacementConfigModel
+/**
+ * Model EmplacementPack
+ * 
+ */
+export type EmplacementPack = Prisma.EmplacementPackModel

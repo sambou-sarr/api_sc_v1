@@ -73,7 +73,11 @@ export const ModelName = {
   FichePassage: 'FichePassage',
   PrintJob: 'PrintJob',
   StickerOrder: 'StickerOrder',
-  QrLink: 'QrLink'
+  QrLink: 'QrLink',
+  PlanDuree: 'PlanDuree',
+  PlanRemise: 'PlanRemise',
+  EmplacementConfig: 'EmplacementConfig',
+  EmplacementPack: 'EmplacementPack'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -296,6 +300,7 @@ export const PlanScalarFieldEnum = {
   type: 'type',
   nom: 'nom',
   themeDefaut: 'themeDefaut',
+  prixMensuelFcfa: 'prixMensuelFcfa',
   prixFcfa: 'prixFcfa',
   dureeMois: 'dureeMois',
   actif: 'actif'
@@ -468,6 +473,43 @@ export const QrLinkScalarFieldEnum = {
 } as const
 
 export type QrLinkScalarFieldEnum = (typeof QrLinkScalarFieldEnum)[keyof typeof QrLinkScalarFieldEnum]
+
+
+export const PlanDureeScalarFieldEnum = {
+  id: 'id',
+  planId: 'planId',
+  dureeMois: 'dureeMois',
+  remisePct: 'remisePct'
+} as const
+
+export type PlanDureeScalarFieldEnum = (typeof PlanDureeScalarFieldEnum)[keyof typeof PlanDureeScalarFieldEnum]
+
+
+export const PlanRemiseScalarFieldEnum = {
+  id: 'id',
+  planId: 'planId',
+  quantiteMin: 'quantiteMin',
+  remisePct: 'remisePct'
+} as const
+
+export type PlanRemiseScalarFieldEnum = (typeof PlanRemiseScalarFieldEnum)[keyof typeof PlanRemiseScalarFieldEnum]
+
+
+export const EmplacementConfigScalarFieldEnum = {
+  id: 'id',
+  prixUnitaireFcfa: 'prixUnitaireFcfa'
+} as const
+
+export type EmplacementConfigScalarFieldEnum = (typeof EmplacementConfigScalarFieldEnum)[keyof typeof EmplacementConfigScalarFieldEnum]
+
+
+export const EmplacementPackScalarFieldEnum = {
+  id: 'id',
+  quantite: 'quantite',
+  prixFcfa: 'prixFcfa'
+} as const
+
+export type EmplacementPackScalarFieldEnum = (typeof EmplacementPackScalarFieldEnum)[keyof typeof EmplacementPackScalarFieldEnum]
 
 
 export const SortOrder = {

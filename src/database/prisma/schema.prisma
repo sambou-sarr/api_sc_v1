@@ -242,12 +242,15 @@ model Plan {
   type          PlanType       @unique
   nom           String
   themeDefaut   Theme
+  prixMensuelFcfa Int?
   prixFcfa      Int?
   dureeMois     Int?
   actif         Boolean        @default(true)
   limits        PlanLimit?
   subscriptions Subscription[]
   payments      Payment[]
+  durees        PlanDuree[]
+  remises       PlanRemise[]
 
   @@map("plans")
 }
@@ -578,4 +581,45 @@ model QrLink {
 
   @@index([stickerId])
   @@map("qr_links")
+}
+
+// Remise selon la durée d'engagement (1 mois 0 %, 3 mois 10 %, 6 mois 15 %, 12 mois 20 %).
+model PlanDuree {
+  id        Int  @id @default(autoincrement())
+  planId    Int
+  dureeMois Int
+  remisePct Int
+  plan      Plan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, dureeMois])
+  @@map("plan_durees")
+}
+
+// Remise selon le nombre de fiches prises d'un coup : à partir de `quantiteMin`, `remisePct` %.
+model PlanRemise {
+  id          Int  @id @default(autoincrement())
+  planId      Int
+  quantiteMin Int
+  remisePct   Int
+  plan        Plan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, quantiteMin])
+  @@map("plan_remises")
+}
+
+// Emplacements de fiches gratuites supplémentaires : une seule ligne (id = 1).
+model EmplacementConfig {
+  id               Int  @id @default(1)
+  prixUnitaireFcfa Int?
+
+  @@map("emplacement_config")
+}
+
+// Packs d'emplacements à prix fixe (ex. 3 emplacements pour 3 500 FCFA).
+model EmplacementPack {
+  id       Int @id @default(autoincrement())
+  quantite Int @unique
+  prixFcfa Int
+
+  @@map("emplacement_packs")
 }
