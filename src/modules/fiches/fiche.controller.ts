@@ -6,6 +6,7 @@ import {
   type PassageSource,
 } from "./services/passages.service";
 import { RappelService } from "./services/rappels.service";
+import { ProductionService } from "../production/production.service";
 
 export const FicheController = {
   createPublicRappel: asyncHandler(async (req, res) => {
@@ -60,6 +61,25 @@ export const FicheController = {
         Number(req.params.id)
       ),
     });
+  }),
+
+  getCardRequest: asyncHandler(async (req, res) => {
+    res.json(
+      await ProductionService.getClientCardRequest(
+        req.user!,
+        Number(req.params.id),
+      ),
+    );
+  }),
+
+  createCardRequest: asyncHandler(async (req, res) => {
+    res.status(201).json(
+      await ProductionService.requestClientCarte(
+        req.user!,
+        Number(req.params.id),
+        req.body,
+      ),
+    );
   }),
 
   recordPublicPassage: asyncHandler(async (req, res) => {

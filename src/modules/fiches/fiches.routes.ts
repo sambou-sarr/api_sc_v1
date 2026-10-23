@@ -4,6 +4,7 @@ import { validate } from "../../middlewares/validate";
 import { MediaController } from "../media/media.controller";
 import { mediaUploadQuery } from "../media/media.validation";
 import { FicheController } from "./fiche.controller";
+import { clientCarteRequestSchema } from "../production/production.schemas";
 import {
   createFicheSchema,
   createRappelSchema,
@@ -102,6 +103,18 @@ fichesRouter.get(
   "/:id/rappels",
   validate({ params: idParam }),
   FicheController.listRappels
+);
+
+fichesRouter.get(
+  "/:id/card-request",
+  validate({ params: idParam }),
+  FicheController.getCardRequest
+);
+
+fichesRouter.post(
+  "/:id/card-request",
+  validate({ params: idParam, body: clientCarteRequestSchema }),
+  FicheController.createCardRequest
 );
 
 fichesRouter.get(

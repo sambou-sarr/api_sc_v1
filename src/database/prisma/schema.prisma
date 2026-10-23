@@ -550,6 +550,10 @@ model PrintJob {
   clientTelephone  String?
   clientEmail      String?
   clientFonction   String?
+  deliveryAddress  String?
+  deliveryTelephone String?
+  clientNotes      String?
+  amountFcfa       Int?
   printedAt        DateTime?
   testedAt         DateTime?
   notes            String?

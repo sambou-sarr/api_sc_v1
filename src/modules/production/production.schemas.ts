@@ -43,6 +43,19 @@ export const createCarteSchema = z
   })
   .strict();
 
+export const clientCarteRequestSchema = z
+  .object({
+    adresseLivraison: z.string().trim().min(5).max(500),
+    telephoneLivraison: z
+      .string()
+      .trim()
+      .min(6)
+      .max(30)
+      .refine(value => value.replace(/\D/g, "").length >= 6, "Numéro de téléphone invalide"),
+    notesClient: z.string().trim().max(1000).optional(),
+  })
+  .strict();
+
 export const patchCarteSchema = z
   .object({
     statut: statutCarte.optional(),
@@ -113,6 +126,7 @@ export const patchQrSchema = z
   .refine(b => b.targetUrl !== undefined || b.actif !== undefined, { message: "Rien à modifier" });
 
 export type CreateCarteInput = z.infer<typeof createCarteSchema>;
+export type ClientCarteRequestInput = z.infer<typeof clientCarteRequestSchema>;
 export type PatchCarteInput = z.infer<typeof patchCarteSchema>;
 export type CreateStickerInput = z.infer<typeof createStickerSchema>;
 export type PatchStickerInput = z.infer<typeof patchStickerSchema>;
