@@ -100,6 +100,7 @@ export async function createPurchasedFiche(
     data: {
       slug,
       userId,
+      statut: "BROUILLON",
       prenom,
       nom: input?.nom ?? "",
       fonction: input?.fonction ?? null,
@@ -173,6 +174,7 @@ export async function createPurchasedFiches(
     data: items.map(item => ({
       slug: item.slug,
       userId,
+      statut: "BROUILLON",
       prenom: "Nouvelle fiche",
       nom: "",
       enLigneSeule: item.amountFcfa === 0,
@@ -343,7 +345,40 @@ export const FicheService = {
         "FICHE_INDISPONIBLE",
         "Cette fiche est momentanément indisponible"
       );
+    if (fiche.statut === "BROUILLON") throw notFound();
     return dtoFor(fiche);
+  },
+
+  publishFiche: async (user: AuthUser, id: number) => {
+    const fiche = await prisma.fiche.findUnique({ where: { id } });
+    if (!fiche) throw notFound("Fiche introuvable");
+    assertAccess(user, fiche);
+    if (fiche.statut !== "BROUILLON")
+      throw conflict(
+        "FICHE_NON_BROUILLON",
+        "Seule une fiche en brouillon peut être publiée."
+      );
+
+    const subscription = await getEffectiveSubscription(id);
+    if (!subscription?.plan.limits)
+      throw forbidden(
+        "ABONNEMENT_EXPIRE",
+        "L'abonnement de cette fiche a expiré : elle ne peut pas être publiée."
+      );
+
+    const published = await prisma.fiche.updateMany({
+      where: { id, statut: "BROUILLON" },
+      data: { statut: "ACTIVE", updatedAt: new Date() },
+    });
+    if (published.count !== 1)
+      throw conflict(
+        "FICHE_NON_BROUILLON",
+        "La fiche a changé d’état. Rechargez-la avant de la publier."
+      );
+
+    const updated = await loadFull(id);
+    if (!updated) throw notFound("Fiche introuvable");
+    return toFicheDto(updated, subscription);
   },
 
   // ───────── Mise à jour (cœur de la sécurité) ─────────

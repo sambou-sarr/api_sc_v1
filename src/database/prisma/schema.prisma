@@ -24,7 +24,7 @@ model Fiche {
   googlePlaceId     String?
   premierBouton     PremierBouton      @default(WHATSAPP)
   messageWhatsapp   String?
-  statut            StatutFiche        @default(ACTIVE)
+  statut            StatutFiche        @default(BROUILLON)
   enLigneSeule      Boolean            @default(false)
   scansTotal        Int                @default(0)
   userId            Int?
@@ -429,6 +429,7 @@ enum FichePassageSource {
 enum StatutFiche {
   ACTIVE
   SUSPENDUE
+  BROUILLON
 }
 
 enum Secteur {

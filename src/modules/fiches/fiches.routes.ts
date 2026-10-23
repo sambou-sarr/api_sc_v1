@@ -110,6 +110,12 @@ fichesRouter.get(
   FicheController.getFiche
 );
 
+fichesRouter.post(
+  "/:id/publish",
+  validate({ params: idParam }),
+  FicheController.publishFiche
+);
+
 fichesRouter.patch(
   "/:id",
   validate({ params: idParam, body: updateFicheSchema }),

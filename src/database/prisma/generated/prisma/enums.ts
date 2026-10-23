@@ -76,7 +76,8 @@ export type FichePassageSource = (typeof FichePassageSource)[keyof typeof FicheP
 
 export const StatutFiche = {
   ACTIVE: 'ACTIVE',
-  SUSPENDUE: 'SUSPENDUE'
+  SUSPENDUE: 'SUSPENDUE',
+  BROUILLON: 'BROUILLON'
 } as const
 
 export type StatutFiche = (typeof StatutFiche)[keyof typeof StatutFiche]

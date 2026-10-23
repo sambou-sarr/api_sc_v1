@@ -110,6 +110,15 @@ export const FicheController = {
     });
   }),
 
+  publishFiche: asyncHandler(async (req, res) => {
+    res.json({
+      fiche: await FicheService.publishFiche(
+        req.user!,
+        Number(req.params.id)
+      ),
+    });
+  }),
+
   updateFiche: asyncHandler(async (req, res) => {
     res.json({
       fiche: await FicheService.updateFiche(

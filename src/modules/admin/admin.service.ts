@@ -370,6 +370,7 @@ export const AdminService = {
         slug,
         userId: input.userId ?? null,
         claimCode,
+        statut: "ACTIVE",
         prenom: input.prenom,
         nom: input.nom ?? "",
         fonction: input.fonction,
