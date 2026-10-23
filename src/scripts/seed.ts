@@ -7,6 +7,10 @@ import {
 } from "../database/prisma/generated/prisma/client";
 import { prisma } from "../database/prisma/prisma-client";
 import { logger } from "../lib/logger";
+import {
+  DEFAULT_PLAN_DUREES,
+  DEFAULT_PLAN_REMISES,
+} from "../modules/parametres/parametres.tarifs";
 
 const TOUS_LES_BLOCS: TabType[] = [
   "PRESENTATION",
@@ -29,6 +33,7 @@ type PlanSeed = {
   type: PlanType;
   nom: string;
   themeDefaut: Theme;
+  prixMensuelFcfa: number | null;
   prixFcfa: number | null; // prix affichés sur la page d'accueil : à confirmer
   dureeMois: number | null; // durée supposée : à confirmer
   limits: Omit<Prisma.PlanLimitUncheckedCreateInput, "planId">;
@@ -39,6 +44,7 @@ const PLANS: PlanSeed[] = [
     type: "ESSENTIELLE",
     nom: "Essentielle",
     themeDefaut: "BLEU",
+    prixMensuelFcfa: null,
     prixFcfa: 12000,
     dureeMois: 12,
     limits: {
@@ -67,6 +73,7 @@ const PLANS: PlanSeed[] = [
     type: "PRO",
     nom: "Pro",
     themeDefaut: "CLAIR",
+    prixMensuelFcfa: 2500,
     prixFcfa: 15000,
     dureeMois: 12,
     limits: {
@@ -107,6 +114,7 @@ const PLANS: PlanSeed[] = [
     type: "SIGNATURE",
     nom: "Signature",
     themeDefaut: "OR",
+    prixMensuelFcfa: 5000,
     prixFcfa: 75000,
     dureeMois: 12,
     limits: {
@@ -144,6 +152,12 @@ const PLANS: PlanSeed[] = [
 ];
 
 async function main() {
+  await prisma.emplacementConfig.upsert({
+    where: { id: 1 },
+    update: {},
+    create: { id: 1, prixUnitaireFcfa: 1000 },
+  });
+
   for (const p of PLANS) {
     const plan = await prisma.plan.upsert({
       where: { type: p.type },
@@ -157,6 +171,7 @@ async function main() {
         type: p.type,
         nom: p.nom,
         themeDefaut: p.themeDefaut,
+        prixMensuelFcfa: p.prixMensuelFcfa,
         prixFcfa: p.prixFcfa,
         dureeMois: p.dureeMois,
       },
@@ -167,6 +182,43 @@ async function main() {
       update: p.limits,
       create: { planId: plan.id, ...p.limits },
     });
+
+    if (p.prixMensuelFcfa !== null)
+      await prisma.plan.updateMany({
+        where: { id: plan.id, prixMensuelFcfa: null },
+        data: { prixMensuelFcfa: p.prixMensuelFcfa },
+      });
+
+    const dureesParDefaut =
+      p.type === "ESSENTIELLE"
+        ? p.dureeMois
+          ? [{ dureeMois: p.dureeMois, remisePct: 0 }]
+          : []
+        : DEFAULT_PLAN_DUREES[p.type];
+    for (const duree of dureesParDefaut)
+      await prisma.planDuree.upsert({
+        where: {
+          planId_dureeMois: {
+            planId: plan.id,
+            dureeMois: duree.dureeMois,
+          },
+        },
+        update: {},
+        create: { planId: plan.id, ...duree },
+      });
+
+    if (p.type !== "ESSENTIELLE")
+      for (const remise of DEFAULT_PLAN_REMISES[p.type])
+        await prisma.planRemise.upsert({
+          where: {
+            planId_quantiteMin: {
+              planId: plan.id,
+              quantiteMin: remise.quantiteMin,
+            },
+          },
+          update: {},
+          create: { planId: plan.id, ...remise },
+        });
 
     logger.info("Plan seeded", { planId: plan.id, plan: p.nom });
   }

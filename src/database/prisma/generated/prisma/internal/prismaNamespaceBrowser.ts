@@ -69,6 +69,7 @@ export const ModelName = {
   PlanLimit: 'PlanLimit',
   Subscription: 'Subscription',
   Payment: 'Payment',
+  FichePurchase: 'FichePurchase',
   DemandeRappel: 'DemandeRappel',
   FichePassage: 'FichePassage',
   PrintJob: 'PrintJob',
@@ -366,6 +367,7 @@ export const PaymentScalarFieldEnum = {
   ficheId: 'ficheId',
   subscriptionId: 'subscriptionId',
   planId: 'planId',
+  dureeMois: 'dureeMois',
   provider: 'provider',
   status: 'status',
   amountFcfa: 'amountFcfa',
@@ -378,6 +380,24 @@ export const PaymentScalarFieldEnum = {
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const FichePurchaseScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  planId: 'planId',
+  quantity: 'quantity',
+  freeQuantity: 'freeQuantity',
+  dureeMois: 'dureeMois',
+  amountFcfa: 'amountFcfa',
+  status: 'status',
+  reference: 'reference',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  confirmedAt: 'confirmedAt'
+} as const
+
+export type FichePurchaseScalarFieldEnum = (typeof FichePurchaseScalarFieldEnum)[keyof typeof FichePurchaseScalarFieldEnum]
 
 
 export const DemandeRappelScalarFieldEnum = {

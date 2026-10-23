@@ -11,7 +11,10 @@ import clientRoute from "./modules/client/client.route";
 import { fichesRouter } from "./modules/fiches/fiches.routes";
 import { mediaRouter } from "./modules/media/media.routes";
 import { plansRouter } from "./modules/plans/plans.routes";
-import { parametresRouter } from "./modules/parametres/parametres.routes";
+import {
+  parametresClientRouter,
+  parametresRouter,
+} from "./modules/parametres/parametres.routes";
 import { scansRouter } from "./modules/scans/scans.routes";
 import { relancesRouter } from "./modules/relances/relances.routes";
 import { revenusRouter } from "./modules/revenus/revenus.routes";
@@ -58,6 +61,7 @@ app.use("/api/scans", scansRouter); // route publique : pas de connexion
 
 // Routes admin spécialisées : avant app.use("/api/admin", adminRouter)
 app.use("/api/admin/parametres", parametresRouter);
+app.use("/api/client/parametres", parametresClientRouter);
 app.use("/api/admin/relances", relancesRouter);
 app.use("/api/admin/revenus", revenusRouter);
 app.use("/api/admin/production", productionRouter);

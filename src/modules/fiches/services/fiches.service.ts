@@ -1,13 +1,13 @@
 import { randomBytes } from "crypto";
 import { env } from "../../../config/env";
-import type {
-  Disposition,
-  PremierBouton,
+import {
   Prisma,
-  Secteur,
-  TabType,
-  Taille,
-  Theme,
+  type Disposition,
+  type PremierBouton,
+  type Secteur,
+  type TabType,
+  type Taille,
+  type Theme,
 } from "../../../database/prisma/generated/prisma/client";
 import { prisma } from "../../../database/prisma/prisma-client";
 import {
@@ -37,6 +37,217 @@ const isAdmin = (u: AuthUser) => u.role === "ADMIN";
 const up = <T extends string>(v: string) => v.toUpperCase() as T;
 const nullIfEmpty = (v: string | undefined) =>
   v === undefined ? undefined : v === "" ? null : v;
+const addMonths = (date: Date, months: number) => {
+  const result = new Date(date);
+  result.setMonth(result.getMonth() + months);
+  return result;
+};
+
+type FicheDb = Prisma.TransactionClient | typeof prisma;
+type InitialPlan = Prisma.PlanGetPayload<{ include: { limits: true } }>;
+
+async function ficheCreationUsage(
+  userId: number,
+  db: FicheDb = prisma,
+  excludePurchaseId?: number
+) {
+  const now = new Date();
+  const [fiches, reservations] = await Promise.all([
+    db.fiche.count({ where: { userId } }),
+    db.fichePurchase.aggregate({
+      where: {
+        userId,
+        status: "PENDING",
+        expiresAt: { gt: now },
+        ...(excludePurchaseId === undefined
+          ? {}
+          : { id: { not: excludePurchaseId } }),
+      },
+      _sum: { quantity: true },
+    }),
+  ]);
+  const reserved = reservations._sum.quantity ?? 0;
+  return {
+    fiches,
+    reserved,
+    remainingFreeSlots: Math.max(
+      0,
+      env.MAX_FICHES_PER_USER - fiches - reserved
+    ),
+  };
+}
+
+export async function createPurchasedFiche(
+  tx: Prisma.TransactionClient,
+  userId: number,
+  plan: InitialPlan,
+  input: CreateFicheInput | null,
+  amountFcfa: number,
+  dureeMois: number | null,
+  paymentRef: string | null
+) {
+  if (!plan.limits)
+    throw new HttpError(
+      500,
+      "SEED_MANQUANT",
+      "Les capacités des formules ne sont pas initialisées (npm run prisma:seed)"
+    );
+  const prenom = input?.prenom ?? "Nouvelle fiche";
+  const slug = await uniqueSlug(slugify(`${prenom} ${input?.nom ?? ""}`));
+  const now = new Date();
+  const endsAt = dureeMois ? addMonths(now, dureeMois) : null;
+  const created = await tx.fiche.create({
+    data: {
+      slug,
+      userId,
+      prenom,
+      nom: input?.nom ?? "",
+      fonction: input?.fonction ?? null,
+      entreprise: input?.entreprise ?? null,
+      telephone: input?.telephone ?? null,
+      whatsapp: input?.whatsapp ?? null,
+      secteur: input?.secteur ? up<Secteur>(input.secteur) : undefined,
+      enLigneSeule: amountFcfa === 0,
+      enteteTheme: plan.themeDefaut,
+      enteteDisposition: plan.limits.headerLayouts[0] ?? "PORTRAIT",
+      onglets: {
+        create: plan.limits.tabsAutorises.map((type, position) => ({
+          type,
+          position,
+          visible: true,
+        })),
+      },
+      subscriptions: {
+        create: {
+          planId: plan.id,
+          status: "ACTIVE",
+          startsAt: now,
+          endsAt,
+          amountFcfa,
+          paymentRef,
+        },
+      },
+    },
+    include: {
+      ...ficheInclude,
+      subscriptions: {
+        where: { status: "ACTIVE" },
+        orderBy: { startsAt: "desc" },
+        take: 1,
+        include: { plan: { include: { limits: true } } },
+      },
+    },
+  });
+  const subscription = created.subscriptions[0];
+  return {
+    fiche: toFicheDto(created, subscription ?? null),
+    ficheId: created.id,
+    subscriptionId: subscription?.id ?? null,
+  };
+}
+
+export async function createPurchasedFiches(
+  tx: Prisma.TransactionClient,
+  userId: number,
+  plan: InitialPlan,
+  amountsFcfa: number[],
+  dureeMois: number | null,
+  purchaseReference: string
+) {
+  if (!plan.limits)
+    throw new HttpError(
+      500,
+      "SEED_MANQUANT",
+      "Les capacités des formules ne sont pas initialisées (npm run prisma:seed)"
+    );
+
+  const now = new Date();
+  const endsAt = dureeMois ? addMonths(now, dureeMois) : null;
+  const items = amountsFcfa.map((amountFcfa, index) => ({
+    amountFcfa,
+    slug: `nouvelle-fiche-${randomBytes(8).toString("hex")}`,
+    paymentRef:
+      amountFcfa > 0 ? `${purchaseReference}-${index + 1}` : null,
+  }));
+  const created = await tx.fiche.createManyAndReturn({
+    data: items.map(item => ({
+      slug: item.slug,
+      userId,
+      prenom: "Nouvelle fiche",
+      nom: "",
+      enLigneSeule: item.amountFcfa === 0,
+      enteteTheme: plan.themeDefaut,
+      enteteDisposition: plan.limits!.headerLayouts[0] ?? "PORTRAIT",
+    })),
+    select: { id: true, slug: true },
+  });
+  const ficheIdBySlug = new Map(created.map(fiche => [fiche.slug, fiche.id]));
+  const tabs = items.flatMap(item => {
+    const ficheId = ficheIdBySlug.get(item.slug);
+    if (ficheId === undefined) throw new Error("Fiche créée sans identifiant");
+    return plan.limits!.tabsAutorises.map((type, position) => ({
+      ficheId,
+      type,
+      position,
+      visible: true,
+    }));
+  });
+  if (tabs.length > 0) await tx.ficheOnglet.createMany({ data: tabs });
+
+  const subscriptions = await tx.subscription.createManyAndReturn({
+    data: items.map(item => {
+      const ficheId = ficheIdBySlug.get(item.slug);
+      if (ficheId === undefined)
+        throw new Error("Fiche créée sans identifiant");
+      return {
+        ficheId,
+        planId: plan.id,
+        status: "ACTIVE" as const,
+        startsAt: now,
+        endsAt,
+        amountFcfa: item.amountFcfa,
+        paymentRef: item.paymentRef,
+      };
+    }),
+    select: { id: true, ficheId: true },
+  });
+  const subscriptionByFiche = new Map(
+    subscriptions.map(subscription => [subscription.ficheId, subscription])
+  );
+
+  const fiches = await tx.fiche.findMany({
+    where: { id: { in: created.map(fiche => fiche.id) } },
+    include: ficheInclude,
+  });
+  const fullFicheById = new Map(fiches.map(fiche => [fiche.id, fiche]));
+  return items.map(item => {
+    const ficheId = ficheIdBySlug.get(item.slug);
+    if (ficheId === undefined) throw new Error("Fiche créée sans identifiant");
+    const fiche = fullFicheById.get(ficheId);
+    const subscription = subscriptionByFiche.get(ficheId);
+    if (!fiche || !subscription)
+      throw new Error("Fiche créée sans abonnement actif");
+    return {
+      fiche: toFicheDto(fiche, {
+        ...subscription,
+        ficheId,
+        planId: plan.id,
+        status: "ACTIVE",
+        startsAt: now,
+        endsAt,
+        canceledAt: null,
+        amountFcfa: item.amountFcfa,
+        paymentRef: item.paymentRef,
+        createdAt: now,
+        plan,
+      }),
+      ficheId,
+      subscriptionId: subscription.id,
+      amountFcfa: item.amountFcfa,
+      paymentRef: item.paymentRef,
+    };
+  });
+}
 
 // Un client ne voit que ses fiches. Pour les autres : « introuvable » (on ne révèle pas l'existence).
 function assertAccess(user: AuthUser, fiche: { userId: number | null }) {
@@ -56,65 +267,58 @@ export const FicheService = {
     return fiches.map(f => toFicheDto(f, subs.get(f.id) ?? null));
   },
 
-  // Create fiche
+  ficheCount: async (user: AuthUser): Promise<boolean> => {
+    const usage = await ficheCreationUsage(user.id);
+    return usage.remainingFreeSlots === 0;
+  },
+
+  creationStatus: async (user: AuthUser) => {
+    const usage = await ficheCreationUsage(user.id);
+    return {
+      totalFiches: usage.fiches,
+      fichesReservees: usage.reserved,
+      freeSlots: usage.remainingFreeSlots,
+    };
+  },
+
   createFiche: async (user: AuthUser, input: CreateFicheInput) => {
-    if (!isAdmin(user)) {
-      const count = await prisma.fiche.count({ where: { userId: user.id } });
-      if (count >= env.MAX_FICHES_PER_USER) {
+    const fiche = await prisma.$transaction(
+      async tx => {
+        if (!isAdmin(user)) {
+          const usage = await ficheCreationUsage(user.id, tx);
+          if (usage.remainingFreeSlots === 0) {
+            throw forbidden(
+              "LIMITE_FICHES",
+              "Les fiches gratuites sont épuisées. Choisis un emplacement ou une formule payante."
+            );
+          }
+        }
 
-        console.log(input)
-      /** Check formule , 
-       * isEssentiel ? call subscrption
-       */
+        const essentielle = await tx.plan.findUnique({
+          where: { type: "ESSENTIELLE" },
+          include: { limits: true },
+        });
+        if (!essentielle)
+          throw new HttpError(
+            500,
+            "SEED_MANQUANT",
+            "Les formules ne sont pas initialisées (npm run prisma:seed)"
+          );
 
-
-        // Pay for a new emplacement
-        throw forbidden(
-          "LIMITE_FICHES",
-          `Tu ne peux pas créer plus de ${env.MAX_FICHES_PER_USER} fiches`
+        return createPurchasedFiche(
+          tx,
+          user.id,
+          essentielle,
+          input,
+          0,
+          null,
+          null
         );
-      }
-
-    }
-
-    const slug = await uniqueSlug(
-      slugify(`${input.prenom} ${input.nom ?? ""}`)
-    );
-    const essentielle = await prisma.plan.findUnique({
-      where: { type: "ESSENTIELLE" },
-    });
-    if (!essentielle)
-      throw new HttpError(
-        500,
-        "SEED_MANQUANT",
-        "Les formules ne sont pas initialisées (npm run prisma:seed)"
-      );
-
-    const fiche = await prisma.fiche.create({
-      data: {
-        slug,
-        userId: user.id,
-        prenom: input.prenom,
-        nom: input.nom ?? "",
-        fonction: input.fonction,
-        entreprise: input.entreprise,
-        telephone: input.telephone,
-        whatsapp: input.whatsapp,
-        secteur: input.secteur ? up<Secteur>(input.secteur) : undefined,
-        enLigneSeule: true, // badge « Créée gratuitement avec Support Connecté »
-        subscriptions: {
-          create: {
-            planId: essentielle.id,
-            status: "ACTIVE",
-            endsAt: null,
-            amountFcfa: 0,
-          },
-        },
       },
-      include: ficheInclude,
-    });
-    logger.info("Fiche created", { ficheId: fiche.id, userId: user.id });
-    return dtoFor(fiche);
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+    );
+    logger.info("Fiche created", { ficheId: fiche.ficheId, userId: user.id });
+    return fiche.fiche;
   },
 
   getFiche: async (user: AuthUser, id: number) => {

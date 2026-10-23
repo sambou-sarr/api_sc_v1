@@ -55,6 +55,16 @@ export const PaymentStatus = {
 export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
 
 
+export const FichePurchaseStatus = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  CANCELLED: 'CANCELLED',
+  EXPIRED: 'EXPIRED'
+} as const
+
+export type FichePurchaseStatus = (typeof FichePurchaseStatus)[keyof typeof FichePurchaseStatus]
+
+
 export const FichePassageSource = {
   QR: 'QR',
   NFC: 'NFC',

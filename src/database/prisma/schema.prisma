@@ -221,6 +221,7 @@ model User {
   createdAt       DateTime    @default(now())
   tokens          AuthToken[]
   fiches          Fiche[]
+  fichePurchases  FichePurchase[]
 
   @@map("users")
 }
@@ -249,6 +250,7 @@ model Plan {
   limits        PlanLimit?
   subscriptions Subscription[]
   payments      Payment[]
+  purchases     FichePurchase[]
   durees        PlanDuree[]
   remises       PlanRemise[]
 
@@ -316,6 +318,7 @@ model Payment {
   ficheId           Int
   subscriptionId    Int?
   planId            Int
+  dureeMois         Int?
   provider          PaymentProvider @default(SIMULATION)
   status            PaymentStatus   @default(PENDING)
   amountFcfa        Int
@@ -331,6 +334,26 @@ model Payment {
 
   @@index([ficheId, status, createdAt])
   @@map("payments")
+}
+
+model FichePurchase {
+  id          Int                @id @default(autoincrement())
+  userId      Int
+  planId      Int
+  quantity    Int
+  freeQuantity Int               @default(0)
+  dureeMois   Int?
+  amountFcfa  Int
+  status      FichePurchaseStatus @default(PENDING)
+  reference   String             @unique
+  expiresAt   DateTime
+  createdAt   DateTime           @default(now())
+  confirmedAt DateTime?
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan        Plan               @relation(fields: [planId], references: [id])
+
+  @@index([userId, status, expiresAt])
+  @@map("fiche_purchases")
 }
 
 // Demande de rappel envoyée depuis la fiche publique (onglet RAPPEL).
@@ -388,6 +411,13 @@ enum PaymentStatus {
   SUCCEEDED
   FAILED
   CANCELLED
+}
+
+enum FichePurchaseStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  EXPIRED
 }
 
 enum FichePassageSource {

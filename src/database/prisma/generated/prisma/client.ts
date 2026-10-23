@@ -130,6 +130,11 @@ export type Subscription = Prisma.SubscriptionModel
  */
 export type Payment = Prisma.PaymentModel
 /**
+ * Model FichePurchase
+ * 
+ */
+export type FichePurchase = Prisma.FichePurchaseModel
+/**
  * Model DemandeRappel
  * 
  */

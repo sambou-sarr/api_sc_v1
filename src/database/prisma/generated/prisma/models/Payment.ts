@@ -31,6 +31,7 @@ export type PaymentAvgAggregateOutputType = {
   ficheId: number | null
   subscriptionId: number | null
   planId: number | null
+  dureeMois: number | null
   amountFcfa: number | null
 }
 
@@ -39,6 +40,7 @@ export type PaymentSumAggregateOutputType = {
   ficheId: number | null
   subscriptionId: number | null
   planId: number | null
+  dureeMois: number | null
   amountFcfa: number | null
 }
 
@@ -47,6 +49,7 @@ export type PaymentMinAggregateOutputType = {
   ficheId: number | null
   subscriptionId: number | null
   planId: number | null
+  dureeMois: number | null
   provider: $Enums.PaymentProvider | null
   status: $Enums.PaymentStatus | null
   amountFcfa: number | null
@@ -63,6 +66,7 @@ export type PaymentMaxAggregateOutputType = {
   ficheId: number | null
   subscriptionId: number | null
   planId: number | null
+  dureeMois: number | null
   provider: $Enums.PaymentProvider | null
   status: $Enums.PaymentStatus | null
   amountFcfa: number | null
@@ -79,6 +83,7 @@ export type PaymentCountAggregateOutputType = {
   ficheId: number
   subscriptionId: number
   planId: number
+  dureeMois: number
   provider: number
   status: number
   amountFcfa: number
@@ -97,6 +102,7 @@ export type PaymentAvgAggregateInputType = {
   ficheId?: true
   subscriptionId?: true
   planId?: true
+  dureeMois?: true
   amountFcfa?: true
 }
 
@@ -105,6 +111,7 @@ export type PaymentSumAggregateInputType = {
   ficheId?: true
   subscriptionId?: true
   planId?: true
+  dureeMois?: true
   amountFcfa?: true
 }
 
@@ -113,6 +120,7 @@ export type PaymentMinAggregateInputType = {
   ficheId?: true
   subscriptionId?: true
   planId?: true
+  dureeMois?: true
   provider?: true
   status?: true
   amountFcfa?: true
@@ -129,6 +137,7 @@ export type PaymentMaxAggregateInputType = {
   ficheId?: true
   subscriptionId?: true
   planId?: true
+  dureeMois?: true
   provider?: true
   status?: true
   amountFcfa?: true
@@ -145,6 +154,7 @@ export type PaymentCountAggregateInputType = {
   ficheId?: true
   subscriptionId?: true
   planId?: true
+  dureeMois?: true
   provider?: true
   status?: true
   amountFcfa?: true
@@ -248,6 +258,7 @@ export type PaymentGroupByOutputType = {
   ficheId: number
   subscriptionId: number | null
   planId: number
+  dureeMois: number | null
   provider: $Enums.PaymentProvider
   status: $Enums.PaymentStatus
   amountFcfa: number
@@ -287,6 +298,7 @@ export type PaymentWhereInput = {
   ficheId?: Prisma.IntFilter<"Payment"> | number
   subscriptionId?: Prisma.IntNullableFilter<"Payment"> | number | null
   planId?: Prisma.IntFilter<"Payment"> | number
+  dureeMois?: Prisma.IntNullableFilter<"Payment"> | number | null
   provider?: Prisma.EnumPaymentProviderFilter<"Payment"> | $Enums.PaymentProvider
   status?: Prisma.EnumPaymentStatusFilter<"Payment"> | $Enums.PaymentStatus
   amountFcfa?: Prisma.IntFilter<"Payment"> | number
@@ -306,6 +318,7 @@ export type PaymentOrderByWithRelationInput = {
   ficheId?: Prisma.SortOrder
   subscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
   planId?: Prisma.SortOrder
+  dureeMois?: Prisma.SortOrderInput | Prisma.SortOrder
   provider?: Prisma.SortOrder
   status?: Prisma.SortOrder
   amountFcfa?: Prisma.SortOrder
@@ -329,6 +342,7 @@ export type PaymentWhereUniqueInput = Prisma.AtLeast<{
   ficheId?: Prisma.IntFilter<"Payment"> | number
   subscriptionId?: Prisma.IntNullableFilter<"Payment"> | number | null
   planId?: Prisma.IntFilter<"Payment"> | number
+  dureeMois?: Prisma.IntNullableFilter<"Payment"> | number | null
   provider?: Prisma.EnumPaymentProviderFilter<"Payment"> | $Enums.PaymentProvider
   status?: Prisma.EnumPaymentStatusFilter<"Payment"> | $Enums.PaymentStatus
   amountFcfa?: Prisma.IntFilter<"Payment"> | number
@@ -347,6 +361,7 @@ export type PaymentOrderByWithAggregationInput = {
   ficheId?: Prisma.SortOrder
   subscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
   planId?: Prisma.SortOrder
+  dureeMois?: Prisma.SortOrderInput | Prisma.SortOrder
   provider?: Prisma.SortOrder
   status?: Prisma.SortOrder
   amountFcfa?: Prisma.SortOrder
@@ -371,6 +386,7 @@ export type PaymentScalarWhereWithAggregatesInput = {
   ficheId?: Prisma.IntWithAggregatesFilter<"Payment"> | number
   subscriptionId?: Prisma.IntNullableWithAggregatesFilter<"Payment"> | number | null
   planId?: Prisma.IntWithAggregatesFilter<"Payment"> | number
+  dureeMois?: Prisma.IntNullableWithAggregatesFilter<"Payment"> | number | null
   provider?: Prisma.EnumPaymentProviderWithAggregatesFilter<"Payment"> | $Enums.PaymentProvider
   status?: Prisma.EnumPaymentStatusWithAggregatesFilter<"Payment"> | $Enums.PaymentStatus
   amountFcfa?: Prisma.IntWithAggregatesFilter<"Payment"> | number
@@ -383,6 +399,7 @@ export type PaymentScalarWhereWithAggregatesInput = {
 }
 
 export type PaymentCreateInput = {
+  dureeMois?: number | null
   provider?: $Enums.PaymentProvider
   status?: $Enums.PaymentStatus
   amountFcfa: number
@@ -402,6 +419,7 @@ export type PaymentUncheckedCreateInput = {
   ficheId: number
   subscriptionId?: number | null
   planId: number
+  dureeMois?: number | null
   provider?: $Enums.PaymentProvider
   status?: $Enums.PaymentStatus
   amountFcfa: number
@@ -414,6 +432,7 @@ export type PaymentUncheckedCreateInput = {
 }
 
 export type PaymentUpdateInput = {
+  dureeMois?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   provider?: Prisma.EnumPaymentProviderFieldUpdateOperationsInput | $Enums.PaymentProvider
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amountFcfa?: Prisma.IntFieldUpdateOperationsInput | number
@@ -433,6 +452,7 @@ export type PaymentUncheckedUpdateInput = {
   ficheId?: Prisma.IntFieldUpdateOperationsInput | number
   subscriptionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   planId?: Prisma.IntFieldUpdateOperationsInput | number
+  dureeMois?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   provider?: Prisma.EnumPaymentProviderFieldUpdateOperationsInput | $Enums.PaymentProvider
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amountFcfa?: Prisma.IntFieldUpdateOperationsInput | number
@@ -449,6 +469,7 @@ export type PaymentCreateManyInput = {
   ficheId: number
   subscriptionId?: number | null
   planId: number
+  dureeMois?: number | null
   provider?: $Enums.PaymentProvider
   status?: $Enums.PaymentStatus
   amountFcfa: number
@@ -461,6 +482,7 @@ export type PaymentCreateManyInput = {
 }
 
 export type PaymentUpdateManyMutationInput = {
+  dureeMois?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   provider?: Prisma.EnumPaymentProviderFieldUpdateOperationsInput | $Enums.PaymentProvider
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amountFcfa?: Prisma.IntFieldUpdateOperationsInput | number
@@ -477,6 +499,7 @@ export type PaymentUncheckedUpdateManyInput = {
   ficheId?: Prisma.IntFieldUpdateOperationsInput | number
   subscriptionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   planId?: Prisma.IntFieldUpdateOperationsInput | number
+  dureeMois?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   provider?: Prisma.EnumPaymentProviderFieldUpdateOperationsInput | $Enums.PaymentProvider
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amountFcfa?: Prisma.IntFieldUpdateOperationsInput | number
@@ -503,6 +526,7 @@ export type PaymentCountOrderByAggregateInput = {
   ficheId?: Prisma.SortOrder
   subscriptionId?: Prisma.SortOrder
   planId?: Prisma.SortOrder
+  dureeMois?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   status?: Prisma.SortOrder
   amountFcfa?: Prisma.SortOrder
@@ -519,6 +543,7 @@ export type PaymentAvgOrderByAggregateInput = {
   ficheId?: Prisma.SortOrder
   subscriptionId?: Prisma.SortOrder
   planId?: Prisma.SortOrder
+  dureeMois?: Prisma.SortOrder
   amountFcfa?: Prisma.SortOrder
 }
 
@@ -527,6 +552,7 @@ export type PaymentMaxOrderByAggregateInput = {
   ficheId?: Prisma.SortOrder
   subscriptionId?: Prisma.SortOrder
   planId?: Prisma.SortOrder
+  dureeMois?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   status?: Prisma.SortOrder
   amountFcfa?: Prisma.SortOrder
@@ -543,6 +569,7 @@ export type PaymentMinOrderByAggregateInput = {
   ficheId?: Prisma.SortOrder
   subscriptionId?: Prisma.SortOrder
   planId?: Prisma.SortOrder
+  dureeMois?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   status?: Prisma.SortOrder
   amountFcfa?: Prisma.SortOrder
@@ -559,6 +586,7 @@ export type PaymentSumOrderByAggregateInput = {
   ficheId?: Prisma.SortOrder
   subscriptionId?: Prisma.SortOrder
   planId?: Prisma.SortOrder
+  dureeMois?: Prisma.SortOrder
   amountFcfa?: Prisma.SortOrder
 }
 
@@ -697,6 +725,7 @@ export type EnumPaymentStatusFieldUpdateOperationsInput = {
 }
 
 export type PaymentCreateWithoutFicheInput = {
+  dureeMois?: number | null
   provider?: $Enums.PaymentProvider
   status?: $Enums.PaymentStatus
   amountFcfa: number
@@ -714,6 +743,7 @@ export type PaymentUncheckedCreateWithoutFicheInput = {
   id?: number
   subscriptionId?: number | null
   planId: number
+  dureeMois?: number | null
   provider?: $Enums.PaymentProvider
   status?: $Enums.PaymentStatus
   amountFcfa: number
@@ -759,6 +789,7 @@ export type PaymentScalarWhereInput = {
   ficheId?: Prisma.IntFilter<"Payment"> | number
   subscriptionId?: Prisma.IntNullableFilter<"Payment"> | number | null
   planId?: Prisma.IntFilter<"Payment"> | number
+  dureeMois?: Prisma.IntNullableFilter<"Payment"> | number | null
   provider?: Prisma.EnumPaymentProviderFilter<"Payment"> | $Enums.PaymentProvider
   status?: Prisma.EnumPaymentStatusFilter<"Payment"> | $Enums.PaymentStatus
   amountFcfa?: Prisma.IntFilter<"Payment"> | number
@@ -771,6 +802,7 @@ export type PaymentScalarWhereInput = {
 }
 
 export type PaymentCreateWithoutPlanInput = {
+  dureeMois?: number | null
   provider?: $Enums.PaymentProvider
   status?: $Enums.PaymentStatus
   amountFcfa: number
@@ -788,6 +820,7 @@ export type PaymentUncheckedCreateWithoutPlanInput = {
   id?: number
   ficheId: number
   subscriptionId?: number | null
+  dureeMois?: number | null
   provider?: $Enums.PaymentProvider
   status?: $Enums.PaymentStatus
   amountFcfa: number
@@ -826,6 +859,7 @@ export type PaymentUpdateManyWithWhereWithoutPlanInput = {
 }
 
 export type PaymentCreateWithoutSubscriptionInput = {
+  dureeMois?: number | null
   provider?: $Enums.PaymentProvider
   status?: $Enums.PaymentStatus
   amountFcfa: number
@@ -843,6 +877,7 @@ export type PaymentUncheckedCreateWithoutSubscriptionInput = {
   id?: number
   ficheId: number
   planId: number
+  dureeMois?: number | null
   provider?: $Enums.PaymentProvider
   status?: $Enums.PaymentStatus
   amountFcfa: number
@@ -884,6 +919,7 @@ export type PaymentCreateManyFicheInput = {
   id?: number
   subscriptionId?: number | null
   planId: number
+  dureeMois?: number | null
   provider?: $Enums.PaymentProvider
   status?: $Enums.PaymentStatus
   amountFcfa: number
@@ -896,6 +932,7 @@ export type PaymentCreateManyFicheInput = {
 }
 
 export type PaymentUpdateWithoutFicheInput = {
+  dureeMois?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   provider?: Prisma.EnumPaymentProviderFieldUpdateOperationsInput | $Enums.PaymentProvider
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amountFcfa?: Prisma.IntFieldUpdateOperationsInput | number
@@ -913,6 +950,7 @@ export type PaymentUncheckedUpdateWithoutFicheInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   subscriptionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   planId?: Prisma.IntFieldUpdateOperationsInput | number
+  dureeMois?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   provider?: Prisma.EnumPaymentProviderFieldUpdateOperationsInput | $Enums.PaymentProvider
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amountFcfa?: Prisma.IntFieldUpdateOperationsInput | number
@@ -928,6 +966,7 @@ export type PaymentUncheckedUpdateManyWithoutFicheInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   subscriptionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   planId?: Prisma.IntFieldUpdateOperationsInput | number
+  dureeMois?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   provider?: Prisma.EnumPaymentProviderFieldUpdateOperationsInput | $Enums.PaymentProvider
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amountFcfa?: Prisma.IntFieldUpdateOperationsInput | number
@@ -943,6 +982,7 @@ export type PaymentCreateManyPlanInput = {
   id?: number
   ficheId: number
   subscriptionId?: number | null
+  dureeMois?: number | null
   provider?: $Enums.PaymentProvider
   status?: $Enums.PaymentStatus
   amountFcfa: number
@@ -955,6 +995,7 @@ export type PaymentCreateManyPlanInput = {
 }
 
 export type PaymentUpdateWithoutPlanInput = {
+  dureeMois?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   provider?: Prisma.EnumPaymentProviderFieldUpdateOperationsInput | $Enums.PaymentProvider
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amountFcfa?: Prisma.IntFieldUpdateOperationsInput | number
@@ -972,6 +1013,7 @@ export type PaymentUncheckedUpdateWithoutPlanInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   ficheId?: Prisma.IntFieldUpdateOperationsInput | number
   subscriptionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dureeMois?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   provider?: Prisma.EnumPaymentProviderFieldUpdateOperationsInput | $Enums.PaymentProvider
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amountFcfa?: Prisma.IntFieldUpdateOperationsInput | number
@@ -987,6 +1029,7 @@ export type PaymentUncheckedUpdateManyWithoutPlanInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   ficheId?: Prisma.IntFieldUpdateOperationsInput | number
   subscriptionId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dureeMois?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   provider?: Prisma.EnumPaymentProviderFieldUpdateOperationsInput | $Enums.PaymentProvider
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amountFcfa?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1002,6 +1045,7 @@ export type PaymentCreateManySubscriptionInput = {
   id?: number
   ficheId: number
   planId: number
+  dureeMois?: number | null
   provider?: $Enums.PaymentProvider
   status?: $Enums.PaymentStatus
   amountFcfa: number
@@ -1014,6 +1058,7 @@ export type PaymentCreateManySubscriptionInput = {
 }
 
 export type PaymentUpdateWithoutSubscriptionInput = {
+  dureeMois?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   provider?: Prisma.EnumPaymentProviderFieldUpdateOperationsInput | $Enums.PaymentProvider
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amountFcfa?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1031,6 +1076,7 @@ export type PaymentUncheckedUpdateWithoutSubscriptionInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   ficheId?: Prisma.IntFieldUpdateOperationsInput | number
   planId?: Prisma.IntFieldUpdateOperationsInput | number
+  dureeMois?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   provider?: Prisma.EnumPaymentProviderFieldUpdateOperationsInput | $Enums.PaymentProvider
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amountFcfa?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1046,6 +1092,7 @@ export type PaymentUncheckedUpdateManyWithoutSubscriptionInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   ficheId?: Prisma.IntFieldUpdateOperationsInput | number
   planId?: Prisma.IntFieldUpdateOperationsInput | number
+  dureeMois?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   provider?: Prisma.EnumPaymentProviderFieldUpdateOperationsInput | $Enums.PaymentProvider
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amountFcfa?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1064,6 +1111,7 @@ export type PaymentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   ficheId?: boolean
   subscriptionId?: boolean
   planId?: boolean
+  dureeMois?: boolean
   provider?: boolean
   status?: boolean
   amountFcfa?: boolean
@@ -1083,6 +1131,7 @@ export type PaymentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   ficheId?: boolean
   subscriptionId?: boolean
   planId?: boolean
+  dureeMois?: boolean
   provider?: boolean
   status?: boolean
   amountFcfa?: boolean
@@ -1102,6 +1151,7 @@ export type PaymentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   ficheId?: boolean
   subscriptionId?: boolean
   planId?: boolean
+  dureeMois?: boolean
   provider?: boolean
   status?: boolean
   amountFcfa?: boolean
@@ -1121,6 +1171,7 @@ export type PaymentSelectScalar = {
   ficheId?: boolean
   subscriptionId?: boolean
   planId?: boolean
+  dureeMois?: boolean
   provider?: boolean
   status?: boolean
   amountFcfa?: boolean
@@ -1132,7 +1183,7 @@ export type PaymentSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ficheId" | "subscriptionId" | "planId" | "provider" | "status" | "amountFcfa" | "currency" | "providerReference" | "failureReason" | "paidAt" | "createdAt" | "updatedAt", ExtArgs["result"]["payment"]>
+export type PaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ficheId" | "subscriptionId" | "planId" | "dureeMois" | "provider" | "status" | "amountFcfa" | "currency" | "providerReference" | "failureReason" | "paidAt" | "createdAt" | "updatedAt", ExtArgs["result"]["payment"]>
 export type PaymentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   fiche?: boolean | Prisma.FicheDefaultArgs<ExtArgs>
   plan?: boolean | Prisma.PlanDefaultArgs<ExtArgs>
@@ -1161,6 +1212,7 @@ export type $PaymentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     ficheId: number
     subscriptionId: number | null
     planId: number
+    dureeMois: number | null
     provider: $Enums.PaymentProvider
     status: $Enums.PaymentStatus
     amountFcfa: number
@@ -1600,6 +1652,7 @@ export interface PaymentFieldRefs {
   readonly ficheId: Prisma.FieldRef<"Payment", 'Int'>
   readonly subscriptionId: Prisma.FieldRef<"Payment", 'Int'>
   readonly planId: Prisma.FieldRef<"Payment", 'Int'>
+  readonly dureeMois: Prisma.FieldRef<"Payment", 'Int'>
   readonly provider: Prisma.FieldRef<"Payment", 'PaymentProvider'>
   readonly status: Prisma.FieldRef<"Payment", 'PaymentStatus'>
   readonly amountFcfa: Prisma.FieldRef<"Payment", 'Int'>

@@ -1,5 +1,6 @@
 import { asyncHandler } from "../../lib/asyncHandler";
 import { FicheService } from "./services/fiches.service";
+import { FichePurchasesService } from "./services/fiche-purchases.service";
 import {
   PassageService,
   type PassageSource,
@@ -20,6 +21,35 @@ export const FicheController = {
     const limit = Number(req.query.limit ?? 10);
     res.json({
       rappels: await RappelService.listForUser(req.user!, page, limit),
+    });
+  }),
+
+  totalFiches: asyncHandler(async (req, res) => {
+    const status = await FicheService.creationStatus(req.user!);
+    res.json({
+      isLimitReached: status.freeSlots === 0,
+      ...status,
+    });
+  }),
+
+  quotePurchase: asyncHandler(async (req, res) => {
+    res.json({
+      quote: await FichePurchasesService.quote(req.user!, req.body),
+    });
+  }),
+
+  createPurchase: asyncHandler(async (req, res) => {
+    res.status(201).json({
+      ...await FichePurchasesService.create(req.user!, req.body),
+    });
+  }),
+
+  confirmPurchase: asyncHandler(async (req, res) => {
+    res.json({
+      ...await FichePurchasesService.confirmSimulated(
+        req.user!,
+        Number(req.params.purchaseId)
+      ),
     });
   }),
 

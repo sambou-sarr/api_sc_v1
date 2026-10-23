@@ -13,7 +13,10 @@ export const ClientService = {
           },
           orderBy: { startsAt: "desc" },
           take: 1,
-          select: { plan: { select: { type: true } } },
+          select: {
+            endsAt: true,
+            plan: { select: { type: true } },
+          },
         },
       },
     });
