@@ -1,22 +1,65 @@
 import { asyncHandler } from "../../lib/asyncHandler";
-import { FicheService } from "./fiches.service";
-import { PassageService, type PassageSource } from "./passages.service";
-import { RappelService } from "./rappels.service";
+import { FicheService } from "./services/fiches.service";
+import { FichePurchasesService } from "./services/fiche-purchases.service";
+import {
+  PassageService,
+  type PassageSource,
+} from "./services/passages.service";
+import { RappelService } from "./services/rappels.service";
 
 export const FicheController = {
   createPublicRappel: asyncHandler(async (req, res) => {
-    const result = await RappelService.createPublic(String(req.params.slug), req.body);
+    const result = await RappelService.createPublic(
+      String(req.params.slug),
+      req.body
+    );
     res.status(201).json({ ok: true, demande: result });
   }),
 
   listAllRappels: asyncHandler(async (req, res) => {
     const page = Number(req.query.page ?? 1);
     const limit = Number(req.query.limit ?? 10);
-    res.json({ rappels: await RappelService.listForUser(req.user!, page, limit) });
+    res.json({
+      rappels: await RappelService.listForUser(req.user!, page, limit),
+    });
+  }),
+
+  totalFiches: asyncHandler(async (req, res) => {
+    const status = await FicheService.creationStatus(req.user!);
+    res.json({
+      isLimitReached: status.freeSlots === 0,
+      ...status,
+    });
+  }),
+
+  quotePurchase: asyncHandler(async (req, res) => {
+    res.json({
+      quote: await FichePurchasesService.quote(req.user!, req.body),
+    });
+  }),
+
+  createPurchase: asyncHandler(async (req, res) => {
+    res.status(201).json({
+      ...await FichePurchasesService.create(req.user!, req.body),
+    });
+  }),
+
+  confirmPurchase: asyncHandler(async (req, res) => {
+    res.json({
+      ...await FichePurchasesService.confirmSimulated(
+        req.user!,
+        Number(req.params.purchaseId)
+      ),
+    });
   }),
 
   listRappels: asyncHandler(async (req, res) => {
-    res.json({ rappels: await RappelService.listForFiche(req.user!, Number(req.params.id)) });
+    res.json({
+      rappels: await RappelService.listForFiche(
+        req.user!,
+        Number(req.params.id)
+      ),
+    });
   }),
 
   recordPublicPassage: asyncHandler(async (req, res) => {
@@ -25,7 +68,7 @@ export const FicheController = {
       String(req.params.slug),
       source,
       String(req.body.idempotencyKey),
-      req.user,
+      req.user
     );
     res.status(result.recorded ? 201 : 200).json({ ok: true, ...result });
   }),
@@ -37,8 +80,10 @@ export const FicheController = {
       {
         granularity: req.query.granularity === "day" ? "day" : "month",
         ...(typeof req.query.date === "string" ? { date: req.query.date } : {}),
-        ...(typeof req.query.month === "string" ? { month: req.query.month } : {}),
-      },
+        ...(typeof req.query.month === "string"
+          ? { month: req.query.month }
+          : {}),
+      }
     );
     res.json({ stats: result });
   }),
@@ -62,6 +107,15 @@ export const FicheController = {
   getFiche: asyncHandler(async (req, res) => {
     res.json({
       fiche: await FicheService.getFiche(req.user!, Number(req.params.id)),
+    });
+  }),
+
+  publishFiche: asyncHandler(async (req, res) => {
+    res.json({
+      fiche: await FicheService.publishFiche(
+        req.user!,
+        Number(req.params.id)
+      ),
     });
   }),
 

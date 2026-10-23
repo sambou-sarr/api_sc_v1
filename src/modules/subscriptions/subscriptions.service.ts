@@ -7,6 +7,7 @@ import { prisma } from "../../database/prisma/prisma-client";
 import { conflict, forbidden, notFound } from "../../lib/httpError";
 import { env } from "../../config/env";
 import type { AuthUser } from "../../types/user";
+import { ParametresService } from "../parametres/parametres.service";
 import { ficheInclude, toFicheDto } from "../fiches/fiches.dto";
 import { Kpi } from "./subscription.type";
 
@@ -101,7 +102,8 @@ const PLAN_RANK: Record<PlanType, number> = {
 export async function upgrade(
   user: AuthUser,
   ficheId: number,
-  planType: PlanType
+  planType: PlanType,
+  requestedDuration?: number
 ) {
   if (env.NODE_ENV === "production")
     throw forbidden(
@@ -135,7 +137,10 @@ export async function upgrade(
 
     const [currentSubscription, targetPlan] = await Promise.all([
       getEffectiveSubscription(ficheId, tx),
-      tx.plan.findUnique({ where: { type: planType } }),
+      tx.plan.findUnique({
+        where: { type: planType },
+        select: { id: true, actif: true, dureeMois: true },
+      }),
     ]);
 
     if (!targetPlan || !targetPlan.actif)
@@ -148,13 +153,27 @@ export async function upgrade(
         "Choisis une formule supérieure à celle actuellement active"
       );
 
+    const dureeMois = requestedDuration ?? targetPlan.dureeMois;
+    if (!dureeMois)
+      throw forbidden(
+        "DUREE_NON_CONFIGUREE",
+        "Aucune durée par défaut n'est définie pour cette formule"
+      );
+    const tarif = await ParametresService.tarif(
+      planType.toLowerCase(),
+      dureeMois,
+      1,
+      tx
+    );
+
     const payment = await tx.payment.create({
       data: {
         ficheId,
         planId: targetPlan.id,
+        dureeMois,
         provider: "SIMULATION",
         status: "PENDING",
-        amountFcfa: targetPlan.prixFcfa ?? 0,
+        amountFcfa: tarif.totalFcfa,
         currency: "XOF",
         providerReference: `SIMULATED-${ficheId}-${randomUUID()}`,
       },
@@ -166,6 +185,8 @@ export async function upgrade(
         reference: payment.providerReference,
         mode: "simulation" as const,
         status: "pending" as const,
+        dureeMois,
+        amountFcfa: payment.amountFcfa,
       },
     };
   });
@@ -261,8 +282,9 @@ export async function confirmSimulatedPayment(
       data: { status: "CANCELED", canceledAt: now },
     });
 
-    const endsAt = payment.plan.dureeMois
-      ? addMonths(now, payment.plan.dureeMois)
+    const dureeMois = payment.dureeMois ?? payment.plan.dureeMois;
+    const endsAt = dureeMois
+      ? addMonths(now, dureeMois)
       : null;
 
     const subscription = await tx.subscription.create({

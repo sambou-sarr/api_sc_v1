@@ -234,6 +234,7 @@ export type UserWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   tokens?: Prisma.AuthTokenListRelationFilter
   fiches?: Prisma.FicheListRelationFilter
+  fichePurchases?: Prisma.FichePurchaseListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -246,6 +247,7 @@ export type UserOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   tokens?: Prisma.AuthTokenOrderByRelationAggregateInput
   fiches?: Prisma.FicheOrderByRelationAggregateInput
+  fichePurchases?: Prisma.FichePurchaseOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -261,6 +263,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   tokens?: Prisma.AuthTokenListRelationFilter
   fiches?: Prisma.FicheListRelationFilter
+  fichePurchases?: Prisma.FichePurchaseListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -300,6 +303,7 @@ export type UserCreateInput = {
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
+  fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -312,6 +316,7 @@ export type UserUncheckedCreateInput = {
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenUncheckedCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
+  fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -323,6 +328,7 @@ export type UserUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
+  fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -335,6 +341,7 @@ export type UserUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUncheckedUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
+  fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -452,6 +459,20 @@ export type UserUpdateOneRequiredWithoutTokensNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTokensInput, Prisma.UserUpdateWithoutTokensInput>, Prisma.UserUncheckedUpdateWithoutTokensInput>
 }
 
+export type UserCreateNestedOneWithoutFichePurchasesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutFichePurchasesInput, Prisma.UserUncheckedCreateWithoutFichePurchasesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutFichePurchasesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutFichePurchasesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutFichePurchasesInput, Prisma.UserUncheckedCreateWithoutFichePurchasesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutFichePurchasesInput
+  upsert?: Prisma.UserUpsertWithoutFichePurchasesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutFichePurchasesInput, Prisma.UserUpdateWithoutFichePurchasesInput>, Prisma.UserUncheckedUpdateWithoutFichePurchasesInput>
+}
+
 export type UserCreateWithoutFichesInput = {
   email: string
   passwordHash: string
@@ -460,6 +481,7 @@ export type UserCreateWithoutFichesInput = {
   emailVerifiedAt?: Date | string | null
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenCreateNestedManyWithoutUserInput
+  fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutFichesInput = {
@@ -471,6 +493,7 @@ export type UserUncheckedCreateWithoutFichesInput = {
   emailVerifiedAt?: Date | string | null
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenUncheckedCreateNestedManyWithoutUserInput
+  fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutFichesInput = {
@@ -497,6 +520,7 @@ export type UserUpdateWithoutFichesInput = {
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUpdateManyWithoutUserNestedInput
+  fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFichesInput = {
@@ -508,6 +532,7 @@ export type UserUncheckedUpdateWithoutFichesInput = {
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUncheckedUpdateManyWithoutUserNestedInput
+  fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTokensInput = {
@@ -518,6 +543,7 @@ export type UserCreateWithoutTokensInput = {
   emailVerifiedAt?: Date | string | null
   createdAt?: Date | string
   fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
+  fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTokensInput = {
@@ -529,6 +555,7 @@ export type UserUncheckedCreateWithoutTokensInput = {
   emailVerifiedAt?: Date | string | null
   createdAt?: Date | string
   fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
+  fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTokensInput = {
@@ -555,6 +582,7 @@ export type UserUpdateWithoutTokensInput = {
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
+  fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTokensInput = {
@@ -566,6 +594,69 @@ export type UserUncheckedUpdateWithoutTokensInput = {
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
+  fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutFichePurchasesInput = {
+  email: string
+  passwordHash: string
+  role?: $Enums.Role
+  nom?: string | null
+  emailVerifiedAt?: Date | string | null
+  createdAt?: Date | string
+  tokens?: Prisma.AuthTokenCreateNestedManyWithoutUserInput
+  fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutFichePurchasesInput = {
+  id?: number
+  email: string
+  passwordHash: string
+  role?: $Enums.Role
+  nom?: string | null
+  emailVerifiedAt?: Date | string | null
+  createdAt?: Date | string
+  tokens?: Prisma.AuthTokenUncheckedCreateNestedManyWithoutUserInput
+  fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutFichePurchasesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutFichePurchasesInput, Prisma.UserUncheckedCreateWithoutFichePurchasesInput>
+}
+
+export type UserUpsertWithoutFichePurchasesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutFichePurchasesInput, Prisma.UserUncheckedUpdateWithoutFichePurchasesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutFichePurchasesInput, Prisma.UserUncheckedCreateWithoutFichePurchasesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutFichePurchasesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutFichePurchasesInput, Prisma.UserUncheckedUpdateWithoutFichePurchasesInput>
+}
+
+export type UserUpdateWithoutFichePurchasesInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tokens?: Prisma.AuthTokenUpdateManyWithoutUserNestedInput
+  fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutFichePurchasesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tokens?: Prisma.AuthTokenUncheckedUpdateManyWithoutUserNestedInput
+  fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -576,11 +667,13 @@ export type UserUncheckedUpdateWithoutTokensInput = {
 export type UserCountOutputType = {
   tokens: number
   fiches: number
+  fichePurchases: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tokens?: boolean | UserCountOutputTypeCountTokensArgs
   fiches?: boolean | UserCountOutputTypeCountFichesArgs
+  fichePurchases?: boolean | UserCountOutputTypeCountFichePurchasesArgs
 }
 
 /**
@@ -607,6 +700,13 @@ export type UserCountOutputTypeCountFichesArgs<ExtArgs extends runtime.Types.Ext
   where?: Prisma.FicheWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountFichePurchasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FichePurchaseWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -618,6 +718,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdAt?: boolean
   tokens?: boolean | Prisma.User$tokensArgs<ExtArgs>
   fiches?: boolean | Prisma.User$fichesArgs<ExtArgs>
+  fichePurchases?: boolean | Prisma.User$fichePurchasesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -655,6 +756,7 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tokens?: boolean | Prisma.User$tokensArgs<ExtArgs>
   fiches?: boolean | Prisma.User$fichesArgs<ExtArgs>
+  fichePurchases?: boolean | Prisma.User$fichePurchasesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -665,6 +767,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     tokens: Prisma.$AuthTokenPayload<ExtArgs>[]
     fiches: Prisma.$FichePayload<ExtArgs>[]
+    fichePurchases: Prisma.$FichePurchasePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1070,6 +1173,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   tokens<T extends Prisma.User$tokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuthTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   fiches<T extends Prisma.User$fichesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$fichesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FichePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  fichePurchases<T extends Prisma.User$fichePurchasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$fichePurchasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FichePurchasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1544,6 +1648,30 @@ export type User$fichesArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   distinct?: Prisma.FicheScalarFieldEnum | Prisma.FicheScalarFieldEnum[]
+}
+
+/**
+ * User.fichePurchases
+ */
+export type User$fichePurchasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FichePurchase
+   */
+  select?: Prisma.FichePurchaseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FichePurchase
+   */
+  omit?: Prisma.FichePurchaseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FichePurchaseInclude<ExtArgs> | null
+  where?: Prisma.FichePurchaseWhereInput
+  orderBy?: Prisma.FichePurchaseOrderByWithRelationInput | Prisma.FichePurchaseOrderByWithRelationInput[]
+  cursor?: Prisma.FichePurchaseWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FichePurchaseScalarFieldEnum | Prisma.FichePurchaseScalarFieldEnum[]
 }
 
 /**

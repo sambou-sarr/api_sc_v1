@@ -130,6 +130,11 @@ export type Subscription = Prisma.SubscriptionModel
  */
 export type Payment = Prisma.PaymentModel
 /**
+ * Model FichePurchase
+ * 
+ */
+export type FichePurchase = Prisma.FichePurchaseModel
+/**
  * Model DemandeRappel
  * 
  */
@@ -154,3 +159,23 @@ export type StickerOrder = Prisma.StickerOrderModel
  * 
  */
 export type QrLink = Prisma.QrLinkModel
+/**
+ * Model PlanDuree
+ * 
+ */
+export type PlanDuree = Prisma.PlanDureeModel
+/**
+ * Model PlanRemise
+ * 
+ */
+export type PlanRemise = Prisma.PlanRemiseModel
+/**
+ * Model EmplacementConfig
+ * 
+ */
+export type EmplacementConfig = Prisma.EmplacementConfigModel
+/**
+ * Model EmplacementPack
+ * 
+ */
+export type EmplacementPack = Prisma.EmplacementPackModel
