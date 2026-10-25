@@ -77,7 +77,8 @@ export const ModelName = {
   PlanDuree: 'PlanDuree',
   PlanRemise: 'PlanRemise',
   EmplacementConfig: 'EmplacementConfig',
-  EmplacementPack: 'EmplacementPack'
+  EmplacementPack: 'EmplacementPack',
+  QrStyle: 'QrStyle'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -512,6 +513,18 @@ export const EmplacementPackScalarFieldEnum = {
 export type EmplacementPackScalarFieldEnum = (typeof EmplacementPackScalarFieldEnum)[keyof typeof EmplacementPackScalarFieldEnum]
 
 
+export const QrStyleScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  nom: 'nom',
+  style: 'style',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type QrStyleScalarFieldEnum = (typeof QrStyleScalarFieldEnum)[keyof typeof QrStyleScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -526,6 +539,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

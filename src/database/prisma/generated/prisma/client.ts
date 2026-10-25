@@ -174,3 +174,8 @@ export type EmplacementConfig = Prisma.EmplacementConfigModel
  * 
  */
 export type EmplacementPack = Prisma.EmplacementPackModel
+/**
+ * Model QrStyle
+ * 
+ */
+export type QrStyle = Prisma.QrStyleModel

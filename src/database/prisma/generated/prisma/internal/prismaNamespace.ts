@@ -423,7 +423,8 @@ export const ModelName = {
   PlanDuree: 'PlanDuree',
   PlanRemise: 'PlanRemise',
   EmplacementConfig: 'EmplacementConfig',
-  EmplacementPack: 'EmplacementPack'
+  EmplacementPack: 'EmplacementPack',
+  QrStyle: 'QrStyle'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -439,7 +440,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "fiche" | "ficheOnglet" | "ficheReseau" | "ficheLien" | "ficheHoraire" | "ficheMedia" | "catalogueSection" | "catalogueArticle" | "menuSection" | "menuPlat" | "bien" | "bienPhoto" | "user" | "authToken" | "plan" | "planLimit" | "subscription" | "payment" | "demandeRappel" | "fichePassage" | "printJob" | "stickerOrder" | "qrLink" | "planDuree" | "planRemise" | "emplacementConfig" | "emplacementPack"
+    modelProps: "fiche" | "ficheOnglet" | "ficheReseau" | "ficheLien" | "ficheHoraire" | "ficheMedia" | "catalogueSection" | "catalogueArticle" | "menuSection" | "menuPlat" | "bien" | "bienPhoto" | "user" | "authToken" | "plan" | "planLimit" | "subscription" | "payment" | "demandeRappel" | "fichePassage" | "printJob" | "stickerOrder" | "qrLink" | "planDuree" | "planRemise" | "emplacementConfig" | "emplacementPack" | "qrStyle"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2441,6 +2442,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    QrStyle: {
+      payload: Prisma.$QrStylePayload<ExtArgs>
+      fields: Prisma.QrStyleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.QrStyleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.QrStyleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>
+        }
+        findFirst: {
+          args: Prisma.QrStyleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.QrStyleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>
+        }
+        findMany: {
+          args: Prisma.QrStyleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>[]
+        }
+        create: {
+          args: Prisma.QrStyleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>
+        }
+        createMany: {
+          args: Prisma.QrStyleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.QrStyleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>[]
+        }
+        delete: {
+          args: Prisma.QrStyleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>
+        }
+        update: {
+          args: Prisma.QrStyleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>
+        }
+        deleteMany: {
+          args: Prisma.QrStyleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.QrStyleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.QrStyleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>[]
+        }
+        upsert: {
+          args: Prisma.QrStyleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>
+        }
+        aggregate: {
+          args: Prisma.QrStyleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateQrStyle>
+        }
+        groupBy: {
+          args: Prisma.QrStyleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.QrStyleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.QrStyleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.QrStyleCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2896,6 +2971,18 @@ export const EmplacementPackScalarFieldEnum = {
 export type EmplacementPackScalarFieldEnum = (typeof EmplacementPackScalarFieldEnum)[keyof typeof EmplacementPackScalarFieldEnum]
 
 
+export const QrStyleScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  nom: 'nom',
+  style: 'style',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type QrStyleScalarFieldEnum = (typeof QrStyleScalarFieldEnum)[keyof typeof QrStyleScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2910,6 +2997,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -3477,6 +3571,7 @@ export type GlobalOmitConfig = {
   planRemise?: Prisma.PlanRemiseOmit
   emplacementConfig?: Prisma.EmplacementConfigOmit
   emplacementPack?: Prisma.EmplacementPackOmit
+  qrStyle?: Prisma.QrStyleOmit
 }
 
 /* Types for Logging */

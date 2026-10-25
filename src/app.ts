@@ -15,6 +15,8 @@ import { parametresRouter } from "./modules/parametres/parametres.routes";
 import { scansRouter } from "./modules/scans/scans.routes";
 import { relancesRouter } from "./modules/relances/relances.routes";
 import { revenusRouter } from "./modules/revenus/revenus.routes";
+import { qrcodeRouter } from "./modules/qrcode/qrcode.routes";
+
 import { productionRouter, qrPublicRouter } from "./modules/production/production.routes";
 import subscriptionRoute from "./modules/subscriptions/subsctiption.route";
 
@@ -60,6 +62,8 @@ app.use("/api/scans", scansRouter); // route publique : pas de connexion
 app.use("/api/admin/parametres", parametresRouter);
 app.use("/api/admin/relances", relancesRouter);
 app.use("/api/admin/revenus", revenusRouter);
+app.use("/api/admin/qrcodes", qrcodeRouter);
+
 app.use("/api/admin/production", productionRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/subscription", subscriptionRoute);

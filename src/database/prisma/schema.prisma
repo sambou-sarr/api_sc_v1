@@ -221,7 +221,7 @@ model User {
   createdAt       DateTime    @default(now())
   tokens          AuthToken[]
   fiches          Fiche[]
-
+  qrStyles        QrStyle[]
   @@map("users")
 }
 
@@ -622,4 +622,17 @@ model EmplacementPack {
   prixFcfa Int
 
   @@map("emplacement_packs")
+}
+model QrStyle {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  nom       String
+  style     Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("qr_styles")
 }
