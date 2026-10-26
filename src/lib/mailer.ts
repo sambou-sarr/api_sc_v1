@@ -56,9 +56,9 @@ export const sendForgotPasswordMail = async (user: User) => {
       LOGO_URL,
       user.nom ?? "",
       verifyUrl,
-      "24 heures"
+      "30 minutes"
     ),
-    text: `Bonjour ${user.nom ?? ""}, clicker sur ce lien pou réinitialisée votre mot de passe : ${verifyUrl}`,
+    text: `Bonjour ${user.nom ?? ""}, utilisez ce lien pour réinitialiser votre mot de passe dans les 30 minutes : ${verifyUrl}`,
   };
 
   await sendMail(forgotPayload);
