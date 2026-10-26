@@ -27,6 +27,7 @@ import {
 } from "../../subscriptions/subscriptions.service";
 import { ficheInclude, toFicheDto, type FicheFull } from "../fiches.dto";
 import { enforcePlanLimits } from "../fiches.limits";
+import { getPublicSubscription } from "./fiche-public-access";
 import {
   JOURS,
   type CreateFicheInput,
@@ -346,7 +347,14 @@ export const FicheService = {
         "Cette fiche est momentanément indisponible"
       );
     if (fiche.statut === "BROUILLON") throw notFound();
-    return dtoFor(fiche);
+    const subscription = await getPublicSubscription(fiche.id, fiche.statut);
+    if (!subscription)
+      throw new HttpError(
+        410,
+        "FICHE_INDISPONIBLE",
+        "Cette fiche est momentanément indisponible"
+      );
+    return toFicheDto(fiche, subscription);
   },
 
   publishFiche: async (user: AuthUser, id: number) => {

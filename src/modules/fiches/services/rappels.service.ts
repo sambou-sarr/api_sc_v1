@@ -1,6 +1,7 @@
 import { prisma } from "../../../database/prisma/prisma-client";
 import { badRequest, notFound } from "../../../lib/httpError";
 import type { AuthUser } from "../../../types/user";
+import { getPublicSubscription } from "./fiche-public-access";
 
 const normalizePhone = (value: string) => value.replace(/[\s().-]/g, "");
 
@@ -10,7 +11,10 @@ export const RappelService = {
       where: { slug },
       select: { id: true, statut: true },
     });
-    if (!fiche || fiche.statut !== "ACTIVE") {
+    if (
+      !fiche ||
+      !(await getPublicSubscription(fiche.id, fiche.statut))
+    ) {
       throw notFound("Cette fiche est indisponible");
     }
 

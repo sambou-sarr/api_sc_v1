@@ -4,6 +4,7 @@ import { prisma } from "../../database/prisma/prisma-client";
 import { forbidden, notFound, unprocessable } from "../../lib/httpError";
 import type { AuthUser } from "../../types/user";
 import { getEffectiveSubscription } from "../subscriptions/subscriptions.service";
+import { getPublicSubscription } from "../fiches/services/fiche-public-access";
 import { S3StorageProvider } from "../../infrastructure/storage/s3.storage";
 import { optimizeMedia, probeDurationSeconds } from "./media.processor";
 import {
@@ -95,7 +96,9 @@ export const MediaService = {
       where: { id: ficheId },
       select: { id: true, statut: true },
     });
-    if (!fiche || fiche.statut === "SUSPENDUE") throw notFound("Média introuvable");
+    if (!fiche || !(await getPublicSubscription(fiche.id, fiche.statut))) {
+      throw notFound("Média introuvable");
+    }
 
     const extension = fileName.split(".").pop()?.toLowerCase();
     const contentType =

@@ -2,6 +2,7 @@ import { Prisma } from "../../../database/prisma/generated/prisma/client";
 import { prisma } from "../../../database/prisma/prisma-client";
 import { badRequest, conflict, notFound } from "../../../lib/httpError";
 import type { AuthUser } from "../../../types/user";
+import { getPublicSubscription } from "./fiche-public-access";
 
 export type PassageSource = "QR" | "NFC" | "DIRECT";
 export type PassageGranularity = "day" | "month";
@@ -59,7 +60,10 @@ export const PassageService = {
       where: { slug },
       select: { id: true, userId: true, statut: true },
     });
-    if (!fiche || fiche.statut !== "ACTIVE") {
+    if (
+      !fiche ||
+      !(await getPublicSubscription(fiche.id, fiche.statut))
+    ) {
       return { recorded: false };
     }
 
