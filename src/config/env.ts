@@ -13,7 +13,7 @@ const schema = z.object({
     .min(32, "JWT_SECRET doit faire au moins 32 caractères"),
   JWT_EXPIRES_IN: z.string().default("7d"),
   CORS_ORIGIN: z.string().default("http://localhost:5174"),
-  APP_URL: z.string().default("http://localhost:5173"),
+  PUBLIC_SITE_URL: z.string().default("http://localhost:5173"),
   REQUIRE_EMAIL_VERIFICATION: z
     .enum(["true", "false"])
     .default("false")

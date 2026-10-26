@@ -15,6 +15,7 @@ vi.mock("../../database/prisma/prisma-client", () => ({
   },
 }));
 
+import { env } from "../../config/env";
 import type { AuthUser } from "../../types/user";
 import { ProductionService } from "./production.service";
 
@@ -37,7 +38,7 @@ const job = {
   tier: "PRO",
   formule: "pro",
   slug: fiche.slug,
-  nfcUrl: "https://supportconnecte.com/f/awa-ndiaye",
+  nfcUrl: `${env.PUBLIC_SITE_URL}/f/awa-ndiaye`,
   rectoUrl: null,
   versoUrl: null,
   design: null,
@@ -67,12 +68,12 @@ const tx = {
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.transaction.mockImplementation(
-    (callback: (transaction: typeof tx) => unknown) => callback(tx),
+    (callback: (transaction: typeof tx) => unknown) => callback(tx)
   );
   mocks.ficheFindFirst.mockResolvedValue(fiche);
   mocks.printFindFirst.mockResolvedValue(null);
   mocks.printCreate.mockImplementation(({ data }) =>
-    Promise.resolve({ ...job, ...data, fiche }),
+    Promise.resolve({ ...job, ...data, fiche })
   );
 });
 
@@ -83,7 +84,11 @@ describe("ProductionService.requestClientCarte", () => {
   };
 
   it("creates a card using the fiche subscription and server price", async () => {
-    const result = await ProductionService.requestClientCarte(user, fiche.id, input);
+    const result = await ProductionService.requestClientCarte(
+      user,
+      fiche.id,
+      input
+    );
 
     expect(mocks.transaction).toHaveBeenCalledWith(expect.any(Function), {
       isolationLevel: "Serializable",
@@ -97,7 +102,7 @@ describe("ProductionService.requestClientCarte", () => {
           deliveryAddress: input.adresseLivraison,
           deliveryTelephone: input.telephoneLivraison,
         }),
-      }),
+      })
     );
     expect(result.carte).toMatchObject({
       id: job.id,
@@ -111,7 +116,7 @@ describe("ProductionService.requestClientCarte", () => {
     mocks.ficheFindFirst.mockResolvedValue({ ...fiche, statut: "BROUILLON" });
 
     await expect(
-      ProductionService.requestClientCarte(user, fiche.id, input),
+      ProductionService.requestClientCarte(user, fiche.id, input)
     ).rejects.toMatchObject({
       status: 403,
       code: "FICHE_NON_PUBLIEE",
@@ -123,7 +128,7 @@ describe("ProductionService.requestClientCarte", () => {
     mocks.printFindFirst.mockResolvedValue({ id: 25 });
 
     await expect(
-      ProductionService.requestClientCarte(user, fiche.id, input),
+      ProductionService.requestClientCarte(user, fiche.id, input)
     ).rejects.toMatchObject({
       status: 409,
       code: "CARTE_DEJA_EN_COURS",
