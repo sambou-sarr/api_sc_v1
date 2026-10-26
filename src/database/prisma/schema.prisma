@@ -28,7 +28,6 @@ model Fiche {
   enLigneSeule      Boolean            @default(false)
   scansTotal        Int                @default(0)
   userId            Int?
-  claimCode         String?            @unique
   secteur           Secteur?
   presentation      String?
   rdvLabel          String?

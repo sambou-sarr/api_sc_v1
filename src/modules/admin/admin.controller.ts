@@ -27,10 +27,6 @@ export const AdminController = {
     res.json(await AdminService.getFiche(Number(req.params.id)));
   }),
 
-  createFiche: asyncHandler(async (req, res) => {
-    res.status(201).json(await AdminService.createFiche(req.body));
-  }),
-
   updateFiche: asyncHandler(async (req, res) => {
     const fiche = await AdminService.updateFiche(
       Number(req.params.id),
@@ -43,10 +39,6 @@ export const AdminController = {
     const { confirmer } = req.query as unknown as DeleteFicheQuery;
     await AdminService.deleteFiche(Number(req.params.id), confirmer);
     res.json({ ok: true });
-  }),
-
-  generateClaimCode: asyncHandler(async (req, res) => {
-    res.json(await AdminService.generateClaimCode(Number(req.params.id)));
   }),
 
   // ───── Abonnements ─────

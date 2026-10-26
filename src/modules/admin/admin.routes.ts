@@ -13,7 +13,7 @@ import {
 } from "./admin.schemas";
 
 // Tout ce qu'un CLIENT ne peut jamais faire : voir toutes les fiches,
-// slug, statut, propriétaire, formule, suppression.
+// statut, propriétaire, formule, suppression.
 export const adminRouter = Router();
 
 // Équivalent de Route::middleware(['auth', 'role:admin'])->group(...)
@@ -25,21 +25,21 @@ adminRouter.use(requireAuth, requireRole("ADMIN"));
 adminRouter.get("/stats", AdminController.stats);
 
 // ───────── Fiches ─────────
-// GET    /api/admin/fiches?search=&statut=&formule=&expiration=&userId=&carteALier=&tri=&page=&limit=
+// GET    /api/admin/fiches?search=&statut=&formule=&expiration=&userId=&tri=&page=&limit=
 adminRouter.get(
   "/fiches",
   validate({ query: listFichesQuery }),
   AdminController.listFiches
 );
 
-// GET    /api/admin/fiches/:id                 détail + propriétaire + historique des abonnements
+// GET    /api/admin/fiches/:id                 détail + historique des abonnements
 adminRouter.get(
   "/fiches/:id",
   validate({ params: idParam }),
   AdminController.getFiche
 );
 
-// PATCH  /api/admin/fiches/:id                 slug, statut (active/suspendue), propriétaire
+// PATCH  /api/admin/fiches/:id                 statut (active/suspendue), slug avant compte client
 adminRouter.patch(
   "/fiches/:id",
   validate({ params: idParam, body: patchFicheSchema }),
@@ -51,13 +51,6 @@ adminRouter.delete(
   "/fiches/:id",
   validate({ params: idParam, query: deleteFicheQuery }),
   AdminController.deleteFiche
-);
-
-// POST   /api/admin/fiches/:id/claim-code      (re)générer le code de la carte
-adminRouter.post(
-  "/fiches/:id/claim-code",
-  validate({ params: idParam }),
-  AdminController.generateClaimCode
 );
 
 // ───────── Abonnements d'une fiche ─────────

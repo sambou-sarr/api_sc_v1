@@ -59,7 +59,6 @@ export type FicheMinAggregateOutputType = {
   enLigneSeule: boolean | null
   scansTotal: number | null
   userId: number | null
-  claimCode: string | null
   secteur: $Enums.Secteur | null
   presentation: string | null
   rdvLabel: string | null
@@ -93,7 +92,6 @@ export type FicheMaxAggregateOutputType = {
   enLigneSeule: boolean | null
   scansTotal: number | null
   userId: number | null
-  claimCode: string | null
   secteur: $Enums.Secteur | null
   presentation: string | null
   rdvLabel: string | null
@@ -127,7 +125,6 @@ export type FicheCountAggregateOutputType = {
   enLigneSeule: number
   scansTotal: number
   userId: number
-  claimCode: number
   secteur: number
   presentation: number
   rdvLabel: number
@@ -175,7 +172,6 @@ export type FicheMinAggregateInputType = {
   enLigneSeule?: true
   scansTotal?: true
   userId?: true
-  claimCode?: true
   secteur?: true
   presentation?: true
   rdvLabel?: true
@@ -209,7 +205,6 @@ export type FicheMaxAggregateInputType = {
   enLigneSeule?: true
   scansTotal?: true
   userId?: true
-  claimCode?: true
   secteur?: true
   presentation?: true
   rdvLabel?: true
@@ -243,7 +238,6 @@ export type FicheCountAggregateInputType = {
   enLigneSeule?: true
   scansTotal?: true
   userId?: true
-  claimCode?: true
   secteur?: true
   presentation?: true
   rdvLabel?: true
@@ -364,7 +358,6 @@ export type FicheGroupByOutputType = {
   enLigneSeule: boolean
   scansTotal: number
   userId: number | null
-  claimCode: string | null
   secteur: $Enums.Secteur | null
   presentation: string | null
   rdvLabel: string | null
@@ -421,7 +414,6 @@ export type FicheWhereInput = {
   enLigneSeule?: Prisma.BoolFilter<"Fiche"> | boolean
   scansTotal?: Prisma.IntFilter<"Fiche"> | number
   userId?: Prisma.IntNullableFilter<"Fiche"> | number | null
-  claimCode?: Prisma.StringNullableFilter<"Fiche"> | string | null
   secteur?: Prisma.EnumSecteurNullableFilter<"Fiche"> | $Enums.Secteur | null
   presentation?: Prisma.StringNullableFilter<"Fiche"> | string | null
   rdvLabel?: Prisma.StringNullableFilter<"Fiche"> | string | null
@@ -470,7 +462,6 @@ export type FicheOrderByWithRelationInput = {
   enLigneSeule?: Prisma.SortOrder
   scansTotal?: Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
-  claimCode?: Prisma.SortOrderInput | Prisma.SortOrder
   secteur?: Prisma.SortOrderInput | Prisma.SortOrder
   presentation?: Prisma.SortOrderInput | Prisma.SortOrder
   rdvLabel?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -501,7 +492,6 @@ export type FicheOrderByWithRelationInput = {
 export type FicheWhereUniqueInput = Prisma.AtLeast<{
   id?: number
   slug?: string
-  claimCode?: string
   AND?: Prisma.FicheWhereInput | Prisma.FicheWhereInput[]
   OR?: Prisma.FicheWhereInput[]
   NOT?: Prisma.FicheWhereInput | Prisma.FicheWhereInput[]
@@ -548,7 +538,7 @@ export type FicheWhereUniqueInput = Prisma.AtLeast<{
   payments?: Prisma.PaymentListRelationFilter
   passages?: Prisma.FichePassageListRelationFilter
   demandeRappels?: Prisma.DemandeRappelListRelationFilter
-}, "id" | "slug" | "claimCode">
+}, "id" | "slug">
 
 export type FicheOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -571,7 +561,6 @@ export type FicheOrderByWithAggregationInput = {
   enLigneSeule?: Prisma.SortOrder
   scansTotal?: Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
-  claimCode?: Prisma.SortOrderInput | Prisma.SortOrder
   secteur?: Prisma.SortOrderInput | Prisma.SortOrder
   presentation?: Prisma.SortOrderInput | Prisma.SortOrder
   rdvLabel?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -613,7 +602,6 @@ export type FicheScalarWhereWithAggregatesInput = {
   enLigneSeule?: Prisma.BoolWithAggregatesFilter<"Fiche"> | boolean
   scansTotal?: Prisma.IntWithAggregatesFilter<"Fiche"> | number
   userId?: Prisma.IntNullableWithAggregatesFilter<"Fiche"> | number | null
-  claimCode?: Prisma.StringNullableWithAggregatesFilter<"Fiche"> | string | null
   secteur?: Prisma.EnumSecteurNullableWithAggregatesFilter<"Fiche"> | $Enums.Secteur | null
   presentation?: Prisma.StringNullableWithAggregatesFilter<"Fiche"> | string | null
   rdvLabel?: Prisma.StringNullableWithAggregatesFilter<"Fiche"> | string | null
@@ -645,7 +633,6 @@ export type FicheCreateInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -694,7 +681,6 @@ export type FicheUncheckedCreateInput = {
   enLigneSeule?: boolean
   scansTotal?: number
   userId?: number | null
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -740,7 +726,6 @@ export type FicheUpdateInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -789,7 +774,6 @@ export type FicheUncheckedUpdateInput = {
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -837,7 +821,6 @@ export type FicheCreateManyInput = {
   enLigneSeule?: boolean
   scansTotal?: number
   userId?: number | null
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -869,7 +852,6 @@ export type FicheUpdateManyMutationInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -903,7 +885,6 @@ export type FicheUncheckedUpdateManyInput = {
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -937,7 +918,6 @@ export type FicheCountOrderByAggregateInput = {
   enLigneSeule?: Prisma.SortOrder
   scansTotal?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  claimCode?: Prisma.SortOrder
   secteur?: Prisma.SortOrder
   presentation?: Prisma.SortOrder
   rdvLabel?: Prisma.SortOrder
@@ -977,7 +957,6 @@ export type FicheMaxOrderByAggregateInput = {
   enLigneSeule?: Prisma.SortOrder
   scansTotal?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  claimCode?: Prisma.SortOrder
   secteur?: Prisma.SortOrder
   presentation?: Prisma.SortOrder
   rdvLabel?: Prisma.SortOrder
@@ -1011,7 +990,6 @@ export type FicheMinOrderByAggregateInput = {
   enLigneSeule?: Prisma.SortOrder
   scansTotal?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  claimCode?: Prisma.SortOrder
   secteur?: Prisma.SortOrder
   presentation?: Prisma.SortOrder
   rdvLabel?: Prisma.SortOrder
@@ -1367,7 +1345,6 @@ export type FicheCreateWithoutOngletsInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -1415,7 +1392,6 @@ export type FicheUncheckedCreateWithoutOngletsInput = {
   enLigneSeule?: boolean
   scansTotal?: number
   userId?: number | null
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -1476,7 +1452,6 @@ export type FicheUpdateWithoutOngletsInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1524,7 +1499,6 @@ export type FicheUncheckedUpdateWithoutOngletsInput = {
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1569,7 +1543,6 @@ export type FicheCreateWithoutReseauxInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -1617,7 +1590,6 @@ export type FicheUncheckedCreateWithoutReseauxInput = {
   enLigneSeule?: boolean
   scansTotal?: number
   userId?: number | null
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -1678,7 +1650,6 @@ export type FicheUpdateWithoutReseauxInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1726,7 +1697,6 @@ export type FicheUncheckedUpdateWithoutReseauxInput = {
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1771,7 +1741,6 @@ export type FicheCreateWithoutLiensInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -1819,7 +1788,6 @@ export type FicheUncheckedCreateWithoutLiensInput = {
   enLigneSeule?: boolean
   scansTotal?: number
   userId?: number | null
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -1880,7 +1848,6 @@ export type FicheUpdateWithoutLiensInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1928,7 +1895,6 @@ export type FicheUncheckedUpdateWithoutLiensInput = {
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1973,7 +1939,6 @@ export type FicheCreateWithoutHorairesInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -2021,7 +1986,6 @@ export type FicheUncheckedCreateWithoutHorairesInput = {
   enLigneSeule?: boolean
   scansTotal?: number
   userId?: number | null
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -2082,7 +2046,6 @@ export type FicheUpdateWithoutHorairesInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2130,7 +2093,6 @@ export type FicheUncheckedUpdateWithoutHorairesInput = {
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2175,7 +2137,6 @@ export type FicheCreateWithoutMediasInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -2223,7 +2184,6 @@ export type FicheUncheckedCreateWithoutMediasInput = {
   enLigneSeule?: boolean
   scansTotal?: number
   userId?: number | null
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -2284,7 +2244,6 @@ export type FicheUpdateWithoutMediasInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2332,7 +2291,6 @@ export type FicheUncheckedUpdateWithoutMediasInput = {
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2377,7 +2335,6 @@ export type FicheCreateWithoutCatalogueSectionsInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -2425,7 +2382,6 @@ export type FicheUncheckedCreateWithoutCatalogueSectionsInput = {
   enLigneSeule?: boolean
   scansTotal?: number
   userId?: number | null
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -2486,7 +2442,6 @@ export type FicheUpdateWithoutCatalogueSectionsInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2534,7 +2489,6 @@ export type FicheUncheckedUpdateWithoutCatalogueSectionsInput = {
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2579,7 +2533,6 @@ export type FicheCreateWithoutMenuSectionsInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -2627,7 +2580,6 @@ export type FicheUncheckedCreateWithoutMenuSectionsInput = {
   enLigneSeule?: boolean
   scansTotal?: number
   userId?: number | null
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -2688,7 +2640,6 @@ export type FicheUpdateWithoutMenuSectionsInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2736,7 +2687,6 @@ export type FicheUncheckedUpdateWithoutMenuSectionsInput = {
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2781,7 +2731,6 @@ export type FicheCreateWithoutBiensInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -2829,7 +2778,6 @@ export type FicheUncheckedCreateWithoutBiensInput = {
   enLigneSeule?: boolean
   scansTotal?: number
   userId?: number | null
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -2890,7 +2838,6 @@ export type FicheUpdateWithoutBiensInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2938,7 +2885,6 @@ export type FicheUncheckedUpdateWithoutBiensInput = {
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2983,7 +2929,6 @@ export type FicheCreateWithoutUserInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -3030,7 +2975,6 @@ export type FicheUncheckedCreateWithoutUserInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -3107,7 +3051,6 @@ export type FicheScalarWhereInput = {
   enLigneSeule?: Prisma.BoolFilter<"Fiche"> | boolean
   scansTotal?: Prisma.IntFilter<"Fiche"> | number
   userId?: Prisma.IntNullableFilter<"Fiche"> | number | null
-  claimCode?: Prisma.StringNullableFilter<"Fiche"> | string | null
   secteur?: Prisma.EnumSecteurNullableFilter<"Fiche"> | $Enums.Secteur | null
   presentation?: Prisma.StringNullableFilter<"Fiche"> | string | null
   rdvLabel?: Prisma.StringNullableFilter<"Fiche"> | string | null
@@ -3139,7 +3082,6 @@ export type FicheCreateWithoutSubscriptionsInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -3187,7 +3129,6 @@ export type FicheUncheckedCreateWithoutSubscriptionsInput = {
   enLigneSeule?: boolean
   scansTotal?: number
   userId?: number | null
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -3248,7 +3189,6 @@ export type FicheUpdateWithoutSubscriptionsInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3296,7 +3236,6 @@ export type FicheUncheckedUpdateWithoutSubscriptionsInput = {
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3341,7 +3280,6 @@ export type FicheCreateWithoutPaymentsInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -3389,7 +3327,6 @@ export type FicheUncheckedCreateWithoutPaymentsInput = {
   enLigneSeule?: boolean
   scansTotal?: number
   userId?: number | null
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -3450,7 +3387,6 @@ export type FicheUpdateWithoutPaymentsInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3498,7 +3434,6 @@ export type FicheUncheckedUpdateWithoutPaymentsInput = {
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3543,7 +3478,6 @@ export type FicheCreateWithoutDemandeRappelsInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -3591,7 +3525,6 @@ export type FicheUncheckedCreateWithoutDemandeRappelsInput = {
   enLigneSeule?: boolean
   scansTotal?: number
   userId?: number | null
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -3652,7 +3585,6 @@ export type FicheUpdateWithoutDemandeRappelsInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3700,7 +3632,6 @@ export type FicheUncheckedUpdateWithoutDemandeRappelsInput = {
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3745,7 +3676,6 @@ export type FicheCreateWithoutPassagesInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -3793,7 +3723,6 @@ export type FicheUncheckedCreateWithoutPassagesInput = {
   enLigneSeule?: boolean
   scansTotal?: number
   userId?: number | null
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -3854,7 +3783,6 @@ export type FicheUpdateWithoutPassagesInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3902,7 +3830,6 @@ export type FicheUncheckedUpdateWithoutPassagesInput = {
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3947,7 +3874,6 @@ export type FicheCreateWithoutPrintJobsInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -3995,7 +3921,6 @@ export type FicheUncheckedCreateWithoutPrintJobsInput = {
   enLigneSeule?: boolean
   scansTotal?: number
   userId?: number | null
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -4056,7 +3981,6 @@ export type FicheUpdateWithoutPrintJobsInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4104,7 +4028,6 @@ export type FicheUncheckedUpdateWithoutPrintJobsInput = {
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4149,7 +4072,6 @@ export type FicheCreateWithoutStickersInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -4197,7 +4119,6 @@ export type FicheUncheckedCreateWithoutStickersInput = {
   enLigneSeule?: boolean
   scansTotal?: number
   userId?: number | null
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -4258,7 +4179,6 @@ export type FicheUpdateWithoutStickersInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4306,7 +4226,6 @@ export type FicheUncheckedUpdateWithoutStickersInput = {
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4352,7 +4271,6 @@ export type FicheCreateManyUserInput = {
   statut?: $Enums.StatutFiche
   enLigneSeule?: boolean
   scansTotal?: number
-  claimCode?: string | null
   secteur?: $Enums.Secteur | null
   presentation?: string | null
   rdvLabel?: string | null
@@ -4384,7 +4302,6 @@ export type FicheUpdateWithoutUserInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4431,7 +4348,6 @@ export type FicheUncheckedUpdateWithoutUserInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4478,7 +4394,6 @@ export type FicheUncheckedUpdateManyWithoutUserInput = {
   statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
   enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
   scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
   presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4660,7 +4575,6 @@ export type FicheSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   enLigneSeule?: boolean
   scansTotal?: boolean
   userId?: boolean
-  claimCode?: boolean
   secteur?: boolean
   presentation?: boolean
   rdvLabel?: boolean
@@ -4710,7 +4624,6 @@ export type FicheSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   enLigneSeule?: boolean
   scansTotal?: boolean
   userId?: boolean
-  claimCode?: boolean
   secteur?: boolean
   presentation?: boolean
   rdvLabel?: boolean
@@ -4745,7 +4658,6 @@ export type FicheSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   enLigneSeule?: boolean
   scansTotal?: boolean
   userId?: boolean
-  claimCode?: boolean
   secteur?: boolean
   presentation?: boolean
   rdvLabel?: boolean
@@ -4780,7 +4692,6 @@ export type FicheSelectScalar = {
   enLigneSeule?: boolean
   scansTotal?: boolean
   userId?: boolean
-  claimCode?: boolean
   secteur?: boolean
   presentation?: boolean
   rdvLabel?: boolean
@@ -4793,7 +4704,7 @@ export type FicheSelectScalar = {
   updatedAt?: boolean
 }
 
-export type FicheOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "prenom" | "nom" | "fonction" | "entreprise" | "photo" | "logo" | "telephone" | "whatsapp" | "email" | "site" | "adresse" | "googlePlaceId" | "premierBouton" | "messageWhatsapp" | "statut" | "enLigneSeule" | "scansTotal" | "userId" | "claimCode" | "secteur" | "presentation" | "rdvLabel" | "rdvUrl" | "enteteDisposition" | "enteteTaille" | "enteteTheme" | "enteteCouverture" | "createdAt" | "updatedAt", ExtArgs["result"]["fiche"]>
+export type FicheOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "prenom" | "nom" | "fonction" | "entreprise" | "photo" | "logo" | "telephone" | "whatsapp" | "email" | "site" | "adresse" | "googlePlaceId" | "premierBouton" | "messageWhatsapp" | "statut" | "enLigneSeule" | "scansTotal" | "userId" | "secteur" | "presentation" | "rdvLabel" | "rdvUrl" | "enteteDisposition" | "enteteTaille" | "enteteTheme" | "enteteCouverture" | "createdAt" | "updatedAt", ExtArgs["result"]["fiche"]>
 export type FicheInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   biens?: boolean | Prisma.Fiche$biensArgs<ExtArgs>
   catalogueSections?: boolean | Prisma.Fiche$catalogueSectionsArgs<ExtArgs>
@@ -4859,7 +4770,6 @@ export type $FichePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     enLigneSeule: boolean
     scansTotal: number
     userId: number | null
-    claimCode: string | null
     secteur: $Enums.Secteur | null
     presentation: string | null
     rdvLabel: string | null
@@ -5328,7 +5238,6 @@ export interface FicheFieldRefs {
   readonly enLigneSeule: Prisma.FieldRef<"Fiche", 'Boolean'>
   readonly scansTotal: Prisma.FieldRef<"Fiche", 'Int'>
   readonly userId: Prisma.FieldRef<"Fiche", 'Int'>
-  readonly claimCode: Prisma.FieldRef<"Fiche", 'String'>
   readonly secteur: Prisma.FieldRef<"Fiche", 'Secteur'>
   readonly presentation: Prisma.FieldRef<"Fiche", 'String'>
   readonly rdvLabel: Prisma.FieldRef<"Fiche", 'String'>

@@ -2651,7 +2651,6 @@ export const FicheScalarFieldEnum = {
   enLigneSeule: 'enLigneSeule',
   scansTotal: 'scansTotal',
   userId: 'userId',
-  claimCode: 'claimCode',
   secteur: 'secteur',
   presentation: 'presentation',
   rdvLabel: 'rdvLabel',

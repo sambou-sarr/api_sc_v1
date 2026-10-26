@@ -54,7 +54,7 @@ src/
     plans/             # GET /plans (public)
     subscriptions/     # abonnement effectif, activation, expiration
     fiches/            # schémas zod, contrôle des limites, DTO, service, routes
-    admin/             # slug, statut, propriétaire, activation d'une formule
+    admin/             # slug avant création du compte, statut, activation d'une formule
 scripts/create-admin.ts
 ```
 
@@ -106,7 +106,7 @@ curl -X POST localhost:4000/api/fiches -H "Authorization: Bearer $TOKEN" -H 'Con
 ## Règles appliquées côté serveur
 
 - **Propriété** : un client ne voit et ne modifie que ses fiches (sinon 404). L'admin voit tout.
-- **Champs réservés** : `slug`, `formule`, `statut`, `dateEcheance`, `scansTotal`, `userId` sont ignorés si un client les envoie. Seules les routes `/admin` les modifient.
+- **Champs réservés** : `slug`, `formule`, `statut`, `dateEcheance`, `scansTotal`, `userId` sont ignorés si un client les envoie. Le slug ne peut être corrigé côté admin qu'avant la création du compte client associé, puis devient immuable afin de préserver les liens et QR codes.
 - **Formule effective** d'une fiche = son abonnement `ACTIVE` non expiré. Sans abonnement valide : la fiche n'est plus publique et sa modification est bloquée (`ABONNEMENT_EXPIRE`). Une fiche `suspendue` n'est pas publique et sa modification est bloquée pour le client. Les brouillons restent privés et modifiables afin que le client puisse les compléter avant publication.
 - **Création et emplacements** : jusqu'à `MAX_FICHES_PER_USER` fiches Essentielle gratuites par compte (3 par défaut). Une commande Essentielle consomme les places gratuites restantes avant de chiffrer les emplacements payants. Les fiches Pro/Signature utilisent le tarif configuré par durée et quantité, sans frais d'emplacement. Le devis et la confirmation sont recalculés/validés par l'API; les commandes payantes expirent après 30 minutes.
 - **Confirmation d'achat** : aucun lot n'est créé avant la confirmation du paiement simulé; la confirmation vérifie le propriétaire et l'état de la commande, puis crée fiches, abonnements et reçus dans une seule transaction. Les fiches démarrent avec le nom « Nouvelle fiche », le thème et les onglets autorisés par leur formule. Les paiements simulés restent désactivés en production.
@@ -122,8 +122,8 @@ curl -X POST localhost:4000/api/fiches -H "Authorization: Bearer $TOKEN" -H 'Con
 3. **Upload d'images et vidéos** : l'API reçoit des URL. Prévoir un stockage (fichiers sur le VPS ou S3) avec limite de poids ; la durée max des vidéos du menu (30 s) ne peut être vérifiée que là.
 4. **Réorganisation des blocs** (`canReorder`) : non contrôlée côté serveur ; pour l'instant l'ordre envoyé est conservé.
 5. **Paiement** : l'activation d'une formule est manuelle (route admin). Brancher Wave / Orange Money quand tu seras prêt (`paymentRef` est déjà là).
-6. **Rattachement d'une carte physique** (`claimCode`) : colonne prévue, route non écrite.
-7. **Tarifs d’abonnement** : les valeurs initiales sont Pro à 2 500 FCFA/mois et Signature à 5 000 FCFA/mois, avec 0/10/20 % de remise pour 1/3/12 mois et 10/20 % dès 10/50 fiches. Elles restent modifiables depuis Paramètres; les réglages déjà présents ne sont pas écrasés par la seed.
+6. **Ancien rattachement par carte** : les codes de rattachement et leur colonne historique ont été supprimés; aucun parcours de rattachement n'est proposé dans l'administration.
+7. **Tarifs d’abonnement** : les valeurs initiales sont Pro à 2 500 FCFA/mois et Signature à 5 000 FCFA/mois, avec 0/10/20 % de remise pour 1/3/12 mois et 10/20 % dès 10/50 fiches. Elles restent modifiables depuis Formules; les réglages déjà présents ne sont pas écrasés par la seed.
 8. **Paiement réel** : Wave / Orange Money restent hors périmètre; les commandes payantes sont désactivées en production jusqu’à l’intégration d’un fournisseur et de ses notifications vérifiées.
 9. **Tests automatisés** : tests ciblés présents pour les créations/commandes de fiches, les capacités des formules et les validations.
 # api-sc

@@ -1,9 +1,7 @@
-import { randomBytes } from "crypto";
 import type {
   PlanType,
   Prisma,
   Role,
-  Secteur,
   StatutFiche,
 } from "../../database/prisma/generated/prisma/client";
 import { prisma } from "../../database/prisma/prisma-client";
@@ -14,7 +12,6 @@ import {
   getEffectiveSubscription,
 } from "../subscriptions/subscriptions.service";
 import type {
-  CreateFicheInput,
   ListFichesQuery,
   ListUsersQuery,
   PatchFicheInput,
@@ -59,57 +56,6 @@ const expireBientot = (now: Date): Prisma.FicheWhereInput => ({
   },
 });
 
-// Ce qu'on montre d'un propriétaire : jamais le mot de passe.
-const proprietaireSelect = {
-  id: true,
-  email: true,
-  nom: true,
-} satisfies Prisma.UserSelect;
-
-// ───────── Génération de slug et de code de carte ─────────
-
-const slugify = (s: string) =>
-  s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 40);
-
-async function uniqueSlug(base: string) {
-  for (let i = 0; i < 5; i++) {
-    const slug = `${base || "fiche"}-${randomBytes(2).toString("hex")}`;
-    const pris = await prisma.fiche.findUnique({
-      where: { slug },
-      select: { id: true },
-    });
-    if (!pris) return slug;
-  }
-  throw conflict("SLUG_INDISPONIBLE", "Impossible de générer un slug unique");
-}
-
-// 32 caractères, sans 0/O/1/I pour éviter les confusions quand on lit le code sur une carte.
-const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-function randomClaimCode() {
-  let s = "";
-  for (const byte of randomBytes(8)) s += CODE_ALPHABET[byte % 32];
-  return `${s.slice(0, 4)}-${s.slice(4)}`; // ex. K7QM-2XPA
-}
-
-async function uniqueClaimCode() {
-  for (let i = 0; i < 5; i++) {
-    const claimCode = randomClaimCode();
-    const pris = await prisma.fiche.findUnique({
-      where: { claimCode },
-      select: { id: true },
-    });
-    if (!pris) return claimCode;
-  }
-  throw conflict("CODE_INDISPONIBLE", "Impossible de générer un code unique");
-}
-
 // ───────── Vérifications ─────────
 
 // Équivalent de Fiche::findOrFail($id)
@@ -119,18 +65,6 @@ async function assertFicheExists(id: number) {
     select: { id: true },
   });
   if (!fiche) throw notFound("Fiche introuvable");
-}
-
-async function assertUserExists(userId: number) {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { id: true },
-  });
-  if (!user)
-    throw unprocessable(
-      "PROPRIETAIRE_INTROUVABLE",
-      "Aucun compte avec cet identifiant"
-    );
 }
 
 // ═══════════════════════ Le service ═══════════════════════
@@ -148,7 +82,6 @@ export const AdminService = {
       expirees,
       bientot,
       sansProprietaire,
-      cartesALier,
       nouvelles,
       essentielle,
       pro,
@@ -161,7 +94,6 @@ export const AdminService = {
       prisma.fiche.count({ where: estExpiree(now) }),
       prisma.fiche.count({ where: expireBientot(now) }),
       prisma.fiche.count({ where: { userId: null } }),
-      prisma.fiche.count({ where: { claimCode: { not: null } } }),
       prisma.fiche.count({ where: { createdAt: { gte: il_y_a_30_jours } } }),
       prisma.fiche.count({ where: aLaFormule(now, "ESSENTIELLE") }),
       prisma.fiche.count({ where: aLaFormule(now, "PRO") }),
@@ -177,7 +109,6 @@ export const AdminService = {
         expirees,
         expirentBientot: bientot, // dans les 30 jours
         sansProprietaire,
-        cartesALier, // codes de carte pas encore utilisés
         nouvellesSur30Jours: nouvelles,
       },
       formules: { essentielle, pro, signature }, // abonnements valables uniquement
@@ -213,8 +144,6 @@ export const AdminService = {
     if (q.expiration === "expiree") conditions.push(estExpiree(now));
     if (q.expiration === "bientot") conditions.push(expireBientot(now));
     if (q.userId) conditions.push({ userId: q.userId });
-    if (q.carteALier === "true") conditions.push({ claimCode: { not: null } });
-    if (q.carteALier === "false") conditions.push({ claimCode: null });
 
     const where: Prisma.FicheWhereInput = conditions.length
       ? { AND: conditions }
@@ -240,8 +169,7 @@ export const AdminService = {
           statut: true,
           scansTotal: true,
           createdAt: true,
-          claimCode: true,
-          user: { select: proprietaireSelect }, // ->with('user')
+          user: { select: { id: true, email: true, nom: true } },
           subscriptions: {
             where: abonnementValable(now),
             orderBy: { startsAt: "desc" },
@@ -274,8 +202,7 @@ export const AdminService = {
             : null,
           scansTotal: f.scansTotal,
           createdAt: f.createdAt,
-          proprietaire: f.user, // null tant que personne n'a rattaché la fiche
-          carteALier: f.claimCode !== null,
+          proprietaire: f.user,
         };
       }),
       pagination: {
@@ -293,7 +220,6 @@ export const AdminService = {
       where: { id },
       include: {
         ...ficheInclude, // tout le contenu
-        user: { select: proprietaireSelect },
       },
     });
     if (!fiche) throw notFound("Fiche introuvable");
@@ -308,9 +234,10 @@ export const AdminService = {
     ]);
 
     return {
-      fiche: toFicheDto(fiche, effective),
-      proprietaire: fiche.user,
-      claimCode: fiche.claimCode, // visible seulement côté admin
+      fiche: {
+        ...toFicheDto(fiche, effective),
+        compteClientCree: fiche.userId !== null,
+      },
       abonnements: abonnements.map(a => ({
         id: a.id,
         formule: lower(a.plan.type),
@@ -324,103 +251,59 @@ export const AdminService = {
     };
   },
 
-  // ───────── Création d'une fiche pour un client ─────────
-  createFiche: async (input: CreateFicheInput) => {
-    if (input.userId !== undefined) await assertUserExists(input.userId);
-
-    const plan = await prisma.plan.findUnique({
-      where: { type: upper<PlanType>(input.formule) },
-    });
-    if (!plan || !plan.actif)
-      throw unprocessable(
-        "FORMULE_INDISPONIBLE",
-        "Formule introuvable ou désactivée (les formules sont-elles initialisées ?)"
-      );
-
-    let slug: string;
-    if (input.slug) {
-      const pris = await prisma.fiche.findUnique({
-        where: { slug: input.slug },
-        select: { id: true },
-      });
-      if (pris) throw conflict("SLUG_PRIS", "Ce slug est déjà utilisé");
-      slug = input.slug;
-    } else {
-      slug = await uniqueSlug(slugify(`${input.prenom} ${input.nom ?? ""}`));
-    }
-
-    // Pas de propriétaire = on génère un code à imprimer sur la carte,
-    // le client le saisira pour rattacher sa fiche à son compte.
-    const claimCode =
-      input.userId === undefined ? await uniqueClaimCode() : null;
-
-    const now = new Date();
-    const endsAt =
-      input.endsAt !== undefined
-        ? input.endsAt === null
-          ? null
-          : new Date(input.endsAt)
-        : plan.dureeMois
-          ? addMonths(now, plan.dureeMois)
-          : null;
-
-    // La fiche et son abonnement sont créés ensemble (une seule opération).
-    const fiche = await prisma.fiche.create({
-      data: {
-        slug,
-        userId: input.userId ?? null,
-        claimCode,
-        statut: "ACTIVE",
-        prenom: input.prenom,
-        nom: input.nom ?? "",
-        fonction: input.fonction,
-        entreprise: input.entreprise,
-        telephone: input.telephone,
-        whatsapp: input.whatsapp,
-        email: input.email,
-        secteur: input.secteur ? upper<Secteur>(input.secteur) : undefined,
-        enLigneSeule: input.enLigneSeule,
-        subscriptions: {
-          create: {
-            planId: plan.id,
-            status: "ACTIVE",
-            startsAt: now,
-            endsAt,
-            amountFcfa: input.amountFcfa ?? plan.prixFcfa,
-            paymentRef: input.paymentRef ?? null,
-          },
-        },
-      },
-      include: ficheInclude,
-    });
-
-    return {
-      fiche: toFicheDto(fiche, await getEffectiveSubscription(fiche.id)),
-      claimCode,
-    };
-  },
-
-  // ───────── Modifier slug / statut / propriétaire ─────────
+  // ───────── Modifier le slug avant création du compte client / statut ─────────
   updateFiche: async (id: number, input: PatchFicheInput) => {
     await assertFicheExists(id);
 
     if (input.slug !== undefined) {
+      const current = await prisma.fiche.findUnique({
+        where: { id },
+        select: { userId: true },
+      });
+      if (!current) throw notFound("Fiche introuvable");
+      if (current.userId !== null)
+        throw conflict(
+          "SLUG_IMMUABLE",
+          "L'adresse d'une fiche associée à un compte client ne peut plus être modifiée"
+        );
+
       const pris = await prisma.fiche.findFirst({
         where: { slug: input.slug, NOT: { id } },
         select: { id: true },
       });
       if (pris)
         throw conflict("SLUG_PRIS", "Ce slug est déjà utilisé par une autre fiche");
+
+      const updated = await prisma.fiche.updateMany({
+        where: { id, userId: null },
+        data: {
+          slug: input.slug,
+          statut: input.statut ? upper<StatutFiche>(input.statut) : undefined,
+        },
+      });
+      if (updated.count !== 1) {
+        const latest = await prisma.fiche.findUnique({
+          where: { id },
+          select: { userId: true },
+        });
+        if (!latest) throw notFound("Fiche introuvable");
+        throw conflict(
+          "SLUG_IMMUABLE",
+          "L'adresse d'une fiche associée à un compte client ne peut plus être modifiée"
+        );
+      }
+
+      const fiche = await prisma.fiche.findUnique({
+        where: { id },
+        include: ficheInclude,
+      });
+      if (!fiche) throw notFound("Fiche introuvable");
+      return toFicheDto(fiche, await getEffectiveSubscription(id));
     }
-    if (input.userId) await assertUserExists(input.userId);
 
     const fiche = await prisma.fiche.update({
       where: { id },
       data: {
-        slug: input.slug,
-        userId: input.userId, // undefined = inchangé, null = on retire le propriétaire
-        // un propriétaire attribué à la main rend le code de carte inutile
-        claimCode: input.userId ? null : undefined,
         statut: input.statut ? upper<StatutFiche>(input.statut) : undefined,
       },
       include: ficheInclude,
@@ -444,15 +327,6 @@ export const AdminService = {
       );
 
     await prisma.fiche.delete({ where: { id } });
-  },
-
-  // ───────── Code de rattachement de la carte ─────────
-  // Génère un code (ou en remplace un existant) pour qu'un client rattache cette fiche.
-  generateClaimCode: async (id: number) => {
-    await assertFicheExists(id);
-    const claimCode = await uniqueClaimCode();
-    await prisma.fiche.update({ where: { id }, data: { claimCode } });
-    return { claimCode };
   },
 
   // ───────── Abonnements ─────────
