@@ -13,7 +13,7 @@ import { mediaRouter } from "./modules/media/media.routes";
 import { plansRouter } from "./modules/plans/plans.routes";
 import {
   parametresClientRouter,
-  parametresRouter,
+  formulesRouter,
 } from "./modules/parametres/parametres.routes";
 import { scansRouter } from "./modules/scans/scans.routes";
 import { relancesRouter } from "./modules/relances/relances.routes";
@@ -62,7 +62,7 @@ app.use("/api/fiches", fichesRouter);
 app.use("/api/scans", scansRouter); // route publique : pas de connexion
 
 // Routes admin spécialisées : avant app.use("/api/admin", adminRouter)
-app.use("/api/admin/parametres", parametresRouter);
+app.use("/api/admin/formules", formulesRouter);
 app.use("/api/client/parametres", parametresClientRouter);
 app.use("/api/admin/relances", relancesRouter);
 app.use("/api/admin/revenus", revenusRouter);
