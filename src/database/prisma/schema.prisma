@@ -671,3 +671,44 @@ model QrStyle {
   @@index([userId])
   @@map("qr_styles")
 }
+
+model LeadRequest {
+  id               Int        @id @default(autoincrement())
+  intent           String
+  intentLabel      String
+  products         String[]   @default([])
+  sector           String?
+  name             String
+  role             String?
+  company          String?
+  phone            String?
+  email            String?
+  city             String?
+  prefer           String?
+  message          String?
+  consentMarketing Boolean    @default(false)
+  consentText      String?
+  consentAt        DateTime?
+  source           String     @default("site")
+  page             String?
+  pole             String?
+  services         String[]   @default([])
+  production       String?
+  delai            String?
+  profil           String?
+  projet           Json?
+  design           Json?
+  status           LeadStatus @default(NEW)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  @@index([status, createdAt])
+  @@index([createdAt])
+  @@map("lead_requests")
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  CLOSED
+}

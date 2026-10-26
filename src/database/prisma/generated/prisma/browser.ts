@@ -162,3 +162,8 @@ export type EmplacementPack = Prisma.EmplacementPackModel
  * 
  */
 export type QrStyle = Prisma.QrStyleModel
+/**
+ * Model LeadRequest
+ * 
+ */
+export type LeadRequest = Prisma.LeadRequestModel

@@ -425,7 +425,8 @@ export const ModelName = {
   PlanRemise: 'PlanRemise',
   EmplacementConfig: 'EmplacementConfig',
   EmplacementPack: 'EmplacementPack',
-  QrStyle: 'QrStyle'
+  QrStyle: 'QrStyle',
+  LeadRequest: 'LeadRequest'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -441,7 +442,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "fiche" | "ficheOnglet" | "ficheReseau" | "ficheLien" | "ficheHoraire" | "ficheMedia" | "catalogueSection" | "catalogueArticle" | "menuSection" | "menuPlat" | "bien" | "bienPhoto" | "user" | "authToken" | "plan" | "planLimit" | "subscription" | "payment" | "fichePurchase" | "demandeRappel" | "fichePassage" | "printJob" | "stickerOrder" | "qrLink" | "planDuree" | "planRemise" | "emplacementConfig" | "emplacementPack" | "qrStyle"
+    modelProps: "fiche" | "ficheOnglet" | "ficheReseau" | "ficheLien" | "ficheHoraire" | "ficheMedia" | "catalogueSection" | "catalogueArticle" | "menuSection" | "menuPlat" | "bien" | "bienPhoto" | "user" | "authToken" | "plan" | "planLimit" | "subscription" | "payment" | "fichePurchase" | "demandeRappel" | "fichePassage" | "printJob" | "stickerOrder" | "qrLink" | "planDuree" | "planRemise" | "emplacementConfig" | "emplacementPack" | "qrStyle" | "leadRequest"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2591,6 +2592,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    LeadRequest: {
+      payload: Prisma.$LeadRequestPayload<ExtArgs>
+      fields: Prisma.LeadRequestFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LeadRequestFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadRequestPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LeadRequestFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadRequestPayload>
+        }
+        findFirst: {
+          args: Prisma.LeadRequestFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadRequestPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LeadRequestFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadRequestPayload>
+        }
+        findMany: {
+          args: Prisma.LeadRequestFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadRequestPayload>[]
+        }
+        create: {
+          args: Prisma.LeadRequestCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadRequestPayload>
+        }
+        createMany: {
+          args: Prisma.LeadRequestCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LeadRequestCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadRequestPayload>[]
+        }
+        delete: {
+          args: Prisma.LeadRequestDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadRequestPayload>
+        }
+        update: {
+          args: Prisma.LeadRequestUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadRequestPayload>
+        }
+        deleteMany: {
+          args: Prisma.LeadRequestDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LeadRequestUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LeadRequestUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadRequestPayload>[]
+        }
+        upsert: {
+          args: Prisma.LeadRequestUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadRequestPayload>
+        }
+        aggregate: {
+          args: Prisma.LeadRequestAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLeadRequest>
+        }
+        groupBy: {
+          args: Prisma.LeadRequestGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LeadRequestGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LeadRequestCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LeadRequestCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -3081,6 +3156,40 @@ export const QrStyleScalarFieldEnum = {
 export type QrStyleScalarFieldEnum = (typeof QrStyleScalarFieldEnum)[keyof typeof QrStyleScalarFieldEnum]
 
 
+export const LeadRequestScalarFieldEnum = {
+  id: 'id',
+  intent: 'intent',
+  intentLabel: 'intentLabel',
+  products: 'products',
+  sector: 'sector',
+  name: 'name',
+  role: 'role',
+  company: 'company',
+  phone: 'phone',
+  email: 'email',
+  city: 'city',
+  prefer: 'prefer',
+  message: 'message',
+  consentMarketing: 'consentMarketing',
+  consentText: 'consentText',
+  consentAt: 'consentAt',
+  source: 'source',
+  page: 'page',
+  pole: 'pole',
+  services: 'services',
+  production: 'production',
+  delai: 'delai',
+  profil: 'profil',
+  projet: 'projet',
+  design: 'design',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LeadRequestScalarFieldEnum = (typeof LeadRequestScalarFieldEnum)[keyof typeof LeadRequestScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3493,6 +3602,20 @@ export type ListEnumStickerStatusFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'LeadStatus'
+ */
+export type EnumLeadStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LeadStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'LeadStatus[]'
+ */
+export type ListEnumLeadStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LeadStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -3685,6 +3808,7 @@ export type GlobalOmitConfig = {
   emplacementConfig?: Prisma.EmplacementConfigOmit
   emplacementPack?: Prisma.EmplacementPackOmit
   qrStyle?: Prisma.QrStyleOmit
+  leadRequest?: Prisma.LeadRequestOmit
 }
 
 /* Types for Logging */

@@ -221,3 +221,12 @@ export const QrMode = {
 } as const
 
 export type QrMode = (typeof QrMode)[keyof typeof QrMode]
+
+
+export const LeadStatus = {
+  NEW: 'NEW',
+  CONTACTED: 'CONTACTED',
+  CLOSED: 'CLOSED'
+} as const
+
+export type LeadStatus = (typeof LeadStatus)[keyof typeof LeadStatus]

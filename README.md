@@ -55,6 +55,7 @@ src/
     subscriptions/     # abonnement effectif, activation, expiration
     fiches/            # schémas zod, contrôle des limites, DTO, service, routes
     admin/             # slug avant création du compte, statut, activation d'une formule
+    leads/             # réception publique et boîte de réception admin des demandes
 scripts/create-admin.ts
 ```
 
@@ -75,9 +76,12 @@ scripts/create-admin.ts
 | POST | `/fiches/purchases/quote` | client | calcule le devis d'une commande de fiches |
 | POST | `/fiches/purchases` | client | réserve la commande; les fiches payantes sont créées après confirmation simulée |
 | POST | `/fiches/purchases/:purchaseId/simulate-confirmation` | client | confirme la commande simulée et crée les fiches/abonnements atomiquement |
+| POST | `/leads` | public, limité en débit | enregistre un devis, une question, une demande de démonstration ou de maquette |
+| GET | `/admin/leads` | admin | recherche et filtre les demandes, avec pagination |
+| PATCH | `/admin/leads/:id` | admin | modifie le statut (`NEW`, `CONTACTED`, `CLOSED`) |
 | GET | `/fiches/:id` | propriétaire / admin | une fiche |
 | PATCH | `/fiches/:id` | propriétaire / admin | modifie l'identité et `data` (limites de la formule vérifiées) |
-| PATCH | `/admin/fiches/:id` | admin | `slug`, `statut` (`active`/`suspendue`), `userId` |
+| PATCH | `/admin/fiches/:id` | admin | `slug` avant création du compte client, `statut` (`active`/`suspendue`) |
 | POST | `/admin/fiches/:id/subscription` | admin | active une formule `{ plan, endsAt?, amountFcfa?, paymentRef? }` |
 | POST | `/fiches/public/:slug/passages` | public (auth facultative) | enregistre une ouverture `{ source: qr\|nfc\|direct, idempotencyKey }` ; ignorée si le propriétaire connecté ouvre sa propre fiche |
 | POST | `/fiches/public/:slug/rappels` | public | demande de rappel `{ nom, telephone }` |

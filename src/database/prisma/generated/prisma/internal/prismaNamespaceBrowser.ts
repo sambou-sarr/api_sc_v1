@@ -79,7 +79,8 @@ export const ModelName = {
   PlanRemise: 'PlanRemise',
   EmplacementConfig: 'EmplacementConfig',
   EmplacementPack: 'EmplacementPack',
-  QrStyle: 'QrStyle'
+  QrStyle: 'QrStyle',
+  LeadRequest: 'LeadRequest'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -547,6 +548,40 @@ export const QrStyleScalarFieldEnum = {
 } as const
 
 export type QrStyleScalarFieldEnum = (typeof QrStyleScalarFieldEnum)[keyof typeof QrStyleScalarFieldEnum]
+
+
+export const LeadRequestScalarFieldEnum = {
+  id: 'id',
+  intent: 'intent',
+  intentLabel: 'intentLabel',
+  products: 'products',
+  sector: 'sector',
+  name: 'name',
+  role: 'role',
+  company: 'company',
+  phone: 'phone',
+  email: 'email',
+  city: 'city',
+  prefer: 'prefer',
+  message: 'message',
+  consentMarketing: 'consentMarketing',
+  consentText: 'consentText',
+  consentAt: 'consentAt',
+  source: 'source',
+  page: 'page',
+  pole: 'pole',
+  services: 'services',
+  production: 'production',
+  delai: 'delai',
+  profil: 'profil',
+  projet: 'projet',
+  design: 'design',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LeadRequestScalarFieldEnum = (typeof LeadRequestScalarFieldEnum)[keyof typeof LeadRequestScalarFieldEnum]
 
 
 export const SortOrder = {
