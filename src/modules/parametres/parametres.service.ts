@@ -12,12 +12,14 @@ import type {
 import {
   calculerEmplacements,
   calculerTarif,
+  dureesAvecValeursParDefaut,
   emplacementsManquants,
   peutCreerEssentielle,
   quotaEssentielle,
   remiseDuree,
   remiseQuantite,
-} from "./parametres.tarifs (1)";
+  remisesAvecValeursParDefaut,
+} from "./parametres.tarifs";
 
 // Les réglages vivent dans `plans` (+ `plan_durees`, `plan_remises`) et dans
 // `emplacement_config` / `emplacement_packs`. Ils servent de VALEURS PAR DÉFAUT :
@@ -60,8 +62,8 @@ const toDto = (p: Plan) => ({
   prixFcfa: p.prixFcfa,
   dureeMois: p.dureeMois,
   actif: p.actif,
-  durees: p.durees, // [{ dureeMois, remisePct }]
-  remises: p.remises, // [{ quantiteMin, remisePct }]
+  durees: dureesAvecValeursParDefaut(p.type, p.durees),
+  remises: remisesAvecValeursParDefaut(p.type, p.remises),
 });
 
 const toType = (formule: string) => formule.toUpperCase() as PlanType;
@@ -97,7 +99,8 @@ function tarifLigne(
       "PRIX_NON_DEFINI",
       `Aucun prix mensuel n'est défini pour la formule ${plan.nom}`
     );
-  const remiseDureePct = remiseDuree(plan.durees, dureeMois);
+  const durees = dureesAvecValeursParDefaut(plan.type, plan.durees);
+  const remiseDureePct = remiseDuree(durees, dureeMois);
   if (remiseDureePct === undefined)
     throw unprocessable(
       "DUREE_NON_PROPOSEE",
@@ -108,7 +111,10 @@ function tarifLigne(
     prixMensuelFcfa: plan.prixMensuelFcfa,
     dureeMois,
     remiseDureePct,
-    remiseQuantitePct: remiseQuantite(plan.remises, quantiteFormule),
+    remiseQuantitePct: remiseQuantite(
+      remisesAvecValeursParDefaut(plan.type, plan.remises),
+      quantiteFormule
+    ),
     quantite,
   });
 }
@@ -150,7 +156,8 @@ export const ParametresService = {
   },
 
   // ───────── Grille visible par les clients (lecture seule) ─────────
-  // Seulement les formules actives et chiffrées, sans les champs réservés à l'admin
+  // Toutes les formules actives, même si le prix n'est pas encore configuré,
+  // afin que le client puisse distinguer une offre indisponible d'une formule absente.
   // (prixFcfa / dureeMois par défaut, actif). Le calcul d'un panier, lui, réutilise
   // `tarifCommande` ci-dessous : une seule source de vérité pour le prix.
   async grille() {
@@ -163,7 +170,7 @@ export const ParametresService = {
         paiementUnique: true,
       },
       formules: formules
-        .filter(f => f.actif && f.prixMensuelFcfa !== null)
+        .filter(f => f.actif && f.formule !== "essentielle")
         .map(f => ({
           formule: f.formule,
           nom: f.nom,
@@ -282,8 +289,13 @@ export const ParametresService = {
   },
 
   // ───────── Aperçus de prix ─────────
-  async tarif(formule: string, dureeMois: number, quantite: number) {
-    const plan = await prisma.plan.findUnique({
+  async tarif(
+    formule: string,
+    dureeMois: number,
+    quantite: number,
+    db: Db = prisma
+  ) {
+    const plan = await db.plan.findUnique({
       where: { type: toType(formule) },
       select: SELECT,
     });
@@ -294,8 +306,8 @@ export const ParametresService = {
     };
   },
 
-  async tarifEmplacements(quantite: number) {
-    const { prixUnitaireFcfa, packs } = await lireEmplacements();
+  async tarifEmplacements(quantite: number, db: Db = prisma) {
+    const { prixUnitaireFcfa, packs } = await lireEmplacements(db);
     if (prixUnitaireFcfa === null)
       throw unprocessable(
         "PRIX_EMPLACEMENT_NON_DEFINI",
@@ -305,7 +317,7 @@ export const ParametresService = {
   },
 
   // ───────── Prix d'une commande complète ─────────
-  async tarifCommande(input: CommandeTarifInput) {
+  async tarifCommande(input: CommandeTarifInput, db: Db = prisma) {
     // Total de fiches par formule : c'est lui qui détermine le palier de quantité.
     const parFormule = new Map<PlanType, number>();
     for (const l of input.lignes) {
@@ -313,7 +325,7 @@ export const ParametresService = {
       parFormule.set(type, (parFormule.get(type) ?? 0) + l.quantite);
     }
 
-    const plans = await prisma.plan.findMany({
+    const plans = await db.plan.findMany({
       where: { type: { in: [...parFormule.keys()] } },
       select: SELECT,
     });
@@ -333,7 +345,7 @@ export const ParametresService = {
       null;
     if (input.emplacements) {
       // Emplacements = fiches Essentielle au-delà du quota gratuit, paiement unique.
-      const cfg = await lireEmplacements();
+      const cfg = await lireEmplacements(db);
       if (cfg.prixUnitaireFcfa === null)
         throw unprocessable(
           "PRIX_EMPLACEMENT_NON_DEFINI",

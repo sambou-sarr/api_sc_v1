@@ -29,26 +29,31 @@ export type AggregateEmplacementConfig = {
 export type EmplacementConfigAvgAggregateOutputType = {
   id: number | null
   prixUnitaireFcfa: number | null
+  fichesGratuites: number | null
 }
 
 export type EmplacementConfigSumAggregateOutputType = {
   id: number | null
   prixUnitaireFcfa: number | null
+  fichesGratuites: number | null
 }
 
 export type EmplacementConfigMinAggregateOutputType = {
   id: number | null
   prixUnitaireFcfa: number | null
+  fichesGratuites: number | null
 }
 
 export type EmplacementConfigMaxAggregateOutputType = {
   id: number | null
   prixUnitaireFcfa: number | null
+  fichesGratuites: number | null
 }
 
 export type EmplacementConfigCountAggregateOutputType = {
   id: number
   prixUnitaireFcfa: number
+  fichesGratuites: number
   _all: number
 }
 
@@ -56,26 +61,31 @@ export type EmplacementConfigCountAggregateOutputType = {
 export type EmplacementConfigAvgAggregateInputType = {
   id?: true
   prixUnitaireFcfa?: true
+  fichesGratuites?: true
 }
 
 export type EmplacementConfigSumAggregateInputType = {
   id?: true
   prixUnitaireFcfa?: true
+  fichesGratuites?: true
 }
 
 export type EmplacementConfigMinAggregateInputType = {
   id?: true
   prixUnitaireFcfa?: true
+  fichesGratuites?: true
 }
 
 export type EmplacementConfigMaxAggregateInputType = {
   id?: true
   prixUnitaireFcfa?: true
+  fichesGratuites?: true
 }
 
 export type EmplacementConfigCountAggregateInputType = {
   id?: true
   prixUnitaireFcfa?: true
+  fichesGratuites?: true
   _all?: true
 }
 
@@ -168,6 +178,7 @@ export type EmplacementConfigGroupByArgs<ExtArgs extends runtime.Types.Extension
 export type EmplacementConfigGroupByOutputType = {
   id: number
   prixUnitaireFcfa: number | null
+  fichesGratuites: number
   _count: EmplacementConfigCountAggregateOutputType | null
   _avg: EmplacementConfigAvgAggregateOutputType | null
   _sum: EmplacementConfigSumAggregateOutputType | null
@@ -196,11 +207,13 @@ export type EmplacementConfigWhereInput = {
   NOT?: Prisma.EmplacementConfigWhereInput | Prisma.EmplacementConfigWhereInput[]
   id?: Prisma.IntFilter<"EmplacementConfig"> | number
   prixUnitaireFcfa?: Prisma.IntNullableFilter<"EmplacementConfig"> | number | null
+  fichesGratuites?: Prisma.IntFilter<"EmplacementConfig"> | number
 }
 
 export type EmplacementConfigOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   prixUnitaireFcfa?: Prisma.SortOrderInput | Prisma.SortOrder
+  fichesGratuites?: Prisma.SortOrder
 }
 
 export type EmplacementConfigWhereUniqueInput = Prisma.AtLeast<{
@@ -209,11 +222,13 @@ export type EmplacementConfigWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.EmplacementConfigWhereInput[]
   NOT?: Prisma.EmplacementConfigWhereInput | Prisma.EmplacementConfigWhereInput[]
   prixUnitaireFcfa?: Prisma.IntNullableFilter<"EmplacementConfig"> | number | null
+  fichesGratuites?: Prisma.IntFilter<"EmplacementConfig"> | number
 }, "id">
 
 export type EmplacementConfigOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   prixUnitaireFcfa?: Prisma.SortOrderInput | Prisma.SortOrder
+  fichesGratuites?: Prisma.SortOrder
   _count?: Prisma.EmplacementConfigCountOrderByAggregateInput
   _avg?: Prisma.EmplacementConfigAvgOrderByAggregateInput
   _max?: Prisma.EmplacementConfigMaxOrderByAggregateInput
@@ -227,66 +242,79 @@ export type EmplacementConfigScalarWhereWithAggregatesInput = {
   NOT?: Prisma.EmplacementConfigScalarWhereWithAggregatesInput | Prisma.EmplacementConfigScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"EmplacementConfig"> | number
   prixUnitaireFcfa?: Prisma.IntNullableWithAggregatesFilter<"EmplacementConfig"> | number | null
+  fichesGratuites?: Prisma.IntWithAggregatesFilter<"EmplacementConfig"> | number
 }
 
 export type EmplacementConfigCreateInput = {
   id?: number
   prixUnitaireFcfa?: number | null
+  fichesGratuites?: number
 }
 
 export type EmplacementConfigUncheckedCreateInput = {
   id?: number
   prixUnitaireFcfa?: number | null
+  fichesGratuites?: number
 }
 
 export type EmplacementConfigUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   prixUnitaireFcfa?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fichesGratuites?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type EmplacementConfigUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   prixUnitaireFcfa?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fichesGratuites?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type EmplacementConfigCreateManyInput = {
   id?: number
   prixUnitaireFcfa?: number | null
+  fichesGratuites?: number
 }
 
 export type EmplacementConfigUpdateManyMutationInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   prixUnitaireFcfa?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fichesGratuites?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type EmplacementConfigUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   prixUnitaireFcfa?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fichesGratuites?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type EmplacementConfigCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   prixUnitaireFcfa?: Prisma.SortOrder
+  fichesGratuites?: Prisma.SortOrder
 }
 
 export type EmplacementConfigAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   prixUnitaireFcfa?: Prisma.SortOrder
+  fichesGratuites?: Prisma.SortOrder
 }
 
 export type EmplacementConfigMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   prixUnitaireFcfa?: Prisma.SortOrder
+  fichesGratuites?: Prisma.SortOrder
 }
 
 export type EmplacementConfigMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   prixUnitaireFcfa?: Prisma.SortOrder
+  fichesGratuites?: Prisma.SortOrder
 }
 
 export type EmplacementConfigSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   prixUnitaireFcfa?: Prisma.SortOrder
+  fichesGratuites?: Prisma.SortOrder
 }
 
 
@@ -294,24 +322,28 @@ export type EmplacementConfigSumOrderByAggregateInput = {
 export type EmplacementConfigSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   prixUnitaireFcfa?: boolean
+  fichesGratuites?: boolean
 }, ExtArgs["result"]["emplacementConfig"]>
 
 export type EmplacementConfigSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   prixUnitaireFcfa?: boolean
+  fichesGratuites?: boolean
 }, ExtArgs["result"]["emplacementConfig"]>
 
 export type EmplacementConfigSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   prixUnitaireFcfa?: boolean
+  fichesGratuites?: boolean
 }, ExtArgs["result"]["emplacementConfig"]>
 
 export type EmplacementConfigSelectScalar = {
   id?: boolean
   prixUnitaireFcfa?: boolean
+  fichesGratuites?: boolean
 }
 
-export type EmplacementConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "prixUnitaireFcfa", ExtArgs["result"]["emplacementConfig"]>
+export type EmplacementConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "prixUnitaireFcfa" | "fichesGratuites", ExtArgs["result"]["emplacementConfig"]>
 
 export type $EmplacementConfigPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "EmplacementConfig"
@@ -319,6 +351,7 @@ export type $EmplacementConfigPayload<ExtArgs extends runtime.Types.Extensions.I
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     prixUnitaireFcfa: number | null
+    fichesGratuites: number
   }, ExtArgs["result"]["emplacementConfig"]>
   composites: {}
 }
@@ -744,6 +777,7 @@ export interface Prisma__EmplacementConfigClient<T, Null = never, ExtArgs extend
 export interface EmplacementConfigFieldRefs {
   readonly id: Prisma.FieldRef<"EmplacementConfig", 'Int'>
   readonly prixUnitaireFcfa: Prisma.FieldRef<"EmplacementConfig", 'Int'>
+  readonly fichesGratuites: Prisma.FieldRef<"EmplacementConfig", 'Int'>
 }
     
 

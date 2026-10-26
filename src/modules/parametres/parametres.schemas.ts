@@ -1,8 +1,12 @@
 import { z } from "zod";
 
 export const FORMULES = ["essentielle", "pro", "signature"] as const;
+export const FORMULES_ABONNEMENT = ["pro", "signature"] as const;
 
 export const formuleParams = z.object({ formule: z.enum(FORMULES) });
+export const formuleAbonnementParams = z.object({
+  formule: z.enum(FORMULES_ABONNEMENT),
+});
 
 // ───────── Remises selon la durée d'engagement ─────────
 // ex. [{ dureeMois: 1, remisePct: 0 }, { dureeMois: 3, remisePct: 10 }, { dureeMois: 6, remisePct: 15 }, { dureeMois: 12, remisePct: 20 }]
@@ -106,12 +110,17 @@ export const packsSchema = z
 export const patchEmplacementsSchema = z
   .object({
     prixUnitaireFcfa: z.number().int().min(0).max(100_000_000).nullable().optional(),
+    fichesGratuites: z.number().int().min(0).max(100_000).optional(),
     packs: packsSchema.optional(),
   })
   .strict()
-  .refine(b => b.prixUnitaireFcfa !== undefined || b.packs !== undefined, {
-    message: "Rien à modifier",
-  });
+  .refine(
+    b =>
+      b.prixUnitaireFcfa !== undefined ||
+      b.fichesGratuites !== undefined ||
+      b.packs !== undefined,
+    { message: "Rien à modifier" }
+  );
 
 // ───────── Calcul de prix ─────────
 // GET /parametres/formules/:formule/tarif?dureeMois=12&quantite=3

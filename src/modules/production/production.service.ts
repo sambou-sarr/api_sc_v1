@@ -1,14 +1,16 @@
 import { randomInt } from "crypto";
+import { Prisma } from "../../database/prisma/generated/prisma/client";
 import type {
-  Prisma,
   PlanType,
   PrintStatus,
   StickerFonction,
   StickerStatus,
 } from "../../database/prisma/generated/prisma/client";
 import { prisma } from "../../database/prisma/prisma-client";
-import { conflict, notFound, unprocessable } from "../../lib/httpError";
+import { conflict, forbidden, notFound, unprocessable } from "../../lib/httpError";
+import type { AuthUser } from "../../types/user";
 import type {
+  ClientCarteRequestInput,
   CreateCarteInput,
   CreateStickerInput,
   ListCartesQuery,
@@ -94,6 +96,8 @@ type CarteRow = Instantane & {
   id: number; ficheId: number | null; tier: PlanType | null; formule: string | null; slug: string | null; nfcUrl: string;
   rectoUrl: string | null; versoUrl: string | null;
   design: Prisma.JsonValue; statut: PrintStatus;
+  deliveryAddress: string | null; deliveryTelephone: string | null;
+  clientNotes: string | null; amountFcfa: number | null;
   printedAt: Date | null; encodedAt: Date | null; testedAt: Date | null; deliveredAt: Date | null;
   notes: string | null; createdAt: Date; fiche: FicheLight | null;
 };
@@ -109,6 +113,10 @@ const carteDto = (j: CarteRow) => ({
   design: j.design,
   statut: lower(j.statut),
   notes: j.notes,
+  adresseLivraison: j.deliveryAddress,
+  telephoneLivraison: j.deliveryTelephone,
+  notesClient: j.clientNotes,
+  montantFcfa: j.amountFcfa,
   printedAt: j.printedAt,
   encodedAt: j.encodedAt,
   testedAt: j.testedAt,
@@ -162,6 +170,22 @@ const abonnementValable = (now: Date): Prisma.SubscriptionWhereInput => ({
   OR: [{ endsAt: null }, { endsAt: { gt: now } }],
 });
 
+const CARD_PRICES: Record<PlanType, number> = {
+  ESSENTIELLE: 10_000,
+  PRO: 12_000,
+  SIGNATURE: 15_000,
+};
+const ACTIVE_CARD_STATUSES: PrintStatus[] = [
+  "A_IMPRIMER",
+  "IMPRIMEE",
+  "ENCODEE",
+  "TESTEE",
+];
+
+const isSerializationConflict = (error: unknown) =>
+  error instanceof Prisma.PrismaClientKnownRequestError &&
+  error.code === "P2034";
+
 export const ProductionService = {
   // ───────── Chiffres de l'en-tête ─────────
   async summary() {
@@ -191,6 +215,99 @@ export const ProductionService = {
     return { cartes: jobs.map(carteDto) };
   },
 
+  async getClientCardRequest(user: AuthUser, ficheId: number) {
+    const fiche = await prisma.fiche.findFirst({
+      where: { id: ficheId, userId: user.id },
+      select: { id: true },
+    });
+    if (!fiche) throw notFound("Fiche introuvable");
+
+    const job = await prisma.printJob.findFirst({
+      where: { ficheId },
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      include: { fiche: { select: FICHE_SELECT } },
+    });
+    return { carte: job ? carteDto(job) : null };
+  },
+
+  async requestClientCarte(
+    user: AuthUser,
+    ficheId: number,
+    input: ClientCarteRequestInput,
+  ) {
+    const now = new Date();
+    try {
+      return await prisma.$transaction(
+        async tx => {
+          const fiche = await tx.fiche.findFirst({
+            where: { id: ficheId, userId: user.id },
+            select: {
+              ...FICHE_SELECT,
+              statut: true,
+              subscriptions: {
+                where: abonnementValable(now),
+                orderBy: { startsAt: "desc" },
+                take: 1,
+                select: { plan: { select: { type: true } } },
+              },
+            },
+          });
+          if (!fiche) throw notFound("Fiche introuvable");
+          if (fiche.statut !== "ACTIVE")
+            throw forbidden(
+              "FICHE_NON_PUBLIEE",
+              "Publiez la fiche avant de demander une carte.",
+            );
+
+          const plan = fiche.subscriptions[0]?.plan.type;
+          if (!plan)
+            throw forbidden(
+              "ABONNEMENT_INACTIF",
+              "Un abonnement actif est nécessaire pour demander une carte.",
+            );
+
+          const existing = await tx.printJob.findFirst({
+            where: {
+              ficheId,
+              statut: { in: ACTIVE_CARD_STATUSES },
+            },
+            select: { id: true },
+          });
+          if (existing)
+            throw conflict(
+              "CARTE_DEJA_EN_COURS",
+              "Une demande de carte est déjà en cours pour cette fiche.",
+            );
+
+          const job = await tx.printJob.create({
+            data: {
+              ficheId,
+              tier: plan,
+              formule: lower(plan),
+              slug: fiche.slug,
+              nfcUrl: ficheUrl(fiche.slug),
+              ...instantane(fiche),
+              deliveryAddress: input.adresseLivraison,
+              deliveryTelephone: input.telephoneLivraison,
+              clientNotes: input.notesClient || null,
+              amountFcfa: CARD_PRICES[plan],
+            },
+            include: { fiche: { select: FICHE_SELECT } },
+          });
+          return { carte: carteDto(job) };
+        },
+        { isolationLevel: "Serializable" },
+      );
+    } catch (error) {
+      if (isSerializationConflict(error))
+        throw conflict(
+          "CARTE_DEJA_EN_COURS",
+          "Une demande de carte est déjà en cours pour cette fiche.",
+        );
+      throw error;
+    }
+  },
+
   async createCarte(input: CreateCarteInput) {
     const now = new Date();
     const fiche = await prisma.fiche.findUnique({
@@ -200,7 +317,10 @@ export const ProductionService = {
     if (!fiche) throw notFound("Fiche introuvable");
 
     const enCours = await prisma.printJob.findFirst({
-      where: { ficheId: fiche.id, statut: { not: "ANNULEE" } },
+      where: {
+        ficheId: fiche.id,
+        statut: { notIn: ["ANNULEE", "LIVREE"] },
+      },
       select: { id: true },
     });
     if (enCours) throw conflict("409", "Une carte est déjà en production pour cette fiche");

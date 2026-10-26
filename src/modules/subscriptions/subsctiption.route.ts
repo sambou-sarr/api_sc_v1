@@ -9,6 +9,7 @@ const subscriptionRoute = Router();
 const upgradeSchema = z.object({
   ficheId: z.number().int().positive(),
   plan: z.enum(["pro", "signature"]),
+  dureeMois: z.number().int().min(1).max(120).optional(),
 });
 
 subscriptionRoute.use(requireAuth);

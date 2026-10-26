@@ -108,6 +108,11 @@ export type Subscription = Prisma.SubscriptionModel
  */
 export type Payment = Prisma.PaymentModel
 /**
+ * Model FichePurchase
+ * 
+ */
+export type FichePurchase = Prisma.FichePurchaseModel
+/**
  * Model DemandeRappel
  * 
  */
@@ -152,3 +157,8 @@ export type EmplacementConfig = Prisma.EmplacementConfigModel
  * 
  */
 export type EmplacementPack = Prisma.EmplacementPackModel
+/**
+ * Model QrStyle
+ * 
+ */
+export type QrStyle = Prisma.QrStyleModel

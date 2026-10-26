@@ -415,6 +415,7 @@ export const ModelName = {
   PlanLimit: 'PlanLimit',
   Subscription: 'Subscription',
   Payment: 'Payment',
+  FichePurchase: 'FichePurchase',
   DemandeRappel: 'DemandeRappel',
   FichePassage: 'FichePassage',
   PrintJob: 'PrintJob',
@@ -423,7 +424,8 @@ export const ModelName = {
   PlanDuree: 'PlanDuree',
   PlanRemise: 'PlanRemise',
   EmplacementConfig: 'EmplacementConfig',
-  EmplacementPack: 'EmplacementPack'
+  EmplacementPack: 'EmplacementPack',
+  QrStyle: 'QrStyle'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -439,7 +441,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "fiche" | "ficheOnglet" | "ficheReseau" | "ficheLien" | "ficheHoraire" | "ficheMedia" | "catalogueSection" | "catalogueArticle" | "menuSection" | "menuPlat" | "bien" | "bienPhoto" | "user" | "authToken" | "plan" | "planLimit" | "subscription" | "payment" | "demandeRappel" | "fichePassage" | "printJob" | "stickerOrder" | "qrLink" | "planDuree" | "planRemise" | "emplacementConfig" | "emplacementPack"
+    modelProps: "fiche" | "ficheOnglet" | "ficheReseau" | "ficheLien" | "ficheHoraire" | "ficheMedia" | "catalogueSection" | "catalogueArticle" | "menuSection" | "menuPlat" | "bien" | "bienPhoto" | "user" | "authToken" | "plan" | "planLimit" | "subscription" | "payment" | "fichePurchase" | "demandeRappel" | "fichePassage" | "printJob" | "stickerOrder" | "qrLink" | "planDuree" | "planRemise" | "emplacementConfig" | "emplacementPack" | "qrStyle"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1775,6 +1777,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    FichePurchase: {
+      payload: Prisma.$FichePurchasePayload<ExtArgs>
+      fields: Prisma.FichePurchaseFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FichePurchaseFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FichePurchasePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FichePurchaseFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FichePurchasePayload>
+        }
+        findFirst: {
+          args: Prisma.FichePurchaseFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FichePurchasePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FichePurchaseFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FichePurchasePayload>
+        }
+        findMany: {
+          args: Prisma.FichePurchaseFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FichePurchasePayload>[]
+        }
+        create: {
+          args: Prisma.FichePurchaseCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FichePurchasePayload>
+        }
+        createMany: {
+          args: Prisma.FichePurchaseCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FichePurchaseCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FichePurchasePayload>[]
+        }
+        delete: {
+          args: Prisma.FichePurchaseDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FichePurchasePayload>
+        }
+        update: {
+          args: Prisma.FichePurchaseUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FichePurchasePayload>
+        }
+        deleteMany: {
+          args: Prisma.FichePurchaseDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FichePurchaseUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FichePurchaseUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FichePurchasePayload>[]
+        }
+        upsert: {
+          args: Prisma.FichePurchaseUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FichePurchasePayload>
+        }
+        aggregate: {
+          args: Prisma.FichePurchaseAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFichePurchase>
+        }
+        groupBy: {
+          args: Prisma.FichePurchaseGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FichePurchaseGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FichePurchaseCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FichePurchaseCountAggregateOutputType> | number
+        }
+      }
+    }
     DemandeRappel: {
       payload: Prisma.$DemandeRappelPayload<ExtArgs>
       fields: Prisma.DemandeRappelFieldRefs
@@ -2441,6 +2517,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    QrStyle: {
+      payload: Prisma.$QrStylePayload<ExtArgs>
+      fields: Prisma.QrStyleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.QrStyleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.QrStyleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>
+        }
+        findFirst: {
+          args: Prisma.QrStyleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.QrStyleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>
+        }
+        findMany: {
+          args: Prisma.QrStyleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>[]
+        }
+        create: {
+          args: Prisma.QrStyleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>
+        }
+        createMany: {
+          args: Prisma.QrStyleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.QrStyleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>[]
+        }
+        delete: {
+          args: Prisma.QrStyleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>
+        }
+        update: {
+          args: Prisma.QrStyleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>
+        }
+        deleteMany: {
+          args: Prisma.QrStyleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.QrStyleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.QrStyleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>[]
+        }
+        upsert: {
+          args: Prisma.QrStyleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrStylePayload>
+        }
+        aggregate: {
+          args: Prisma.QrStyleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateQrStyle>
+        }
+        groupBy: {
+          args: Prisma.QrStyleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.QrStyleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.QrStyleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.QrStyleCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2750,6 +2900,7 @@ export const PaymentScalarFieldEnum = {
   ficheId: 'ficheId',
   subscriptionId: 'subscriptionId',
   planId: 'planId',
+  dureeMois: 'dureeMois',
   provider: 'provider',
   status: 'status',
   amountFcfa: 'amountFcfa',
@@ -2762,6 +2913,24 @@ export const PaymentScalarFieldEnum = {
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const FichePurchaseScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  planId: 'planId',
+  quantity: 'quantity',
+  freeQuantity: 'freeQuantity',
+  dureeMois: 'dureeMois',
+  amountFcfa: 'amountFcfa',
+  status: 'status',
+  reference: 'reference',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  confirmedAt: 'confirmedAt'
+} as const
+
+export type FichePurchaseScalarFieldEnum = (typeof FichePurchaseScalarFieldEnum)[keyof typeof FichePurchaseScalarFieldEnum]
 
 
 export const DemandeRappelScalarFieldEnum = {
@@ -2802,6 +2971,10 @@ export const PrintJobScalarFieldEnum = {
   clientTelephone: 'clientTelephone',
   clientEmail: 'clientEmail',
   clientFonction: 'clientFonction',
+  deliveryAddress: 'deliveryAddress',
+  deliveryTelephone: 'deliveryTelephone',
+  clientNotes: 'clientNotes',
+  amountFcfa: 'amountFcfa',
   printedAt: 'printedAt',
   testedAt: 'testedAt',
   notes: 'notes',
@@ -2881,7 +3054,8 @@ export type PlanRemiseScalarFieldEnum = (typeof PlanRemiseScalarFieldEnum)[keyof
 
 export const EmplacementConfigScalarFieldEnum = {
   id: 'id',
-  prixUnitaireFcfa: 'prixUnitaireFcfa'
+  prixUnitaireFcfa: 'prixUnitaireFcfa',
+  fichesGratuites: 'fichesGratuites'
 } as const
 
 export type EmplacementConfigScalarFieldEnum = (typeof EmplacementConfigScalarFieldEnum)[keyof typeof EmplacementConfigScalarFieldEnum]
@@ -2894,6 +3068,18 @@ export const EmplacementPackScalarFieldEnum = {
 } as const
 
 export type EmplacementPackScalarFieldEnum = (typeof EmplacementPackScalarFieldEnum)[keyof typeof EmplacementPackScalarFieldEnum]
+
+
+export const QrStyleScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  nom: 'nom',
+  style: 'style',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type QrStyleScalarFieldEnum = (typeof QrStyleScalarFieldEnum)[keyof typeof QrStyleScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2910,6 +3096,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -3185,6 +3378,20 @@ export type EnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'PaymentStatus[]'
  */
 export type ListEnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'FichePurchaseStatus'
+ */
+export type EnumFichePurchaseStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FichePurchaseStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'FichePurchaseStatus[]'
+ */
+export type ListEnumFichePurchaseStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FichePurchaseStatus[]'>
     
 
 
@@ -3468,6 +3675,7 @@ export type GlobalOmitConfig = {
   planLimit?: Prisma.PlanLimitOmit
   subscription?: Prisma.SubscriptionOmit
   payment?: Prisma.PaymentOmit
+  fichePurchase?: Prisma.FichePurchaseOmit
   demandeRappel?: Prisma.DemandeRappelOmit
   fichePassage?: Prisma.FichePassageOmit
   printJob?: Prisma.PrintJobOmit
@@ -3477,6 +3685,7 @@ export type GlobalOmitConfig = {
   planRemise?: Prisma.PlanRemiseOmit
   emplacementConfig?: Prisma.EmplacementConfigOmit
   emplacementPack?: Prisma.EmplacementPackOmit
+  qrStyle?: Prisma.QrStyleOmit
 }
 
 /* Types for Logging */

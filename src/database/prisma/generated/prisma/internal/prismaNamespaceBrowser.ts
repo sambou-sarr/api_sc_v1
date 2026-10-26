@@ -69,6 +69,7 @@ export const ModelName = {
   PlanLimit: 'PlanLimit',
   Subscription: 'Subscription',
   Payment: 'Payment',
+  FichePurchase: 'FichePurchase',
   DemandeRappel: 'DemandeRappel',
   FichePassage: 'FichePassage',
   PrintJob: 'PrintJob',
@@ -77,7 +78,8 @@ export const ModelName = {
   PlanDuree: 'PlanDuree',
   PlanRemise: 'PlanRemise',
   EmplacementConfig: 'EmplacementConfig',
-  EmplacementPack: 'EmplacementPack'
+  EmplacementPack: 'EmplacementPack',
+  QrStyle: 'QrStyle'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -366,6 +368,7 @@ export const PaymentScalarFieldEnum = {
   ficheId: 'ficheId',
   subscriptionId: 'subscriptionId',
   planId: 'planId',
+  dureeMois: 'dureeMois',
   provider: 'provider',
   status: 'status',
   amountFcfa: 'amountFcfa',
@@ -378,6 +381,24 @@ export const PaymentScalarFieldEnum = {
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const FichePurchaseScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  planId: 'planId',
+  quantity: 'quantity',
+  freeQuantity: 'freeQuantity',
+  dureeMois: 'dureeMois',
+  amountFcfa: 'amountFcfa',
+  status: 'status',
+  reference: 'reference',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  confirmedAt: 'confirmedAt'
+} as const
+
+export type FichePurchaseScalarFieldEnum = (typeof FichePurchaseScalarFieldEnum)[keyof typeof FichePurchaseScalarFieldEnum]
 
 
 export const DemandeRappelScalarFieldEnum = {
@@ -418,6 +439,10 @@ export const PrintJobScalarFieldEnum = {
   clientTelephone: 'clientTelephone',
   clientEmail: 'clientEmail',
   clientFonction: 'clientFonction',
+  deliveryAddress: 'deliveryAddress',
+  deliveryTelephone: 'deliveryTelephone',
+  clientNotes: 'clientNotes',
+  amountFcfa: 'amountFcfa',
   printedAt: 'printedAt',
   testedAt: 'testedAt',
   notes: 'notes',
@@ -497,7 +522,8 @@ export type PlanRemiseScalarFieldEnum = (typeof PlanRemiseScalarFieldEnum)[keyof
 
 export const EmplacementConfigScalarFieldEnum = {
   id: 'id',
-  prixUnitaireFcfa: 'prixUnitaireFcfa'
+  prixUnitaireFcfa: 'prixUnitaireFcfa',
+  fichesGratuites: 'fichesGratuites'
 } as const
 
 export type EmplacementConfigScalarFieldEnum = (typeof EmplacementConfigScalarFieldEnum)[keyof typeof EmplacementConfigScalarFieldEnum]
@@ -510,6 +536,18 @@ export const EmplacementPackScalarFieldEnum = {
 } as const
 
 export type EmplacementPackScalarFieldEnum = (typeof EmplacementPackScalarFieldEnum)[keyof typeof EmplacementPackScalarFieldEnum]
+
+
+export const QrStyleScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  nom: 'nom',
+  style: 'style',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type QrStyleScalarFieldEnum = (typeof QrStyleScalarFieldEnum)[keyof typeof QrStyleScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -526,6 +564,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

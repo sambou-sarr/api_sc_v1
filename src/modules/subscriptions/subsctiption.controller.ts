@@ -18,14 +18,16 @@ export const SubscriptionController = {
   }),
 
   upgradePlan: asyncHandler(async (req, res) => {
-    const { ficheId, plan } = req.body as {
+    const { ficheId, plan, dureeMois } = req.body as {
       ficheId: number;
       plan: "pro" | "signature";
+      dureeMois?: number;
     };
     const result = await upgrade(
       req.user!,
       ficheId,
-      plan.toUpperCase() as PlanType
+      plan.toUpperCase() as PlanType,
+      dureeMois
     );
     responseSuccess(
       res,

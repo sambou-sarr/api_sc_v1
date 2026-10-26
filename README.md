@@ -70,7 +70,11 @@ scripts/create-admin.ts
 | GET | `/plans` | public | formules et limites |
 | GET | `/fiches/public/:slug` | public | la fiche affichée par le scan NFC/QR |
 | GET | `/fiches` | connecté | mes fiches (admin : toutes) |
-| POST | `/fiches` | connecté | crée une fiche Essentielle gratuite |
+| GET | `/fiches/total-fiche` | connecté | nombre de fiches et places Essentielle gratuites restantes |
+| POST | `/fiches` | connecté | crée une fiche Essentielle avec une place gratuite disponible |
+| POST | `/fiches/purchases/quote` | client | calcule le devis d'une commande de fiches |
+| POST | `/fiches/purchases` | client | réserve la commande; les fiches payantes sont créées après confirmation simulée |
+| POST | `/fiches/purchases/:purchaseId/simulate-confirmation` | client | confirme la commande simulée et crée les fiches/abonnements atomiquement |
 | GET | `/fiches/:id` | propriétaire / admin | une fiche |
 | PATCH | `/fiches/:id` | propriétaire / admin | modifie l'identité et `data` (limites de la formule vérifiées) |
 | PATCH | `/admin/fiches/:id` | admin | `slug`, `statut` (`active`/`suspendue`), `userId` |
@@ -83,8 +87,10 @@ scripts/create-admin.ts
 | POST | `/fiches/:id/media` | propriétaire / admin | upload binaire d'un média (`?purpose=`), optimisé puis stocké sur S3 |
 | GET | `/media/:ficheId/:key` | public | lecture d'un média (Range supporté) |
 | GET | `/client/dashboard/fiches` | connecté | fiches du client avec leur formule active |
+| GET | `/client/parametres` | connecté | grille des formules, durées/remises et emplacements |
+| POST | `/client/parametres/commande/tarif` | connecté | calcule un tarif pour une commande ou un upgrade unitaire |
 | GET | `/subscription/kpi` | connecté | nombre de fiches, fiches actives, fiches payantes |
-| POST | `/subscription/upgrade` | client | demande de changement de formule `{ ficheId, plan: pro\|signature }` → paiement `PENDING` (désactivé en production) |
+| POST | `/subscription/upgrade` | client | demande de changement de formule `{ ficheId, plan: pro\|signature, dureeMois? }` → paiement `PENDING` au prix serveur (désactivé en production) |
 | POST | `/subscription/payments/:paymentId/simulate-confirmation` | client | confirme un paiement simulé et active la formule (désactivé en production) |
 
 Authentification : en-tête `Authorization: Bearer <token>`.
@@ -102,6 +108,8 @@ curl -X POST localhost:4000/api/fiches -H "Authorization: Bearer $TOKEN" -H 'Con
 - **Propriété** : un client ne voit et ne modifie que ses fiches (sinon 404). L'admin voit tout.
 - **Champs réservés** : `slug`, `formule`, `statut`, `dateEcheance`, `scansTotal`, `userId` sont ignorés si un client les envoie. Seules les routes `/admin` les modifient.
 - **Formule effective** d'une fiche = son abonnement `ACTIVE` non expiré. Sans abonnement valide : modification bloquée (`ABONNEMENT_EXPIRE`). Fiche `suspendue` : modification bloquée pour le client.
+- **Création et emplacements** : jusqu'à `MAX_FICHES_PER_USER` fiches Essentielle gratuites par compte (3 par défaut). Une commande Essentielle consomme les places gratuites restantes avant de chiffrer les emplacements payants. Les fiches Pro/Signature utilisent le tarif configuré par durée et quantité, sans frais d'emplacement. Le devis et la confirmation sont recalculés/validés par l'API; les commandes payantes expirent après 30 minutes.
+- **Confirmation d'achat** : aucun lot n'est créé avant la confirmation du paiement simulé; la confirmation vérifie le propriétaire et l'état de la commande, puis crée fiches, abonnements et reçus dans une seule transaction. Les fiches démarrent avec le nom « Nouvelle fiche », le thème et les onglets autorisés par leur formule. Les paiements simulés restent désactivés en production.
 - **Limites par formule** (table `plan_limits`) : blocs autorisés, onglets libres, présentation, réseaux, liens, photos/vidéos, catalogue (sections, articles, prix), menu, biens, entête, thèmes. En cas de dépassement : 422 `LIMITES_DEPASSEES` avec la liste de **toutes** les violations.
 - **`PATCH /fiches/:id`** : une liste fournie (liens, galerie, onglets, catalogue, menu, biens…) **remplace** l'existante ; une liste absente n'est pas touchée.
 - **Format de la fiche** : `GET` renvoie `{ ...champs à plat, formule, dateEcheance, data: {...} }`, le même format que `src/data/fiches.js` du module front. Les ids des onglets viennent de la base (ne pas réutiliser les `o1`, `o2` du front).
@@ -115,9 +123,9 @@ curl -X POST localhost:4000/api/fiches -H "Authorization: Bearer $TOKEN" -H 'Con
 4. **Réorganisation des blocs** (`canReorder`) : non contrôlée côté serveur ; pour l'instant l'ordre envoyé est conservé.
 5. **Paiement** : l'activation d'une formule est manuelle (route admin). Brancher Wave / Orange Money quand tu seras prêt (`paymentRef` est déjà là).
 6. **Rattachement d'une carte physique** (`claimCode`) : colonne prévue, route non écrite.
-7. **`MAX_FICHES_PER_USER`** (3 par défaut) : limite de fiches gratuites par compte, à confirmer.
-8. **Prix et durées** des formules dans `prisma/seed.ts` : à confirmer.
-9. **Tests automatisés** : aucun pour l'instant.
+7. **Tarifs d’abonnement** : les valeurs initiales sont Pro à 2 500 FCFA/mois et Signature à 5 000 FCFA/mois, avec 0/10/20 % de remise pour 1/3/12 mois et 10/20 % dès 10/50 fiches. Elles restent modifiables depuis Paramètres; les réglages déjà présents ne sont pas écrasés par la seed.
+8. **Paiement réel** : Wave / Orange Money restent hors périmètre; les commandes payantes sont désactivées en production jusqu’à l’intégration d’un fournisseur et de ses notifications vérifiées.
+9. **Tests automatisés** : tests ciblés présents pour les créations/commandes de fiches, les capacités des formules et les validations.
 # api-sc
 
 

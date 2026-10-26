@@ -24,7 +24,7 @@ model Fiche {
   googlePlaceId     String?
   premierBouton     PremierBouton      @default(WHATSAPP)
   messageWhatsapp   String?
-  statut            StatutFiche        @default(ACTIVE)
+  statut            StatutFiche        @default(BROUILLON)
   enLigneSeule      Boolean            @default(false)
   scansTotal        Int                @default(0)
   userId            Int?
@@ -221,7 +221,8 @@ model User {
   createdAt       DateTime    @default(now())
   tokens          AuthToken[]
   fiches          Fiche[]
-
+  qrStyles        QrStyle[]
+  fichePurchases  FichePurchase[]
   @@map("users")
 }
 
@@ -249,6 +250,7 @@ model Plan {
   limits        PlanLimit?
   subscriptions Subscription[]
   payments      Payment[]
+  purchases     FichePurchase[]
   durees        PlanDuree[]
   remises       PlanRemise[]
 
@@ -316,6 +318,7 @@ model Payment {
   ficheId           Int
   subscriptionId    Int?
   planId            Int
+  dureeMois         Int?
   provider          PaymentProvider @default(SIMULATION)
   status            PaymentStatus   @default(PENDING)
   amountFcfa        Int
@@ -331,6 +334,26 @@ model Payment {
 
   @@index([ficheId, status, createdAt])
   @@map("payments")
+}
+
+model FichePurchase {
+  id          Int                @id @default(autoincrement())
+  userId      Int
+  planId      Int
+  quantity    Int
+  freeQuantity Int               @default(0)
+  dureeMois   Int?
+  amountFcfa  Int
+  status      FichePurchaseStatus @default(PENDING)
+  reference   String             @unique
+  expiresAt   DateTime
+  createdAt   DateTime           @default(now())
+  confirmedAt DateTime?
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan        Plan               @relation(fields: [planId], references: [id])
+
+  @@index([userId, status, expiresAt])
+  @@map("fiche_purchases")
 }
 
 // Demande de rappel envoyée depuis la fiche publique (onglet RAPPEL).
@@ -390,6 +413,13 @@ enum PaymentStatus {
   CANCELLED
 }
 
+enum FichePurchaseStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  EXPIRED
+}
+
 enum FichePassageSource {
   QR
   NFC
@@ -399,6 +429,7 @@ enum FichePassageSource {
 enum StatutFiche {
   ACTIVE
   SUSPENDUE
+  BROUILLON
 }
 
 enum Secteur {
@@ -519,6 +550,10 @@ model PrintJob {
   clientTelephone  String?
   clientEmail      String?
   clientFonction   String?
+  deliveryAddress  String?
+  deliveryTelephone String?
+  clientNotes      String?
+  amountFcfa       Int?
   printedAt        DateTime?
   testedAt         DateTime?
   notes            String?
@@ -611,6 +646,7 @@ model PlanRemise {
 model EmplacementConfig {
   id               Int  @id @default(1)
   prixUnitaireFcfa Int?
+  fichesGratuites  Int  @default(3)
 
   @@map("emplacement_config")
 }
@@ -622,4 +658,17 @@ model EmplacementPack {
   prixFcfa Int
 
   @@map("emplacement_packs")
+}
+model QrStyle {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  nom       String
+  style     Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("qr_styles")
 }

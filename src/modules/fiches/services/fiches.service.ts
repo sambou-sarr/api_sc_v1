@@ -1,92 +1,260 @@
 import { randomBytes } from "crypto";
-import { env } from "../../config/env";
-import type {
-  Disposition,
-  PremierBouton,
+import { env } from "../../../config/env";
+import {
   Prisma,
-  Secteur,
-  TabType,
-  Taille,
-  Theme,
-} from "../../database/prisma/generated/prisma/client";
-import { prisma } from "../../database/prisma/prisma-client";
-import { HttpError, conflict, forbidden, notFound } from "../../lib/httpError";
-import { logger } from "../../lib/logger";
+  type Disposition,
+  type PremierBouton,
+  type Secteur,
+  type TabType,
+  type Taille,
+  type Theme,
+} from "../../../database/prisma/generated/prisma/client";
+import { prisma } from "../../../database/prisma/prisma-client";
+import {
+  HttpError,
+  conflict,
+  forbidden,
+  notFound,
+} from "../../../lib/httpError";
+import { logger } from "../../../lib/logger";
+import { normalizeMediaReferences } from "../../../lib/media";
+import { AuthUser } from "../../../types/user";
+import { MediaService } from "../../media/media.service";
+import { collectStoredMediaKeys } from "../../media/media.validation";
 import {
   getEffectiveSubscription,
   type EffectiveSubscription,
-} from "../subscriptions/subscriptions.service";
-import { ficheInclude, toFicheDto, type FicheFull } from "./fiches.dto";
-import { enforcePlanLimits } from "./fiches.limits";
+} from "../../subscriptions/subscriptions.service";
+import { ficheInclude, toFicheDto, type FicheFull } from "../fiches.dto";
+import { enforcePlanLimits } from "../fiches.limits";
 import {
   JOURS,
   type CreateFicheInput,
   type UpdateFicheInput,
-} from "./fiches.schemas";
-import { AuthUser } from "../../types/user";
-import { MediaService } from "../media/media.service";
-import { collectStoredMediaKeys } from "../media/media.validation";
-
+} from "../fiches.schemas";
 
 const isAdmin = (u: AuthUser) => u.role === "ADMIN";
 const up = <T extends string>(v: string) => v.toUpperCase() as T;
 const nullIfEmpty = (v: string | undefined) =>
   v === undefined ? undefined : v === "" ? null : v;
+const addMonths = (date: Date, months: number) => {
+  const result = new Date(date);
+  result.setMonth(result.getMonth() + months);
+  return result;
+};
+
+type FicheDb = Prisma.TransactionClient | typeof prisma;
+type InitialPlan = Prisma.PlanGetPayload<{ include: { limits: true } }>;
+
+async function ficheCreationUsage(
+  userId: number,
+  db: FicheDb = prisma,
+  excludePurchaseId?: number
+) {
+  const now = new Date();
+  const [fiches, reservations] = await Promise.all([
+    db.fiche.count({ where: { userId } }),
+    db.fichePurchase.aggregate({
+      where: {
+        userId,
+        status: "PENDING",
+        expiresAt: { gt: now },
+        ...(excludePurchaseId === undefined
+          ? {}
+          : { id: { not: excludePurchaseId } }),
+      },
+      _sum: { quantity: true },
+    }),
+  ]);
+  const reserved = reservations._sum.quantity ?? 0;
+  return {
+    fiches,
+    reserved,
+    remainingFreeSlots: Math.max(
+      0,
+      env.MAX_FICHES_PER_USER - fiches - reserved
+    ),
+  };
+}
+
+export async function createPurchasedFiche(
+  tx: Prisma.TransactionClient,
+  userId: number,
+  plan: InitialPlan,
+  input: CreateFicheInput | null,
+  amountFcfa: number,
+  dureeMois: number | null,
+  paymentRef: string | null
+) {
+  if (!plan.limits)
+    throw new HttpError(
+      500,
+      "SEED_MANQUANT",
+      "Les capacités des formules ne sont pas initialisées (npm run prisma:seed)"
+    );
+  const prenom = input?.prenom ?? "Nouvelle fiche";
+  const slug = await uniqueSlug(slugify(`${prenom} ${input?.nom ?? ""}`));
+  const now = new Date();
+  const endsAt = dureeMois ? addMonths(now, dureeMois) : null;
+  const created = await tx.fiche.create({
+    data: {
+      slug,
+      userId,
+      statut: "BROUILLON",
+      prenom,
+      nom: input?.nom ?? "",
+      fonction: input?.fonction ?? null,
+      entreprise: input?.entreprise ?? null,
+      telephone: input?.telephone ?? null,
+      whatsapp: input?.whatsapp ?? null,
+      secteur: input?.secteur ? up<Secteur>(input.secteur) : undefined,
+      enLigneSeule: amountFcfa === 0,
+      enteteTheme: plan.themeDefaut,
+      enteteDisposition: plan.limits.headerLayouts[0] ?? "PORTRAIT",
+      onglets: {
+        create: plan.limits.tabsAutorises.map((type, position) => ({
+          type,
+          position,
+          visible: true,
+        })),
+      },
+      subscriptions: {
+        create: {
+          planId: plan.id,
+          status: "ACTIVE",
+          startsAt: now,
+          endsAt,
+          amountFcfa,
+          paymentRef,
+        },
+      },
+    },
+    include: {
+      ...ficheInclude,
+      subscriptions: {
+        where: { status: "ACTIVE" },
+        orderBy: { startsAt: "desc" },
+        take: 1,
+        include: { plan: { include: { limits: true } } },
+      },
+    },
+  });
+  const subscription = created.subscriptions[0];
+  return {
+    fiche: toFicheDto(created, subscription ?? null),
+    ficheId: created.id,
+    subscriptionId: subscription?.id ?? null,
+  };
+}
+
+export async function createPurchasedFiches(
+  tx: Prisma.TransactionClient,
+  userId: number,
+  plan: InitialPlan,
+  amountsFcfa: number[],
+  dureeMois: number | null,
+  purchaseReference: string
+) {
+  if (!plan.limits)
+    throw new HttpError(
+      500,
+      "SEED_MANQUANT",
+      "Les capacités des formules ne sont pas initialisées (npm run prisma:seed)"
+    );
+
+  const now = new Date();
+  const endsAt = dureeMois ? addMonths(now, dureeMois) : null;
+  const items = amountsFcfa.map((amountFcfa, index) => ({
+    amountFcfa,
+    slug: `nouvelle-fiche-${randomBytes(8).toString("hex")}`,
+    paymentRef:
+      amountFcfa > 0 ? `${purchaseReference}-${index + 1}` : null,
+  }));
+  const created = await tx.fiche.createManyAndReturn({
+    data: items.map(item => ({
+      slug: item.slug,
+      userId,
+      statut: "BROUILLON",
+      prenom: "Nouvelle fiche",
+      nom: "",
+      enLigneSeule: item.amountFcfa === 0,
+      enteteTheme: plan.themeDefaut,
+      enteteDisposition: plan.limits!.headerLayouts[0] ?? "PORTRAIT",
+    })),
+    select: { id: true, slug: true },
+  });
+  const ficheIdBySlug = new Map(created.map(fiche => [fiche.slug, fiche.id]));
+  const tabs = items.flatMap(item => {
+    const ficheId = ficheIdBySlug.get(item.slug);
+    if (ficheId === undefined) throw new Error("Fiche créée sans identifiant");
+    return plan.limits!.tabsAutorises.map((type, position) => ({
+      ficheId,
+      type,
+      position,
+      visible: true,
+    }));
+  });
+  if (tabs.length > 0) await tx.ficheOnglet.createMany({ data: tabs });
+
+  const subscriptions = await tx.subscription.createManyAndReturn({
+    data: items.map(item => {
+      const ficheId = ficheIdBySlug.get(item.slug);
+      if (ficheId === undefined)
+        throw new Error("Fiche créée sans identifiant");
+      return {
+        ficheId,
+        planId: plan.id,
+        status: "ACTIVE" as const,
+        startsAt: now,
+        endsAt,
+        amountFcfa: item.amountFcfa,
+        paymentRef: item.paymentRef,
+      };
+    }),
+    select: { id: true, ficheId: true },
+  });
+  const subscriptionByFiche = new Map(
+    subscriptions.map(subscription => [subscription.ficheId, subscription])
+  );
+
+  const fiches = await tx.fiche.findMany({
+    where: { id: { in: created.map(fiche => fiche.id) } },
+    include: ficheInclude,
+  });
+  const fullFicheById = new Map(fiches.map(fiche => [fiche.id, fiche]));
+  return items.map(item => {
+    const ficheId = ficheIdBySlug.get(item.slug);
+    if (ficheId === undefined) throw new Error("Fiche créée sans identifiant");
+    const fiche = fullFicheById.get(ficheId);
+    const subscription = subscriptionByFiche.get(ficheId);
+    if (!fiche || !subscription)
+      throw new Error("Fiche créée sans abonnement actif");
+    return {
+      fiche: toFicheDto(fiche, {
+        ...subscription,
+        ficheId,
+        planId: plan.id,
+        status: "ACTIVE",
+        startsAt: now,
+        endsAt,
+        canceledAt: null,
+        amountFcfa: item.amountFcfa,
+        paymentRef: item.paymentRef,
+        createdAt: now,
+        plan,
+      }),
+      ficheId,
+      subscriptionId: subscription.id,
+      amountFcfa: item.amountFcfa,
+      paymentRef: item.paymentRef,
+    };
+  });
+}
 
 // Un client ne voit que ses fiches. Pour les autres : « introuvable » (on ne révèle pas l'existence).
 function assertAccess(user: AuthUser, fiche: { userId: number | null }) {
   if (!isAdmin(user) && fiche.userId !== user.id)
     throw notFound("Fiche introuvable");
-}
-
-// Les URL de l'API ne sont jamais persistées : seule la référence relative /api/media/... est stockée.
-function normalizeMediaUrl(value: string | undefined) {
-  if (!value) return value;
-  const apiOrigin = env.SERVER.replace(/\/api\/?$/, "").replace(/\/$/, "");
-  const prefix = `${apiOrigin}/api/media/`;
-  return value.startsWith(prefix) ? value.slice(apiOrigin.length) : value;
-}
-
-function normalizeMediaReferences(input: UpdateFicheInput): UpdateFicheInput {
-  const d = input.data;
-  return {
-    ...input,
-    photo: normalizeMediaUrl(input.photo),
-    logo: normalizeMediaUrl(input.logo),
-    ...(d ? {
-      data: {
-        ...d,
-        galerie: d.galerie?.map(m => ({ ...m, url: normalizeMediaUrl(m.url)! })),
-        sections: d.sections?.map(section => ({
-          ...section,
-          articles: section.articles.map(article => ({
-            ...article,
-            photo: normalizeMediaUrl(article.photo),
-          })),
-        })),
-        menu: d.menu ? {
-          ...d.menu,
-          sections: d.menu.sections.map(section => ({
-            ...section,
-            plats: section.plats.map(plat => ({
-              ...plat,
-              image: normalizeMediaUrl(plat.image),
-              video: normalizeMediaUrl(plat.video),
-              videoWebm: normalizeMediaUrl(plat.videoWebm),
-            })),
-          })),
-        } : undefined,
-        biens: d.biens?.map(bien => ({
-          ...bien,
-          photos: bien.photos.map(photo => normalizeMediaUrl(photo)!),
-        })),
-        entete: d.entete ? {
-          ...d.entete,
-          couverture: normalizeMediaUrl(d.entete.couverture),
-        } : undefined,
-      },
-    } : {}),
-  };
 }
 
 export const FicheService = {
@@ -100,59 +268,61 @@ export const FicheService = {
     const subs = await effectiveByFiche(fiches.map(f => f.id));
     return fiches.map(f => toFicheDto(f, subs.get(f.id) ?? null));
   },
-  createFiche: async (user: AuthUser, input: CreateFicheInput) => {
-    if (!isAdmin(user)) {
-      const count = await prisma.fiche.count({ where: { userId: user.id } });
-      if (count >= env.MAX_FICHES_PER_USER)
-        throw forbidden(
-          "LIMITE_FICHES",
-          `Tu ne peux pas créer plus de ${env.MAX_FICHES_PER_USER} fiches`
-        );
-    }
 
-    const slug = await uniqueSlug(
-      slugify(`${input.prenom} ${input.nom ?? ""}`)
-    );
-    const essentielle = await prisma.plan.findUnique({
-      where: { type: "ESSENTIELLE" },
-    });
-    if (!essentielle)
-      throw new HttpError(
-        500,
-        "SEED_MANQUANT",
-        "Les formules ne sont pas initialisées (npm run prisma:seed)"
-      );
-
-    const fiche = await prisma.fiche.create({
-      data: {
-        slug,
-        userId: user.id,
-        prenom: input.prenom,
-        nom: input.nom ?? "",
-        fonction: input.fonction,
-        entreprise: input.entreprise,
-        telephone: input.telephone,
-        whatsapp: input.whatsapp,
-        secteur: input.secteur ? up<Secteur>(input.secteur) : undefined,
-        enLigneSeule: true, // badge « Créée gratuitement avec Support Connecté »
-        subscriptions: {
-          create: {
-            planId: essentielle.id,
-            status: "ACTIVE",
-            endsAt: null,
-            amountFcfa: 0,
-          },
-        },
-      },
-      include: ficheInclude,
-    });
-    logger.info("Fiche created", { ficheId: fiche.id, userId: user.id });
-    return dtoFor(fiche);
+  ficheCount: async (user: AuthUser): Promise<boolean> => {
+    const usage = await ficheCreationUsage(user.id);
+    return usage.remainingFreeSlots === 0;
   },
 
+  creationStatus: async (user: AuthUser) => {
+    const usage = await ficheCreationUsage(user.id);
+    return {
+      totalFiches: usage.fiches,
+      fichesReservees: usage.reserved,
+      freeSlots: usage.remainingFreeSlots,
+    };
+  },
 
+  createFiche: async (user: AuthUser, input: CreateFicheInput) => {
+    const fiche = await prisma.$transaction(
+      async tx => {
+        if (!isAdmin(user)) {
+          const usage = await ficheCreationUsage(user.id, tx);
+          if (usage.remainingFreeSlots === 0) {
+            throw forbidden(
+              "LIMITE_FICHES",
+              "Les fiches gratuites sont épuisées. Choisis un emplacement ou une formule payante."
+            );
+          }
+        }
 
-  
+        const essentielle = await tx.plan.findUnique({
+          where: { type: "ESSENTIELLE" },
+          include: { limits: true },
+        });
+        if (!essentielle)
+          throw new HttpError(
+            500,
+            "SEED_MANQUANT",
+            "Les formules ne sont pas initialisées (npm run prisma:seed)"
+          );
+
+        return createPurchasedFiche(
+          tx,
+          user.id,
+          essentielle,
+          input,
+          0,
+          null,
+          null
+        );
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+    );
+    logger.info("Fiche created", { ficheId: fiche.ficheId, userId: user.id });
+    return fiche.fiche;
+  },
+
   getFiche: async (user: AuthUser, id: number) => {
     const fiche = await loadFull(id);
     if (!fiche) throw notFound("Fiche introuvable");
@@ -175,7 +345,40 @@ export const FicheService = {
         "FICHE_INDISPONIBLE",
         "Cette fiche est momentanément indisponible"
       );
+    if (fiche.statut === "BROUILLON") throw notFound();
     return dtoFor(fiche);
+  },
+
+  publishFiche: async (user: AuthUser, id: number) => {
+    const fiche = await prisma.fiche.findUnique({ where: { id } });
+    if (!fiche) throw notFound("Fiche introuvable");
+    assertAccess(user, fiche);
+    if (fiche.statut !== "BROUILLON")
+      throw conflict(
+        "FICHE_NON_BROUILLON",
+        "Seule une fiche en brouillon peut être publiée."
+      );
+
+    const subscription = await getEffectiveSubscription(id);
+    if (!subscription?.plan.limits)
+      throw forbidden(
+        "ABONNEMENT_EXPIRE",
+        "L'abonnement de cette fiche a expiré : elle ne peut pas être publiée."
+      );
+
+    const published = await prisma.fiche.updateMany({
+      where: { id, statut: "BROUILLON" },
+      data: { statut: "ACTIVE", updatedAt: new Date() },
+    });
+    if (published.count !== 1)
+      throw conflict(
+        "FICHE_NON_BROUILLON",
+        "La fiche a changé d’état. Rechargez-la avant de la publier."
+      );
+
+    const updated = await loadFull(id);
+    if (!updated) throw notFound("Fiche introuvable");
+    return toFicheDto(updated, subscription);
   },
 
   // ───────── Mise à jour (cœur de la sécurité) ─────────
@@ -209,10 +412,15 @@ export const FicheService = {
         "L'abonnement de cette fiche a expiré : la modification est bloquée"
       );
 
-    const input = enforcePlanLimits(sub.plan.limits, normalizeMediaReferences(rawInput)); // 422 si dépassement
+    const input = enforcePlanLimits(
+      sub.plan.limits,
+      normalizeMediaReferences(rawInput)
+    ); // 422 si dépassement
     const previousSnapshot = await loadFull(id);
     const d = input.data;
-    const baseVersion = rawInput.baseUpdatedAt ? new Date(rawInput.baseUpdatedAt) : null;
+    const baseVersion = rawInput.baseUpdatedAt
+      ? new Date(rawInput.baseUpdatedAt)
+      : null;
 
     await prisma.$transaction(
       async tx => {
@@ -398,7 +606,9 @@ export const FicheService = {
     if (previousSnapshot && updated) {
       const previousKeys = collectStoredMediaKeys(previousSnapshot, id);
       const currentKeys = collectStoredMediaKeys(updated, id);
-      const removedKeys = [...previousKeys].filter(key => !currentKeys.has(key));
+      const removedKeys = [...previousKeys].filter(
+        key => !currentKeys.has(key)
+      );
       for (const key of removedKeys) {
         try {
           await MediaService.deleteStoredMedia(id, key);
