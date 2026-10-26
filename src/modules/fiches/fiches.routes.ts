@@ -4,16 +4,21 @@ import { validate } from "../../middlewares/validate";
 import { MediaController } from "../media/media.controller";
 import { mediaUploadQuery } from "../media/media.validation";
 import { FicheController } from "./fiche.controller";
+import { clientCarteRequestSchema } from "../production/production.schemas";
 import {
   createFicheSchema,
+  createRappelSchema,
   idParam,
+  passageStatsQuerySchema,
+  rappelListQuerySchema,
+  recordPassageSchema,
   slugParam,
   updateFicheSchema,
-  recordPassageSchema,
-  passageStatsQuerySchema,
-  createRappelSchema,
-  rappelListQuerySchema,
 } from "./fiches.schemas";
+import {
+  fichePurchaseId,
+  fichePurchaseInput,
+} from "./fiche-purchases.schemas";
 
 export const fichesRouter = Router();
 
@@ -50,6 +55,30 @@ fichesRouter.get(
   FicheController.listAllRappels
 );
 
+fichesRouter.get(
+  "/total-fiche",
+  // validate({ query: rappelListQuerySchema }),
+  FicheController.totalFiches
+);
+
+fichesRouter.post(
+  "/purchases/quote",
+  validate({ body: fichePurchaseInput }),
+  FicheController.quotePurchase
+);
+
+fichesRouter.post(
+  "/purchases",
+  validate({ body: fichePurchaseInput }),
+  FicheController.createPurchase
+);
+
+fichesRouter.post(
+  "/purchases/:purchaseId/simulate-confirmation",
+  validate({ params: fichePurchaseId }),
+  FicheController.confirmPurchase
+);
+
 fichesRouter.post(
   "/",
   validate({ body: createFicheSchema }),
@@ -77,9 +106,27 @@ fichesRouter.get(
 );
 
 fichesRouter.get(
+  "/:id/card-request",
+  validate({ params: idParam }),
+  FicheController.getCardRequest
+);
+
+fichesRouter.post(
+  "/:id/card-request",
+  validate({ params: idParam, body: clientCarteRequestSchema }),
+  FicheController.createCardRequest
+);
+
+fichesRouter.get(
   "/:id",
   validate({ params: idParam }),
   FicheController.getFiche
+);
+
+fichesRouter.post(
+  "/:id/publish",
+  validate({ params: idParam }),
+  FicheController.publishFiche
 );
 
 fichesRouter.patch(

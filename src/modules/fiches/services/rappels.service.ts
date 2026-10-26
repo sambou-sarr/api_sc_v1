@@ -1,6 +1,6 @@
-import { prisma } from "../../database/prisma/prisma-client";
-import { badRequest, notFound } from "../../lib/httpError";
-import type { AuthUser } from "../../types/user";
+import { prisma } from "../../../database/prisma/prisma-client";
+import { badRequest, notFound } from "../../../lib/httpError";
+import type { AuthUser } from "../../../types/user";
 
 const normalizePhone = (value: string) => value.replace(/[\s().-]/g, "");
 
@@ -20,7 +20,10 @@ export const RappelService = {
       throw badRequest("NOM_INVALIDE", "Veuillez saisir un nom valide.");
     }
     if (!/^\+?[0-9]{7,15}$/.test(telephone)) {
-      throw badRequest("TELEPHONE_INVALIDE", "Veuillez saisir un numéro de téléphone valide.");
+      throw badRequest(
+        "TELEPHONE_INVALIDE",
+        "Veuillez saisir un numéro de téléphone valide."
+      );
     }
 
     const demande = await prisma.demandeRappel.create({

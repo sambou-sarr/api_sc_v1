@@ -29,11 +29,13 @@ export type AggregatePrintJob = {
 export type PrintJobAvgAggregateOutputType = {
   id: number | null
   ficheId: number | null
+  amountFcfa: number | null
 }
 
 export type PrintJobSumAggregateOutputType = {
   id: number | null
   ficheId: number | null
+  amountFcfa: number | null
 }
 
 export type PrintJobMinAggregateOutputType = {
@@ -51,6 +53,10 @@ export type PrintJobMinAggregateOutputType = {
   clientTelephone: string | null
   clientEmail: string | null
   clientFonction: string | null
+  deliveryAddress: string | null
+  deliveryTelephone: string | null
+  clientNotes: string | null
+  amountFcfa: number | null
   printedAt: Date | null
   testedAt: Date | null
   notes: string | null
@@ -77,6 +83,10 @@ export type PrintJobMaxAggregateOutputType = {
   clientTelephone: string | null
   clientEmail: string | null
   clientFonction: string | null
+  deliveryAddress: string | null
+  deliveryTelephone: string | null
+  clientNotes: string | null
+  amountFcfa: number | null
   printedAt: Date | null
   testedAt: Date | null
   notes: string | null
@@ -104,6 +114,10 @@ export type PrintJobCountAggregateOutputType = {
   clientTelephone: number
   clientEmail: number
   clientFonction: number
+  deliveryAddress: number
+  deliveryTelephone: number
+  clientNotes: number
+  amountFcfa: number
   printedAt: number
   testedAt: number
   notes: number
@@ -120,11 +134,13 @@ export type PrintJobCountAggregateOutputType = {
 export type PrintJobAvgAggregateInputType = {
   id?: true
   ficheId?: true
+  amountFcfa?: true
 }
 
 export type PrintJobSumAggregateInputType = {
   id?: true
   ficheId?: true
+  amountFcfa?: true
 }
 
 export type PrintJobMinAggregateInputType = {
@@ -142,6 +158,10 @@ export type PrintJobMinAggregateInputType = {
   clientTelephone?: true
   clientEmail?: true
   clientFonction?: true
+  deliveryAddress?: true
+  deliveryTelephone?: true
+  clientNotes?: true
+  amountFcfa?: true
   printedAt?: true
   testedAt?: true
   notes?: true
@@ -168,6 +188,10 @@ export type PrintJobMaxAggregateInputType = {
   clientTelephone?: true
   clientEmail?: true
   clientFonction?: true
+  deliveryAddress?: true
+  deliveryTelephone?: true
+  clientNotes?: true
+  amountFcfa?: true
   printedAt?: true
   testedAt?: true
   notes?: true
@@ -195,6 +219,10 @@ export type PrintJobCountAggregateInputType = {
   clientTelephone?: true
   clientEmail?: true
   clientFonction?: true
+  deliveryAddress?: true
+  deliveryTelephone?: true
+  clientNotes?: true
+  amountFcfa?: true
   printedAt?: true
   testedAt?: true
   notes?: true
@@ -309,6 +337,10 @@ export type PrintJobGroupByOutputType = {
   clientTelephone: string | null
   clientEmail: string | null
   clientFonction: string | null
+  deliveryAddress: string | null
+  deliveryTelephone: string | null
+  clientNotes: string | null
+  amountFcfa: number | null
   printedAt: Date | null
   testedAt: Date | null
   notes: string | null
@@ -359,6 +391,10 @@ export type PrintJobWhereInput = {
   clientTelephone?: Prisma.StringNullableFilter<"PrintJob"> | string | null
   clientEmail?: Prisma.StringNullableFilter<"PrintJob"> | string | null
   clientFonction?: Prisma.StringNullableFilter<"PrintJob"> | string | null
+  deliveryAddress?: Prisma.StringNullableFilter<"PrintJob"> | string | null
+  deliveryTelephone?: Prisma.StringNullableFilter<"PrintJob"> | string | null
+  clientNotes?: Prisma.StringNullableFilter<"PrintJob"> | string | null
+  amountFcfa?: Prisma.IntNullableFilter<"PrintJob"> | number | null
   printedAt?: Prisma.DateTimeNullableFilter<"PrintJob"> | Date | string | null
   testedAt?: Prisma.DateTimeNullableFilter<"PrintJob"> | Date | string | null
   notes?: Prisma.StringNullableFilter<"PrintJob"> | string | null
@@ -387,6 +423,10 @@ export type PrintJobOrderByWithRelationInput = {
   clientTelephone?: Prisma.SortOrderInput | Prisma.SortOrder
   clientEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   clientFonction?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryAddress?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryTelephone?: Prisma.SortOrderInput | Prisma.SortOrder
+  clientNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  amountFcfa?: Prisma.SortOrderInput | Prisma.SortOrder
   printedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   testedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -418,6 +458,10 @@ export type PrintJobWhereUniqueInput = Prisma.AtLeast<{
   clientTelephone?: Prisma.StringNullableFilter<"PrintJob"> | string | null
   clientEmail?: Prisma.StringNullableFilter<"PrintJob"> | string | null
   clientFonction?: Prisma.StringNullableFilter<"PrintJob"> | string | null
+  deliveryAddress?: Prisma.StringNullableFilter<"PrintJob"> | string | null
+  deliveryTelephone?: Prisma.StringNullableFilter<"PrintJob"> | string | null
+  clientNotes?: Prisma.StringNullableFilter<"PrintJob"> | string | null
+  amountFcfa?: Prisma.IntNullableFilter<"PrintJob"> | number | null
   printedAt?: Prisma.DateTimeNullableFilter<"PrintJob"> | Date | string | null
   testedAt?: Prisma.DateTimeNullableFilter<"PrintJob"> | Date | string | null
   notes?: Prisma.StringNullableFilter<"PrintJob"> | string | null
@@ -446,6 +490,10 @@ export type PrintJobOrderByWithAggregationInput = {
   clientTelephone?: Prisma.SortOrderInput | Prisma.SortOrder
   clientEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   clientFonction?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryAddress?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryTelephone?: Prisma.SortOrderInput | Prisma.SortOrder
+  clientNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  amountFcfa?: Prisma.SortOrderInput | Prisma.SortOrder
   printedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   testedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -481,6 +529,10 @@ export type PrintJobScalarWhereWithAggregatesInput = {
   clientTelephone?: Prisma.StringNullableWithAggregatesFilter<"PrintJob"> | string | null
   clientEmail?: Prisma.StringNullableWithAggregatesFilter<"PrintJob"> | string | null
   clientFonction?: Prisma.StringNullableWithAggregatesFilter<"PrintJob"> | string | null
+  deliveryAddress?: Prisma.StringNullableWithAggregatesFilter<"PrintJob"> | string | null
+  deliveryTelephone?: Prisma.StringNullableWithAggregatesFilter<"PrintJob"> | string | null
+  clientNotes?: Prisma.StringNullableWithAggregatesFilter<"PrintJob"> | string | null
+  amountFcfa?: Prisma.IntNullableWithAggregatesFilter<"PrintJob"> | number | null
   printedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PrintJob"> | Date | string | null
   testedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PrintJob"> | Date | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"PrintJob"> | string | null
@@ -506,6 +558,10 @@ export type PrintJobCreateInput = {
   clientTelephone?: string | null
   clientEmail?: string | null
   clientFonction?: string | null
+  deliveryAddress?: string | null
+  deliveryTelephone?: string | null
+  clientNotes?: string | null
+  amountFcfa?: number | null
   printedAt?: Date | string | null
   testedAt?: Date | string | null
   notes?: string | null
@@ -534,6 +590,10 @@ export type PrintJobUncheckedCreateInput = {
   clientTelephone?: string | null
   clientEmail?: string | null
   clientFonction?: string | null
+  deliveryAddress?: string | null
+  deliveryTelephone?: string | null
+  clientNotes?: string | null
+  amountFcfa?: number | null
   printedAt?: Date | string | null
   testedAt?: Date | string | null
   notes?: string | null
@@ -559,6 +619,10 @@ export type PrintJobUpdateInput = {
   clientTelephone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientFonction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryTelephone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amountFcfa?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   printedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   testedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -587,6 +651,10 @@ export type PrintJobUncheckedUpdateInput = {
   clientTelephone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientFonction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryTelephone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amountFcfa?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   printedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   testedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -614,6 +682,10 @@ export type PrintJobCreateManyInput = {
   clientTelephone?: string | null
   clientEmail?: string | null
   clientFonction?: string | null
+  deliveryAddress?: string | null
+  deliveryTelephone?: string | null
+  clientNotes?: string | null
+  amountFcfa?: number | null
   printedAt?: Date | string | null
   testedAt?: Date | string | null
   notes?: string | null
@@ -639,6 +711,10 @@ export type PrintJobUpdateManyMutationInput = {
   clientTelephone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientFonction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryTelephone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amountFcfa?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   printedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   testedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -666,6 +742,10 @@ export type PrintJobUncheckedUpdateManyInput = {
   clientTelephone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientFonction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryTelephone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amountFcfa?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   printedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   testedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -703,6 +783,10 @@ export type PrintJobCountOrderByAggregateInput = {
   clientTelephone?: Prisma.SortOrder
   clientEmail?: Prisma.SortOrder
   clientFonction?: Prisma.SortOrder
+  deliveryAddress?: Prisma.SortOrder
+  deliveryTelephone?: Prisma.SortOrder
+  clientNotes?: Prisma.SortOrder
+  amountFcfa?: Prisma.SortOrder
   printedAt?: Prisma.SortOrder
   testedAt?: Prisma.SortOrder
   notes?: Prisma.SortOrder
@@ -717,6 +801,7 @@ export type PrintJobCountOrderByAggregateInput = {
 export type PrintJobAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   ficheId?: Prisma.SortOrder
+  amountFcfa?: Prisma.SortOrder
 }
 
 export type PrintJobMaxOrderByAggregateInput = {
@@ -734,6 +819,10 @@ export type PrintJobMaxOrderByAggregateInput = {
   clientTelephone?: Prisma.SortOrder
   clientEmail?: Prisma.SortOrder
   clientFonction?: Prisma.SortOrder
+  deliveryAddress?: Prisma.SortOrder
+  deliveryTelephone?: Prisma.SortOrder
+  clientNotes?: Prisma.SortOrder
+  amountFcfa?: Prisma.SortOrder
   printedAt?: Prisma.SortOrder
   testedAt?: Prisma.SortOrder
   notes?: Prisma.SortOrder
@@ -760,6 +849,10 @@ export type PrintJobMinOrderByAggregateInput = {
   clientTelephone?: Prisma.SortOrder
   clientEmail?: Prisma.SortOrder
   clientFonction?: Prisma.SortOrder
+  deliveryAddress?: Prisma.SortOrder
+  deliveryTelephone?: Prisma.SortOrder
+  clientNotes?: Prisma.SortOrder
+  amountFcfa?: Prisma.SortOrder
   printedAt?: Prisma.SortOrder
   testedAt?: Prisma.SortOrder
   notes?: Prisma.SortOrder
@@ -774,6 +867,7 @@ export type PrintJobMinOrderByAggregateInput = {
 export type PrintJobSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   ficheId?: Prisma.SortOrder
+  amountFcfa?: Prisma.SortOrder
 }
 
 export type PrintJobCreateNestedManyWithoutFicheInput = {
@@ -840,6 +934,10 @@ export type PrintJobCreateWithoutFicheInput = {
   clientTelephone?: string | null
   clientEmail?: string | null
   clientFonction?: string | null
+  deliveryAddress?: string | null
+  deliveryTelephone?: string | null
+  clientNotes?: string | null
+  amountFcfa?: number | null
   printedAt?: Date | string | null
   testedAt?: Date | string | null
   notes?: string | null
@@ -866,6 +964,10 @@ export type PrintJobUncheckedCreateWithoutFicheInput = {
   clientTelephone?: string | null
   clientEmail?: string | null
   clientFonction?: string | null
+  deliveryAddress?: string | null
+  deliveryTelephone?: string | null
+  clientNotes?: string | null
+  amountFcfa?: number | null
   printedAt?: Date | string | null
   testedAt?: Date | string | null
   notes?: string | null
@@ -922,6 +1024,10 @@ export type PrintJobScalarWhereInput = {
   clientTelephone?: Prisma.StringNullableFilter<"PrintJob"> | string | null
   clientEmail?: Prisma.StringNullableFilter<"PrintJob"> | string | null
   clientFonction?: Prisma.StringNullableFilter<"PrintJob"> | string | null
+  deliveryAddress?: Prisma.StringNullableFilter<"PrintJob"> | string | null
+  deliveryTelephone?: Prisma.StringNullableFilter<"PrintJob"> | string | null
+  clientNotes?: Prisma.StringNullableFilter<"PrintJob"> | string | null
+  amountFcfa?: Prisma.IntNullableFilter<"PrintJob"> | number | null
   printedAt?: Prisma.DateTimeNullableFilter<"PrintJob"> | Date | string | null
   testedAt?: Prisma.DateTimeNullableFilter<"PrintJob"> | Date | string | null
   notes?: Prisma.StringNullableFilter<"PrintJob"> | string | null
@@ -948,6 +1054,10 @@ export type PrintJobCreateManyFicheInput = {
   clientTelephone?: string | null
   clientEmail?: string | null
   clientFonction?: string | null
+  deliveryAddress?: string | null
+  deliveryTelephone?: string | null
+  clientNotes?: string | null
+  amountFcfa?: number | null
   printedAt?: Date | string | null
   testedAt?: Date | string | null
   notes?: string | null
@@ -973,6 +1083,10 @@ export type PrintJobUpdateWithoutFicheInput = {
   clientTelephone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientFonction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryTelephone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amountFcfa?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   printedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   testedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -999,6 +1113,10 @@ export type PrintJobUncheckedUpdateWithoutFicheInput = {
   clientTelephone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientFonction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryTelephone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amountFcfa?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   printedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   testedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1025,6 +1143,10 @@ export type PrintJobUncheckedUpdateManyWithoutFicheInput = {
   clientTelephone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clientFonction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryTelephone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amountFcfa?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   printedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   testedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1054,6 +1176,10 @@ export type PrintJobSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   clientTelephone?: boolean
   clientEmail?: boolean
   clientFonction?: boolean
+  deliveryAddress?: boolean
+  deliveryTelephone?: boolean
+  clientNotes?: boolean
+  amountFcfa?: boolean
   printedAt?: boolean
   testedAt?: boolean
   notes?: boolean
@@ -1082,6 +1208,10 @@ export type PrintJobSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   clientTelephone?: boolean
   clientEmail?: boolean
   clientFonction?: boolean
+  deliveryAddress?: boolean
+  deliveryTelephone?: boolean
+  clientNotes?: boolean
+  amountFcfa?: boolean
   printedAt?: boolean
   testedAt?: boolean
   notes?: boolean
@@ -1110,6 +1240,10 @@ export type PrintJobSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   clientTelephone?: boolean
   clientEmail?: boolean
   clientFonction?: boolean
+  deliveryAddress?: boolean
+  deliveryTelephone?: boolean
+  clientNotes?: boolean
+  amountFcfa?: boolean
   printedAt?: boolean
   testedAt?: boolean
   notes?: boolean
@@ -1138,6 +1272,10 @@ export type PrintJobSelectScalar = {
   clientTelephone?: boolean
   clientEmail?: boolean
   clientFonction?: boolean
+  deliveryAddress?: boolean
+  deliveryTelephone?: boolean
+  clientNotes?: boolean
+  amountFcfa?: boolean
   printedAt?: boolean
   testedAt?: boolean
   notes?: boolean
@@ -1149,7 +1287,7 @@ export type PrintJobSelectScalar = {
   deliveredAt?: boolean
 }
 
-export type PrintJobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ficheId" | "tier" | "formule" | "slug" | "nfcUrl" | "design" | "rectoPath" | "versoPath" | "statut" | "clientNom" | "clientEntreprise" | "clientTelephone" | "clientEmail" | "clientFonction" | "printedAt" | "testedAt" | "notes" | "createdAt" | "updatedAt" | "rectoUrl" | "versoUrl" | "encodedAt" | "deliveredAt", ExtArgs["result"]["printJob"]>
+export type PrintJobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ficheId" | "tier" | "formule" | "slug" | "nfcUrl" | "design" | "rectoPath" | "versoPath" | "statut" | "clientNom" | "clientEntreprise" | "clientTelephone" | "clientEmail" | "clientFonction" | "deliveryAddress" | "deliveryTelephone" | "clientNotes" | "amountFcfa" | "printedAt" | "testedAt" | "notes" | "createdAt" | "updatedAt" | "rectoUrl" | "versoUrl" | "encodedAt" | "deliveredAt", ExtArgs["result"]["printJob"]>
 export type PrintJobInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   fiche?: boolean | Prisma.PrintJob$ficheArgs<ExtArgs>
 }
@@ -1181,6 +1319,10 @@ export type $PrintJobPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     clientTelephone: string | null
     clientEmail: string | null
     clientFonction: string | null
+    deliveryAddress: string | null
+    deliveryTelephone: string | null
+    clientNotes: string | null
+    amountFcfa: number | null
     printedAt: Date | null
     testedAt: Date | null
     notes: string | null
@@ -1629,6 +1771,10 @@ export interface PrintJobFieldRefs {
   readonly clientTelephone: Prisma.FieldRef<"PrintJob", 'String'>
   readonly clientEmail: Prisma.FieldRef<"PrintJob", 'String'>
   readonly clientFonction: Prisma.FieldRef<"PrintJob", 'String'>
+  readonly deliveryAddress: Prisma.FieldRef<"PrintJob", 'String'>
+  readonly deliveryTelephone: Prisma.FieldRef<"PrintJob", 'String'>
+  readonly clientNotes: Prisma.FieldRef<"PrintJob", 'String'>
+  readonly amountFcfa: Prisma.FieldRef<"PrintJob", 'Int'>
   readonly printedAt: Prisma.FieldRef<"PrintJob", 'DateTime'>
   readonly testedAt: Prisma.FieldRef<"PrintJob", 'DateTime'>
   readonly notes: Prisma.FieldRef<"PrintJob", 'String'>

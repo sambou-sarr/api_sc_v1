@@ -5,6 +5,48 @@ export type Duree = { dureeMois: number; remisePct: number };
 export type Palier = { quantiteMin: number; remisePct: number };
 export type Pack = { quantite: number; prixFcfa: number };
 
+export const DEFAULT_PLAN_DUREES: Record<"PRO" | "SIGNATURE", Duree[]> = {
+  PRO: [
+    { dureeMois: 1, remisePct: 0 },
+    { dureeMois: 3, remisePct: 10 },
+    { dureeMois: 12, remisePct: 20 },
+  ],
+  SIGNATURE: [
+    { dureeMois: 1, remisePct: 0 },
+    { dureeMois: 3, remisePct: 10 },
+    { dureeMois: 12, remisePct: 20 },
+  ],
+};
+
+export const DEFAULT_PLAN_REMISES: Record<"PRO" | "SIGNATURE", Palier[]> = {
+  PRO: [
+    { quantiteMin: 10, remisePct: 10 },
+    { quantiteMin: 50, remisePct: 20 },
+  ],
+  SIGNATURE: [
+    { quantiteMin: 10, remisePct: 10 },
+    { quantiteMin: 50, remisePct: 20 },
+  ],
+};
+
+export function dureesAvecValeursParDefaut(
+  formule: string,
+  configurees: Duree[],
+): Duree[] {
+  if (configurees.length > 0) return configurees;
+  if (formule !== "PRO" && formule !== "SIGNATURE") return configurees;
+  return DEFAULT_PLAN_DUREES[formule];
+}
+
+export function remisesAvecValeursParDefaut(
+  formule: string,
+  configurees: Palier[],
+): Palier[] {
+  if (configurees.length > 0) return configurees;
+  if (formule !== "PRO" && formule !== "SIGNATURE") return configurees;
+  return DEFAULT_PLAN_REMISES[formule];
+}
+
 // Remise liée à la durée d'engagement. undefined = durée non proposée.
 export const remiseDuree = (durees: Duree[], dureeMois: number) =>
   durees.find(d => d.dureeMois === dureeMois)?.remisePct;
