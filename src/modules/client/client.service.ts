@@ -34,6 +34,8 @@ export const ClientService = {
             ficheId: true,
             endsAt: true,
             status: true,
+            // Formule du dernier abonnement : permet de proposer le renouvellement de la même formule.
+            plan: { select: { type: true } },
           },
         })
       : [];

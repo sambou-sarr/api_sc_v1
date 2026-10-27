@@ -94,8 +94,16 @@ scripts/create-admin.ts
 | GET | `/client/parametres` | connecté | grille des formules, durées/remises et emplacements |
 | POST | `/client/parametres/commande/tarif` | connecté | calcule un tarif pour une commande ou un upgrade unitaire |
 | GET | `/subscription/kpi` | connecté | nombre de fiches, fiches actives, fiches payantes |
-| POST | `/subscription/upgrade` | client | demande de changement de formule `{ ficheId, plan: pro\|signature, dureeMois? }` → paiement `PENDING` au prix serveur (désactivé en production) |
+| POST | `/subscription/upgrade` | client | demande de changement de formule **ou renouvellement d'une fiche échue** `{ ficheId, plan: pro\|signature, dureeMois? }` → paiement `PENDING` au prix serveur (désactivé en production) |
 | POST | `/subscription/payments/:paymentId/simulate-confirmation` | client | confirme un paiement simulé et active la formule (désactivé en production) |
+
+> **Renouvellement d'une fiche arrivée à terme.** Il n'y a pas de route dédiée : une fiche sans abonnement valide
+> (échéance dépassée) est traitée comme Essentielle, donc `/subscription/upgrade` accepte toute formule payante, y
+> compris la même que celle qui vient de se terminer ; la confirmation crée alors un nouvel abonnement à partir de
+> « maintenant ». Tant qu'un abonnement est valide, seule une formule supérieure est acceptée
+> (`FORMULE_NON_SUPERIEURE`) : il n'y a pas de renouvellement anticipé. `GET /client/dashboard/fiches` renvoie
+> `latestSubscription.plan.type` pour proposer la formule précédente. Comportement figé par
+> `src/modules/subscriptions/subscriptions.renewal.test.ts`.
 
 Authentification : en-tête `Authorization: Bearer <token>`.
 Erreurs : toujours `{ "error": { "code", "message", "details?" } }`.
