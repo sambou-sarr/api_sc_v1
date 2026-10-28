@@ -7,7 +7,9 @@ export const publicMediaParams = z.object({
 });
 
 // `purpose=menu` : vidéo d'un plat du menu interactif, soumise à une durée maximale (plan_limits.maxMenuVideoSeconds).
-export const mediaUploadQuery = z.object({ purpose: z.enum(["menu"]).optional() });
+export const mediaUploadQuery = z.object({
+  purpose: z.enum(["menu"]).optional(),
+});
 export type MediaPurpose = z.infer<typeof mediaUploadQuery>["purpose"];
 
 /** Lit la durée (secondes) affichée par `ffprobe -show_entries format=duration`. */
@@ -17,9 +19,15 @@ export function parseProbeDuration(output: string): number | null {
 }
 
 /** Tolérance de 0,5 s, comme le contrôle fait côté navigateur. */
-export function assertMenuVideoDuration(seconds: number | null, maxSeconds: number) {
+export function assertMenuVideoDuration(
+  seconds: number | null,
+  maxSeconds: number = 60
+) {
   if (seconds === null) {
-    throw unprocessable("DUREE_VIDEO_INCONNUE", "Impossible de lire la durée de la vidéo");
+    throw unprocessable(
+      "DUREE_VIDEO_INCONNUE",
+      "Impossible de lire la durée de la vidéo"
+    );
   }
   if (seconds > maxSeconds + 0.5) {
     throw unprocessable(
@@ -39,7 +47,9 @@ export const MEDIA_FORMATS = {
 
 export type SupportedMediaMime = keyof typeof MEDIA_FORMATS;
 
-export function resolveMediaMime(value: string | undefined): SupportedMediaMime {
+export function resolveMediaMime(
+  value: string | undefined
+): SupportedMediaMime {
   const mime = (value ?? "").split(";")[0].trim().toLowerCase();
   if (!(mime in MEDIA_FORMATS)) {
     throw unprocessable(
@@ -57,14 +67,25 @@ export function mediaMaxBytes(kind: "image" | "video") {
 export function validateMediaSignature(body: Buffer, mime: SupportedMediaMime) {
   const valid =
     mime === "image/jpeg"
-      ? body.length >= 3 && body[0] === 0xff && body[1] === 0xd8 && body[2] === 0xff
+      ? body.length >= 3 &&
+        body[0] === 0xff &&
+        body[1] === 0xd8 &&
+        body[2] === 0xff
       : mime === "image/png"
-        ? body.length >= 8 && body.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))
+        ? body.length >= 8 &&
+          body
+            .subarray(0, 8)
+            .equals(
+              Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+            )
         : mime === "image/webp"
-          ? body.length >= 12 && body.toString("ascii", 0, 4) === "RIFF" && body.toString("ascii", 8, 12) === "WEBP"
+          ? body.length >= 12 &&
+            body.toString("ascii", 0, 4) === "RIFF" &&
+            body.toString("ascii", 8, 12) === "WEBP"
           : mime === "video/mp4"
             ? body.length >= 12 && body.toString("ascii", 4, 8) === "ftyp"
-            : body.length >= 4 && body.subarray(0, 4).equals(Buffer.from([0x1a, 0x45, 0xdf, 0xa3]));
+            : body.length >= 4 &&
+              body.subarray(0, 4).equals(Buffer.from([0x1a, 0x45, 0xdf, 0xa3]));
 
   if (!valid) {
     throw unprocessable(
@@ -74,10 +95,14 @@ export function validateMediaSignature(body: Buffer, mime: SupportedMediaMime) {
   }
 }
 
-export function collectStoredMediaKeys(value: unknown, ficheId: number): Set<string> {
+export function collectStoredMediaKeys(
+  value: unknown,
+  ficheId: number
+): Set<string> {
   const keys = new Set<string>();
   const seen = new Set<object>();
-  const pattern = /\/api\/media\/(\d+)\/([0-9a-f-]{36}\.(?:jpg|png|webp|mp4|webm))/gi;
+  const pattern =
+    /\/api\/media\/(\d+)\/([0-9a-f-]{36}\.(?:jpg|png|webp|mp4|webm))/gi;
 
   const visit = (current: unknown) => {
     if (typeof current === "string") {
@@ -99,4 +124,3 @@ export function collectStoredMediaKeys(value: unknown, ficheId: number): Set<str
   visit(value);
   return keys;
 }
-
