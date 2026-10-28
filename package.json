@@ -13,8 +13,8 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx ./src/scripts/seed.ts",
+    "create-admin": "tsx ./src/scripts/create-admin.ts",
     "db:studio": "prisma studio",
-    "create-admin": "tsx scripts/create-admin.ts",
     "test": "vitest run"
   },
   "prisma": {
