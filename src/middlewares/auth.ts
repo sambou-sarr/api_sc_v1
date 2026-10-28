@@ -67,7 +67,6 @@ export const requireRole =
     next();
   };
 
-
 // Authentification facultative pour les endpoints publics qui doivent distinguer
 // un visiteur anonyme du propriétaire connecté. Un jeton absent ou invalide reste anonyme.
 export async function optionalAuth(
@@ -84,6 +83,7 @@ export async function optionalAuth(
       if (!Number.isSafeInteger(userId) || userId <= 0) return next();
 
       const user = await prisma.user.findUnique({ where: { id: userId } });
+
       if (user) {
         req.user = {
           id: user.id,

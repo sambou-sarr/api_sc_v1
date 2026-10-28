@@ -3,8 +3,9 @@ import { optionalAuth, requireAuth } from "../../middlewares/auth";
 import { validate } from "../../middlewares/validate";
 import { MediaController } from "../media/media.controller";
 import { mediaUploadQuery } from "../media/media.validation";
-import { FicheController } from "./fiche.controller";
 import { clientCarteRequestSchema } from "../production/production.schemas";
+import { fichePurchaseId, fichePurchaseInput } from "./fiche-purchases.schemas";
+import { FicheController } from "./fiche.controller";
 import {
   createFicheSchema,
   createRappelSchema,
@@ -15,10 +16,6 @@ import {
   slugParam,
   updateFicheSchema,
 } from "./fiches.schemas";
-import {
-  fichePurchaseId,
-  fichePurchaseInput,
-} from "./fiche-purchases.schemas";
 
 export const fichesRouter = Router();
 
@@ -133,4 +130,10 @@ fichesRouter.patch(
   "/:id",
   validate({ params: idParam, body: updateFicheSchema }),
   FicheController.updateFiche
+);
+
+fichesRouter.delete(
+  "/:id",
+  validate({ params: idParam }),
+  FicheController.deleteFiche
 );

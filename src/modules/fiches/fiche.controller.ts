@@ -1,12 +1,12 @@
 import { asyncHandler } from "../../lib/asyncHandler";
-import { FicheService } from "./services/fiches.service";
+import { ProductionService } from "../production/production.service";
 import { FichePurchasesService } from "./services/fiche-purchases.service";
+import { FicheService } from "./services/fiches.service";
 import {
   PassageService,
   type PassageSource,
 } from "./services/passages.service";
 import { RappelService } from "./services/rappels.service";
-import { ProductionService } from "../production/production.service";
 
 export const FicheController = {
   createPublicRappel: asyncHandler(async (req, res) => {
@@ -41,16 +41,16 @@ export const FicheController = {
 
   createPurchase: asyncHandler(async (req, res) => {
     res.status(201).json({
-      ...await FichePurchasesService.create(req.user!, req.body),
+      ...(await FichePurchasesService.create(req.user!, req.body)),
     });
   }),
 
   confirmPurchase: asyncHandler(async (req, res) => {
     res.json({
-      ...await FichePurchasesService.confirmSimulated(
+      ...(await FichePurchasesService.confirmSimulated(
         req.user!,
         Number(req.params.purchaseId)
-      ),
+      )),
     });
   }),
 
@@ -67,19 +67,21 @@ export const FicheController = {
     res.json(
       await ProductionService.getClientCardRequest(
         req.user!,
-        Number(req.params.id),
-      ),
+        Number(req.params.id)
+      )
     );
   }),
 
   createCardRequest: asyncHandler(async (req, res) => {
-    res.status(201).json(
-      await ProductionService.requestClientCarte(
-        req.user!,
-        Number(req.params.id),
-        req.body,
-      ),
-    );
+    res
+      .status(201)
+      .json(
+        await ProductionService.requestClientCarte(
+          req.user!,
+          Number(req.params.id),
+          req.body
+        )
+      );
   }),
 
   recordPublicPassage: asyncHandler(async (req, res) => {
@@ -132,10 +134,7 @@ export const FicheController = {
 
   publishFiche: asyncHandler(async (req, res) => {
     res.json({
-      fiche: await FicheService.publishFiche(
-        req.user!,
-        Number(req.params.id)
-      ),
+      fiche: await FicheService.publishFiche(req.user!, Number(req.params.id)),
     });
   }),
 
@@ -146,6 +145,12 @@ export const FicheController = {
         Number(req.params.id),
         req.body
       ),
+    });
+  }),
+
+  deleteFiche: asyncHandler(async (req, res) => {
+    res.json({
+      fiche: await FicheService.deleteFiche(req.user!, Number(req.params.id)),
     });
   }),
 };

@@ -1244,10 +1244,12 @@ export type FicheCreateNestedOneWithoutSubscriptionsInput = {
   connect?: Prisma.FicheWhereUniqueInput
 }
 
-export type FicheUpdateOneRequiredWithoutSubscriptionsNestedInput = {
+export type FicheUpdateOneWithoutSubscriptionsNestedInput = {
   create?: Prisma.XOR<Prisma.FicheCreateWithoutSubscriptionsInput, Prisma.FicheUncheckedCreateWithoutSubscriptionsInput>
   connectOrCreate?: Prisma.FicheCreateOrConnectWithoutSubscriptionsInput
   upsert?: Prisma.FicheUpsertWithoutSubscriptionsInput
+  disconnect?: Prisma.FicheWhereInput | boolean
+  delete?: Prisma.FicheWhereInput | boolean
   connect?: Prisma.FicheWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.FicheUpdateToOneWithWhereWithoutSubscriptionsInput, Prisma.FicheUpdateWithoutSubscriptionsInput>, Prisma.FicheUncheckedUpdateWithoutSubscriptionsInput>
 }
@@ -1258,10 +1260,12 @@ export type FicheCreateNestedOneWithoutPaymentsInput = {
   connect?: Prisma.FicheWhereUniqueInput
 }
 
-export type FicheUpdateOneRequiredWithoutPaymentsNestedInput = {
+export type FicheUpdateOneWithoutPaymentsNestedInput = {
   create?: Prisma.XOR<Prisma.FicheCreateWithoutPaymentsInput, Prisma.FicheUncheckedCreateWithoutPaymentsInput>
   connectOrCreate?: Prisma.FicheCreateOrConnectWithoutPaymentsInput
   upsert?: Prisma.FicheUpsertWithoutPaymentsInput
+  disconnect?: Prisma.FicheWhereInput | boolean
+  delete?: Prisma.FicheWhereInput | boolean
   connect?: Prisma.FicheWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.FicheUpdateToOneWithWhereWithoutPaymentsInput, Prisma.FicheUpdateWithoutPaymentsInput>, Prisma.FicheUncheckedUpdateWithoutPaymentsInput>
 }

@@ -294,7 +294,7 @@ model PlanLimit {
 
 model Subscription {
   id         Int                @id @default(autoincrement())
-  ficheId    Int
+  ficheId    Int?
   planId     Int
   status     SubscriptionStatus @default(ACTIVE)
   startsAt   DateTime           @default(now())
@@ -303,8 +303,12 @@ model Subscription {
   amountFcfa Int?
   paymentRef String?
   createdAt  DateTime           @default(now())
-  fiche      Fiche              @relation(fields: [ficheId], references: [id], onDelete: Cascade)
+  fiche      Fiche?              @relation(fields: [ficheId], references: [id], onDelete: SetNull)
   plan       Plan               @relation(fields: [planId], references: [id])
+
+
+  // ficheNomSnapshot  String?
+  // ficheSlugSnapshot String
   payments   Payment[]
 
   @@index([ficheId, status])
@@ -314,7 +318,7 @@ model Subscription {
 
 model Payment {
   id                Int             @id @default(autoincrement())
-  ficheId           Int
+  ficheId           Int?
   subscriptionId    Int?
   planId            Int
   dureeMois         Int?
@@ -327,9 +331,13 @@ model Payment {
   paidAt            DateTime?
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
-  fiche             Fiche           @relation(fields: [ficheId], references: [id], onDelete: Cascade)
+  fiche             Fiche?           @relation(fields: [ficheId], references: [id], onDelete: SetNull)
   plan              Plan            @relation(fields: [planId], references: [id])
   subscription      Subscription?   @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+
+  // ficheNomSnapshot  String?
+  // ficheSlugSnapshot String
 
   @@index([ficheId, status, createdAt])
   @@map("payments")

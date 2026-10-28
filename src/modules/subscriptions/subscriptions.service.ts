@@ -1,14 +1,14 @@
 import { randomUUID } from "node:crypto";
+import { env } from "../../config/env";
 import type {
   PlanType,
   Prisma,
 } from "../../database/prisma/generated/prisma/client";
 import { prisma } from "../../database/prisma/prisma-client";
 import { conflict, forbidden, notFound } from "../../lib/httpError";
-import { env } from "../../config/env";
 import type { AuthUser } from "../../types/user";
-import { ParametresService } from "../parametres/parametres.service";
 import { ficheInclude, toFicheDto } from "../fiches/fiches.dto";
+import { ParametresService } from "../parametres/parametres.service";
 import { Kpi } from "./subscription.type";
 
 const planInclude = {
@@ -126,8 +126,7 @@ export async function upgrade(
       select: { id: true, userId: true, statut: true },
     });
 
-    if (!fiche || fiche.userId !== user.id)
-      throw notFound("Fiche introuvable");
+    if (!fiche || fiche.userId !== user.id) throw notFound("Fiche introuvable");
 
     if (fiche.statut === "SUSPENDUE")
       throw forbidden(
@@ -223,7 +222,7 @@ export async function confirmSimulatedPayment(
       },
     });
 
-    if (!payment || payment.fiche.userId !== user.id)
+    if (!payment || payment.fiche?.userId !== user.id)
       throw notFound("Paiement introuvable");
 
     if (payment.status !== "PENDING")
@@ -247,7 +246,10 @@ export async function confirmSimulatedPayment(
     if (!payment.plan.actif)
       throw notFound("Formule introuvable ou désactivée");
 
-    const currentSubscription = await getEffectiveSubscription(payment.ficheId, tx);
+    const currentSubscription = await getEffectiveSubscription(
+      payment.ficheId as number,
+      tx
+    );
     const currentPlanType = currentSubscription?.plan.type ?? "ESSENTIELLE";
     if (PLAN_RANK[payment.plan.type] <= PLAN_RANK[currentPlanType])
       throw conflict(
@@ -283,9 +285,7 @@ export async function confirmSimulatedPayment(
     });
 
     const dureeMois = payment.dureeMois ?? payment.plan.dureeMois;
-    const endsAt = dureeMois
-      ? addMonths(now, dureeMois)
-      : null;
+    const endsAt = dureeMois ? addMonths(now, dureeMois) : null;
 
     const subscription = await tx.subscription.create({
       data: {
@@ -305,12 +305,15 @@ export async function confirmSimulatedPayment(
     });
 
     const updatedFiche = await tx.fiche.findUnique({
-      where: { id: payment.ficheId },
+      where: { id: payment.ficheId as number },
       include: ficheInclude,
     });
     if (!updatedFiche) throw notFound("Fiche introuvable");
 
-    const effectiveSubscription = await getEffectiveSubscription(payment.ficheId, tx);
+    const effectiveSubscription = await getEffectiveSubscription(
+      payment.ficheId as number,
+      tx
+    );
     return {
       subscription,
       fiche: toFicheDto(updatedFiche, effectiveSubscription),

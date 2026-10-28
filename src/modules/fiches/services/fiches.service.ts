@@ -27,12 +27,12 @@ import {
 } from "../../subscriptions/subscriptions.service";
 import { ficheInclude, toFicheDto, type FicheFull } from "../fiches.dto";
 import { enforcePlanLimits } from "../fiches.limits";
-import { getPublicSubscription } from "./fiche-public-access";
 import {
   JOURS,
   type CreateFicheInput,
   type UpdateFicheInput,
 } from "../fiches.schemas";
+import { getPublicSubscription } from "./fiche-public-access";
 
 const isAdmin = (u: AuthUser) => u.role === "ADMIN";
 const up = <T extends string>(v: string) => v.toUpperCase() as T;
@@ -168,8 +168,7 @@ export async function createPurchasedFiches(
   const items = amountsFcfa.map((amountFcfa, index) => ({
     amountFcfa,
     slug: `nouvelle-fiche-${randomBytes(8).toString("hex")}`,
-    paymentRef:
-      amountFcfa > 0 ? `${purchaseReference}-${index + 1}` : null,
+    paymentRef: amountFcfa > 0 ? `${purchaseReference}-${index + 1}` : null,
   }));
   const created = await tx.fiche.createManyAndReturn({
     data: items.map(item => ({
@@ -633,8 +632,38 @@ export const FicheService = {
     logger.info("Fiche updated", { ficheId: id, userId: user.id });
     return toFicheDto(updated!, sub);
   },
-};
 
+  deleteFiche: async (user: AuthUser, ficheId: number) => {
+    const fiche = await prisma.fiche.findFirst({
+      where: {
+        id: ficheId,
+        userId: user.id,
+      },
+      include: {
+        subscriptions: {
+          where: {
+            status: "ACTIVE",
+          },
+          select: {
+            id: true,
+            status: true,
+            endsAt: true,
+          },
+        },
+      },
+    });
+
+    if (!fiche) {
+      throw notFound("Fiche introuvable");
+    }
+
+    await prisma.fiche.delete({
+      where: {
+        id: fiche.id,
+      },
+    });
+  },
+};
 async function effectiveByFiche(ids: number[]) {
   const rows = await prisma.subscription.findMany({
     where: {
@@ -646,7 +675,8 @@ async function effectiveByFiche(ids: number[]) {
     include: { plan: { include: { limits: true } } },
   });
   const map = new Map<number, EffectiveSubscription>();
-  for (const r of rows) if (!map.has(r.ficheId)) map.set(r.ficheId, r);
+  for (const r of rows)
+    if (!map.has(r.ficheId as number)) map.set(r.ficheId as number, r);
   return map;
 }
 
