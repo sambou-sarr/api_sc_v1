@@ -1,4 +1,6 @@
 import { asyncHandler } from "../../lib/asyncHandler";
+import type { CreateModeleCarteInput, PatchModeleCarteInput } from "./card-models.schemas";
+import { CardModelService } from "./card-models.service";
 import type {
   CreateCarteInput,
   CreateStickerInput,
@@ -24,6 +26,20 @@ export const ProductionController = {
   }),
   updateCarte: asyncHandler(async (req, res) => {
     res.json(await ProductionService.updateCarte(Number(req.params.id), req.body as PatchCarteInput));
+  }),
+
+  // ───── Modèles de carte (recto / verso) ─────
+  listModelesCartes: asyncHandler(async (_req, res) => {
+    res.json(await CardModelService.list());
+  }),
+  createModeleCarte: asyncHandler(async (req, res) => {
+    res.status(201).json(await CardModelService.create(req.body as CreateModeleCarteInput));
+  }),
+  updateModeleCarte: asyncHandler(async (req, res) => {
+    res.json(await CardModelService.update(Number(req.params.id), req.body as PatchModeleCarteInput));
+  }),
+  deleteModeleCarte: asyncHandler(async (req, res) => {
+    res.json(await CardModelService.remove(Number(req.params.id)));
   }),
 
   // ───── Stickers ─────

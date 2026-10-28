@@ -389,6 +389,22 @@ model FichePassage {
   @@map("fiche_passages")
 }
 
+// Modèles de carte (recto / verso) gérés par l'administration, par formule. Un seul modèle ACTIF par formule
+// (index unique partiel dans la migration card_models) : c'est celui que le client voit dans sa demande de carte.
+model CardModel {
+  id        Int      @id @default(autoincrement())
+  tier      PlanType
+  nom       String
+  rectoUrl  String
+  versoUrl  String
+  actif     Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tier, actif])
+  @@map("card_models")
+}
+
 enum PlanType {
   ESSENTIELLE
   PRO

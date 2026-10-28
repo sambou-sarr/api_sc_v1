@@ -106,6 +106,23 @@ scripts/create-admin.ts
 > `src/modules/subscriptions/subscriptions.renewal.test.ts`.
 
 Authentification : en-tête `Authorization: Bearer <token>`.
+
+### Modèles de carte (recto / verso) et demande de carte
+
+L'administration définit, **par formule** (essentielle, pro, signature), le recto et le verso de la carte que le client
+voit quand il demande une carte. Un seul modèle est **actif** par formule (index unique partiel en base ; activer un modèle
+désactive l'ancien). Les images sont des adresses `https://` déjà hébergées (Cloudinary…), comme les fichiers d'impression.
+
+| Méthode | Route | Accès | Rôle |
+|---|---|---|---|
+| GET | `/admin/production/modeles-cartes` | admin | tous les modèles, par formule (actif en premier) |
+| POST | `/admin/production/modeles-cartes` | admin | `{ tier, nom, rectoUrl, versoUrl, actif? }` |
+| PATCH | `/admin/production/modeles-cartes/:id` | admin | `{ nom?, rectoUrl?, versoUrl?, actif? }` (`actif: true` désactive l'ancien) |
+| DELETE | `/admin/production/modeles-cartes/:id` | admin | supprime le modèle (les demandes passées ne sont pas touchées) |
+| GET | `/fiches/:id/card-request` | client | `{ carte, modele }` : `modele` = modèle actif de la formule qui sera facturée (abonnement valide, sinon essentielle), `null` si aucun n'est défini |
+
+Migration : `20261027230000_card_models` (après `prisma migrate deploy`, régénérer le client : `prisma generate`).
+
 Erreurs : toujours `{ "error": { "code", "message", "details?" } }`.
 
 ```bash

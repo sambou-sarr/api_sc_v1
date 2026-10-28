@@ -72,6 +72,7 @@ export const ModelName = {
   FichePurchase: 'FichePurchase',
   DemandeRappel: 'DemandeRappel',
   FichePassage: 'FichePassage',
+  CardModel: 'CardModel',
   PrintJob: 'PrintJob',
   StickerOrder: 'StickerOrder',
   QrLink: 'QrLink',
@@ -421,6 +422,20 @@ export const FichePassageScalarFieldEnum = {
 } as const
 
 export type FichePassageScalarFieldEnum = (typeof FichePassageScalarFieldEnum)[keyof typeof FichePassageScalarFieldEnum]
+
+
+export const CardModelScalarFieldEnum = {
+  id: 'id',
+  tier: 'tier',
+  nom: 'nom',
+  rectoUrl: 'rectoUrl',
+  versoUrl: 'versoUrl',
+  actif: 'actif',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CardModelScalarFieldEnum = (typeof CardModelScalarFieldEnum)[keyof typeof CardModelScalarFieldEnum]
 
 
 export const PrintJobScalarFieldEnum = {

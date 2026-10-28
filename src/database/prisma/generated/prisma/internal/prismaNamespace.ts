@@ -418,6 +418,7 @@ export const ModelName = {
   FichePurchase: 'FichePurchase',
   DemandeRappel: 'DemandeRappel',
   FichePassage: 'FichePassage',
+  CardModel: 'CardModel',
   PrintJob: 'PrintJob',
   StickerOrder: 'StickerOrder',
   QrLink: 'QrLink',
@@ -442,7 +443,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "fiche" | "ficheOnglet" | "ficheReseau" | "ficheLien" | "ficheHoraire" | "ficheMedia" | "catalogueSection" | "catalogueArticle" | "menuSection" | "menuPlat" | "bien" | "bienPhoto" | "user" | "authToken" | "plan" | "planLimit" | "subscription" | "payment" | "fichePurchase" | "demandeRappel" | "fichePassage" | "printJob" | "stickerOrder" | "qrLink" | "planDuree" | "planRemise" | "emplacementConfig" | "emplacementPack" | "qrStyle" | "leadRequest"
+    modelProps: "fiche" | "ficheOnglet" | "ficheReseau" | "ficheLien" | "ficheHoraire" | "ficheMedia" | "catalogueSection" | "catalogueArticle" | "menuSection" | "menuPlat" | "bien" | "bienPhoto" | "user" | "authToken" | "plan" | "planLimit" | "subscription" | "payment" | "fichePurchase" | "demandeRappel" | "fichePassage" | "cardModel" | "printJob" | "stickerOrder" | "qrLink" | "planDuree" | "planRemise" | "emplacementConfig" | "emplacementPack" | "qrStyle" | "leadRequest"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2000,6 +2001,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CardModel: {
+      payload: Prisma.$CardModelPayload<ExtArgs>
+      fields: Prisma.CardModelFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CardModelFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CardModelPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CardModelFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CardModelPayload>
+        }
+        findFirst: {
+          args: Prisma.CardModelFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CardModelPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CardModelFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CardModelPayload>
+        }
+        findMany: {
+          args: Prisma.CardModelFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CardModelPayload>[]
+        }
+        create: {
+          args: Prisma.CardModelCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CardModelPayload>
+        }
+        createMany: {
+          args: Prisma.CardModelCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CardModelCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CardModelPayload>[]
+        }
+        delete: {
+          args: Prisma.CardModelDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CardModelPayload>
+        }
+        update: {
+          args: Prisma.CardModelUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CardModelPayload>
+        }
+        deleteMany: {
+          args: Prisma.CardModelDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CardModelUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CardModelUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CardModelPayload>[]
+        }
+        upsert: {
+          args: Prisma.CardModelUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CardModelPayload>
+        }
+        aggregate: {
+          args: Prisma.CardModelAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCardModel>
+        }
+        groupBy: {
+          args: Prisma.CardModelGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CardModelGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CardModelCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CardModelCountAggregateOutputType> | number
+        }
+      }
+    }
     PrintJob: {
       payload: Prisma.$PrintJobPayload<ExtArgs>
       fields: Prisma.PrintJobFieldRefs
@@ -3029,6 +3104,20 @@ export const FichePassageScalarFieldEnum = {
 export type FichePassageScalarFieldEnum = (typeof FichePassageScalarFieldEnum)[keyof typeof FichePassageScalarFieldEnum]
 
 
+export const CardModelScalarFieldEnum = {
+  id: 'id',
+  tier: 'tier',
+  nom: 'nom',
+  rectoUrl: 'rectoUrl',
+  versoUrl: 'versoUrl',
+  actif: 'actif',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CardModelScalarFieldEnum = (typeof CardModelScalarFieldEnum)[keyof typeof CardModelScalarFieldEnum]
+
+
 export const PrintJobScalarFieldEnum = {
   id: 'id',
   ficheId: 'ficheId',
@@ -3800,6 +3889,7 @@ export type GlobalOmitConfig = {
   fichePurchase?: Prisma.FichePurchaseOmit
   demandeRappel?: Prisma.DemandeRappelOmit
   fichePassage?: Prisma.FichePassageOmit
+  cardModel?: Prisma.CardModelOmit
   printJob?: Prisma.PrintJobOmit
   stickerOrder?: Prisma.StickerOrderOmit
   qrLink?: Prisma.QrLinkOmit

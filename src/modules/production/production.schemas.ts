@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // ───────── Briques communes ─────────
-const tier = z.enum(["essentielle", "pro", "signature"]);
+export const tier = z.enum(["essentielle", "pro", "signature"]);
 const statutCarte = z.enum(["a_imprimer", "imprimee", "encodee", "testee", "livree", "annulee"]);
 const statutSticker = z.enum(["a_parametrer", "parametre", "teste", "imprime", "livre", "annule"]);
 const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/, "couleur #RRGGBB attendue");
@@ -21,7 +21,7 @@ const urlHttp = z
   .refine(u => /^https?:\/\//i.test(u), "l'adresse doit commencer par http:// ou https://");
 
 // Fichiers d'impression déjà hébergés (Cloudinary…) : adresse https uniquement.
-const urlImage = z
+export const urlImage = z
   .string()
   .trim()
   .max(2000)

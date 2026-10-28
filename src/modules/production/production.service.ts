@@ -7,6 +7,7 @@ import type {
   StickerStatus,
 } from "../../database/prisma/generated/prisma/client";
 import { prisma } from "../../database/prisma/prisma-client";
+import { CardModelService } from "./card-models.service";
 import { conflict, forbidden, notFound, unprocessable } from "../../lib/httpError";
 import type { AuthUser } from "../../types/user";
 import type {
@@ -218,7 +219,15 @@ export const ProductionService = {
   async getClientCardRequest(user: AuthUser, ficheId: number) {
     const fiche = await prisma.fiche.findFirst({
       where: { id: ficheId, userId: user.id },
-      select: { id: true },
+      select: {
+        id: true,
+        subscriptions: {
+          where: abonnementValable(new Date()),
+          orderBy: { startsAt: "desc" },
+          take: 1,
+          select: { plan: { select: { type: true } } },
+        },
+      },
     });
     if (!fiche) throw notFound("Fiche introuvable");
 
@@ -227,7 +236,10 @@ export const ProductionService = {
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       include: { fiche: { select: FICHE_SELECT } },
     });
-    return { carte: job ? carteDto(job) : null };
+    // Modèle (recto / verso) défini par l'administration pour la formule qui sera facturée (celle de l'abonnement
+    // valide, sinon Essentielle) : même règle que la demande. null = aucun modèle défini → aperçu par défaut.
+    const tier: PlanType = fiche.subscriptions[0]?.plan.type ?? "ESSENTIELLE";
+    return { carte: job ? carteDto(job) : null, modele: await CardModelService.activeFor(tier) };
   },
 
   async requestClientCarte(
