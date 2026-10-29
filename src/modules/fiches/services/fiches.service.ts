@@ -215,7 +215,7 @@ export async function createPurchasedFiches(
     select: {
       id: true,
       ficheId: true,
-      ficheNomSnapshot: true, 
+      ficheNomSnapshot: true,
       ficheSlugSnapshot: true,
     },
   });
@@ -639,44 +639,54 @@ export const FicheService = {
     return toFicheDto(updated!, sub);
   },
 
-  deleteFiche: async (user: AuthUser, ficheId: number) => {
-    prisma.$transaction(async tx => {
-      const fiche = await tx.fiche.findFirst({
-        where: {
-          id: ficheId,
-          userId: user.id,
-        },
-        include: {
-          subscriptions: {
-            where: {
-              status: "ACTIVE",
-            },
-            select: {
-              id: true,
-              status: true,
-              endsAt: true,
-            },
-          },
-        },
-      });
-
-      if (!fiche) {
-        throw notFound("Fiche introuvable");
-      }
-      belongTo(user, fiche);
-
-      console.log(fiche);
-
-      // save snapshot
-      // delete fiche
-
-      // await prisma.fiche.delete({
-      //   where: {
-      //     id: fiche.id,
-      //   },
-      // });
+deleteFiche: async (user: AuthUser, ficheId: number) => {
+  await prisma.$transaction(async (tx) => {
+    const fiche = await tx.fiche.findFirst({
+      where: {
+        id: ficheId,
+        userId: user.id,
+      },
+      select: {
+        id: true,
+        prenom: true,
+        nom: true,
+        slug: true,
+      },
     });
-  },
+
+    if (!fiche) {
+      throw notFound("Fiche introuvable");
+    }
+
+    const ficheNom =
+      [fiche.prenom, fiche.nom]
+        .filter(Boolean)
+        .join(" ")
+        .trim() || fiche.slug;
+
+    // 1. Conserver l'identite de la fiche
+    await tx.subscription.updateMany({
+      where: { ficheId: fiche.id },
+      data: {
+        ficheNomSnapshot: ficheNom,
+        ficheSlugSnapshot: fiche.slug,
+      },
+    });
+
+    await tx.payment.updateMany({
+      where: { ficheId: fiche.id },
+      data: {
+        ficheNomSnapshot: ficheNom,
+        ficheSlugSnapshot: fiche.slug,
+      },
+    });
+
+    // 2. Supprimer la fiche
+    await tx.fiche.delete({
+      where: { id: fiche.id },
+    });
+  });
+},
 };
 
 async function effectiveByFiche(ids: number[]) {
