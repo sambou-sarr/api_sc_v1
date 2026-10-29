@@ -1,5 +1,6 @@
 import { env } from "../../config/env";
 import type { Prisma } from "../../database/prisma/generated/prisma/client";
+import { mediaUrl, s } from "../../lib/media";
 import type { EffectiveSubscription } from "../subscriptions/subscriptions.service";
 import { toPlanCapabilities } from "./plan-capabilities";
 
@@ -37,15 +38,8 @@ const JOURS = [
   "Samedi",
   "Dimanche",
 ];
-const s = (v: string | null | undefined) => v ?? ""; // le front attend '' plutôt que null
 const lower = (v: string) => v.toLowerCase();
-// Les références persistées restent relatives et indépendantes du fournisseur de stockage.
-const mediaUrl = (v: string | null | undefined) => {
-  const value = s(v);
-  if (!value.startsWith("/api/media/")) return value;
-  const apiOrigin = env.SERVER.replace(/\/api\/?$/, "").replace(/\/$/, "");
-  return `${apiOrigin}${value}`;
-};
+
 const n = (v: number | null) => v ?? undefined;
 const price = (v: number | null) => (v === null ? undefined : String(v)); // le front manipule des prix en texte
 

@@ -21,7 +21,9 @@ subscriptionRoute.post(
 );
 subscriptionRoute.post(
   "/payments/:paymentId/simulate-confirmation",
-  validate({ params: z.object({ paymentId: z.coerce.number().int().positive() }) }),
+  validate({
+    params: z.object({ paymentId: z.coerce.number().int().positive() }),
+  }),
   SubscriptionController.confirmSimulatedPayment
 );
 subscriptionRoute.get("/filter", SubscriptionController.filter);

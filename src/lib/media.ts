@@ -9,6 +9,16 @@ export function normalizeMediaUrl(value: string | undefined) {
   return value.startsWith(prefix) ? value.slice(apiOrigin.length) : value;
 }
 
+export const s = (v: string | null | undefined) => v ?? ""; // le front attend '' plutôt que null
+// Les références persistées restent relatives et indépendantes du fournisseur de stockage.
+export const mediaUrl = (v: string | null | undefined) => {
+  const value = s(v);
+  if (!value.startsWith("/api/media/")) return value;
+  const apiOrigin = env.SERVER.replace(/\/api\/?$/, "").replace(/\/$/, "");
+  return `${apiOrigin}${value}`;
+};
+
+
 export function normalizeMediaReferences(
   input: UpdateFicheInput
 ): UpdateFicheInput {

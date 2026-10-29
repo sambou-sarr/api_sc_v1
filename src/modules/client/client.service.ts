@@ -1,5 +1,6 @@
 import { prisma } from "../../database/prisma/prisma-client";
 import { AuthUser } from "../../types/user";
+import { mediaUrl } from "../../lib/media";
 
 export const ClientService = {
   detailFiche: async (user: AuthUser) => {
@@ -43,12 +44,14 @@ export const ClientService = {
       latestSubscriptions.map(subscription => [
         subscription.ficheId,
         subscription,
-      ]),
+      ])
     );
 
     return getFiche.map(fiche => ({
       ...fiche,
       latestSubscription: latestByFicheId.get(fiche.id) ?? null,
+      logo: mediaUrl(fiche.logo),
+      photo: mediaUrl(fiche.photo),
     }));
   },
 };
