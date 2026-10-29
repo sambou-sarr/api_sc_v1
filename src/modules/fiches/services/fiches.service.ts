@@ -212,7 +212,12 @@ export async function createPurchasedFiches(
         paymentRef: item.paymentRef,
       };
     }),
-    select: { id: true, ficheId: true },
+    select: {
+      id: true,
+      ficheId: true,
+      ficheNomSnapshot: true, 
+      ficheSlugSnapshot: true,
+    },
   });
   const subscriptionByFiche = new Map(
     subscriptions.map(subscription => [subscription.ficheId, subscription])
@@ -664,9 +669,6 @@ export const FicheService = {
 
       // save snapshot
       // delete fiche
-
-
-     
 
       // await prisma.fiche.delete({
       //   where: {

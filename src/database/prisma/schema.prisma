@@ -308,7 +308,7 @@ model Subscription {
 
 
   ficheNomSnapshot  String? 
-  ficheSlugSnapshot String @default("valeur-par-defaut")
+  ficheSlugSnapshot String? @default("valeur-par-defaut")
   payments   Payment[]
 
   @@index([ficheId, status])
@@ -337,7 +337,7 @@ model Payment {
 
 
   ficheNomSnapshot  String?
-  ficheSlugSnapshot String @default("valeur-par-defaut")
+  ficheSlugSnapshot String? @default("valeur-par-defaut")
 
   @@index([ficheId, status, createdAt])
   @@map("payments")

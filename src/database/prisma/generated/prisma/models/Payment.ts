@@ -281,7 +281,7 @@ export type PaymentGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   ficheNomSnapshot: string | null
-  ficheSlugSnapshot: string
+  ficheSlugSnapshot: string | null
   _count: PaymentCountAggregateOutputType | null
   _avg: PaymentAvgAggregateOutputType | null
   _sum: PaymentSumAggregateOutputType | null
@@ -323,7 +323,7 @@ export type PaymentWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
   ficheNomSnapshot?: Prisma.StringNullableFilter<"Payment"> | string | null
-  ficheSlugSnapshot?: Prisma.StringFilter<"Payment"> | string
+  ficheSlugSnapshot?: Prisma.StringNullableFilter<"Payment"> | string | null
   fiche?: Prisma.XOR<Prisma.FicheNullableScalarRelationFilter, Prisma.FicheWhereInput> | null
   plan?: Prisma.XOR<Prisma.PlanScalarRelationFilter, Prisma.PlanWhereInput>
   subscription?: Prisma.XOR<Prisma.SubscriptionNullableScalarRelationFilter, Prisma.SubscriptionWhereInput> | null
@@ -345,7 +345,7 @@ export type PaymentOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   ficheNomSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
-  ficheSlugSnapshot?: Prisma.SortOrder
+  ficheSlugSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
   fiche?: Prisma.FicheOrderByWithRelationInput
   plan?: Prisma.PlanOrderByWithRelationInput
   subscription?: Prisma.SubscriptionOrderByWithRelationInput
@@ -370,7 +370,7 @@ export type PaymentWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
   ficheNomSnapshot?: Prisma.StringNullableFilter<"Payment"> | string | null
-  ficheSlugSnapshot?: Prisma.StringFilter<"Payment"> | string
+  ficheSlugSnapshot?: Prisma.StringNullableFilter<"Payment"> | string | null
   fiche?: Prisma.XOR<Prisma.FicheNullableScalarRelationFilter, Prisma.FicheWhereInput> | null
   plan?: Prisma.XOR<Prisma.PlanScalarRelationFilter, Prisma.PlanWhereInput>
   subscription?: Prisma.XOR<Prisma.SubscriptionNullableScalarRelationFilter, Prisma.SubscriptionWhereInput> | null
@@ -392,7 +392,7 @@ export type PaymentOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   ficheNomSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
-  ficheSlugSnapshot?: Prisma.SortOrder
+  ficheSlugSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.PaymentCountOrderByAggregateInput
   _avg?: Prisma.PaymentAvgOrderByAggregateInput
   _max?: Prisma.PaymentMaxOrderByAggregateInput
@@ -419,7 +419,7 @@ export type PaymentScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Payment"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Payment"> | Date | string
   ficheNomSnapshot?: Prisma.StringNullableWithAggregatesFilter<"Payment"> | string | null
-  ficheSlugSnapshot?: Prisma.StringWithAggregatesFilter<"Payment"> | string
+  ficheSlugSnapshot?: Prisma.StringNullableWithAggregatesFilter<"Payment"> | string | null
 }
 
 export type PaymentCreateInput = {
@@ -434,7 +434,7 @@ export type PaymentCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ficheNomSnapshot?: string | null
-  ficheSlugSnapshot?: string
+  ficheSlugSnapshot?: string | null
   fiche?: Prisma.FicheCreateNestedOneWithoutPaymentsInput
   plan: Prisma.PlanCreateNestedOneWithoutPaymentsInput
   subscription?: Prisma.SubscriptionCreateNestedOneWithoutPaymentsInput
@@ -456,7 +456,7 @@ export type PaymentUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ficheNomSnapshot?: string | null
-  ficheSlugSnapshot?: string
+  ficheSlugSnapshot?: string | null
 }
 
 export type PaymentUpdateInput = {
@@ -471,7 +471,7 @@ export type PaymentUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ficheNomSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ficheSlugSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  ficheSlugSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fiche?: Prisma.FicheUpdateOneWithoutPaymentsNestedInput
   plan?: Prisma.PlanUpdateOneRequiredWithoutPaymentsNestedInput
   subscription?: Prisma.SubscriptionUpdateOneWithoutPaymentsNestedInput
@@ -493,7 +493,7 @@ export type PaymentUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ficheNomSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ficheSlugSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  ficheSlugSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PaymentCreateManyInput = {
@@ -512,7 +512,7 @@ export type PaymentCreateManyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ficheNomSnapshot?: string | null
-  ficheSlugSnapshot?: string
+  ficheSlugSnapshot?: string | null
 }
 
 export type PaymentUpdateManyMutationInput = {
@@ -527,7 +527,7 @@ export type PaymentUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ficheNomSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ficheSlugSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  ficheSlugSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PaymentUncheckedUpdateManyInput = {
@@ -546,7 +546,7 @@ export type PaymentUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ficheNomSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ficheSlugSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  ficheSlugSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PaymentListRelationFilter = {
@@ -780,7 +780,7 @@ export type PaymentCreateWithoutFicheInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ficheNomSnapshot?: string | null
-  ficheSlugSnapshot?: string
+  ficheSlugSnapshot?: string | null
   plan: Prisma.PlanCreateNestedOneWithoutPaymentsInput
   subscription?: Prisma.SubscriptionCreateNestedOneWithoutPaymentsInput
 }
@@ -800,7 +800,7 @@ export type PaymentUncheckedCreateWithoutFicheInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ficheNomSnapshot?: string | null
-  ficheSlugSnapshot?: string
+  ficheSlugSnapshot?: string | null
 }
 
 export type PaymentCreateOrConnectWithoutFicheInput = {
@@ -848,7 +848,7 @@ export type PaymentScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
   ficheNomSnapshot?: Prisma.StringNullableFilter<"Payment"> | string | null
-  ficheSlugSnapshot?: Prisma.StringFilter<"Payment"> | string
+  ficheSlugSnapshot?: Prisma.StringNullableFilter<"Payment"> | string | null
 }
 
 export type PaymentCreateWithoutPlanInput = {
@@ -863,7 +863,7 @@ export type PaymentCreateWithoutPlanInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ficheNomSnapshot?: string | null
-  ficheSlugSnapshot?: string
+  ficheSlugSnapshot?: string | null
   fiche?: Prisma.FicheCreateNestedOneWithoutPaymentsInput
   subscription?: Prisma.SubscriptionCreateNestedOneWithoutPaymentsInput
 }
@@ -883,7 +883,7 @@ export type PaymentUncheckedCreateWithoutPlanInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ficheNomSnapshot?: string | null
-  ficheSlugSnapshot?: string
+  ficheSlugSnapshot?: string | null
 }
 
 export type PaymentCreateOrConnectWithoutPlanInput = {
@@ -924,7 +924,7 @@ export type PaymentCreateWithoutSubscriptionInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ficheNomSnapshot?: string | null
-  ficheSlugSnapshot?: string
+  ficheSlugSnapshot?: string | null
   fiche?: Prisma.FicheCreateNestedOneWithoutPaymentsInput
   plan: Prisma.PlanCreateNestedOneWithoutPaymentsInput
 }
@@ -944,7 +944,7 @@ export type PaymentUncheckedCreateWithoutSubscriptionInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ficheNomSnapshot?: string | null
-  ficheSlugSnapshot?: string
+  ficheSlugSnapshot?: string | null
 }
 
 export type PaymentCreateOrConnectWithoutSubscriptionInput = {
@@ -988,7 +988,7 @@ export type PaymentCreateManyFicheInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ficheNomSnapshot?: string | null
-  ficheSlugSnapshot?: string
+  ficheSlugSnapshot?: string | null
 }
 
 export type PaymentUpdateWithoutFicheInput = {
@@ -1003,7 +1003,7 @@ export type PaymentUpdateWithoutFicheInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ficheNomSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ficheSlugSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  ficheSlugSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.PlanUpdateOneRequiredWithoutPaymentsNestedInput
   subscription?: Prisma.SubscriptionUpdateOneWithoutPaymentsNestedInput
 }
@@ -1023,7 +1023,7 @@ export type PaymentUncheckedUpdateWithoutFicheInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ficheNomSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ficheSlugSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  ficheSlugSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PaymentUncheckedUpdateManyWithoutFicheInput = {
@@ -1041,7 +1041,7 @@ export type PaymentUncheckedUpdateManyWithoutFicheInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ficheNomSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ficheSlugSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  ficheSlugSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PaymentCreateManyPlanInput = {
@@ -1059,7 +1059,7 @@ export type PaymentCreateManyPlanInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ficheNomSnapshot?: string | null
-  ficheSlugSnapshot?: string
+  ficheSlugSnapshot?: string | null
 }
 
 export type PaymentUpdateWithoutPlanInput = {
@@ -1074,7 +1074,7 @@ export type PaymentUpdateWithoutPlanInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ficheNomSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ficheSlugSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  ficheSlugSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fiche?: Prisma.FicheUpdateOneWithoutPaymentsNestedInput
   subscription?: Prisma.SubscriptionUpdateOneWithoutPaymentsNestedInput
 }
@@ -1094,7 +1094,7 @@ export type PaymentUncheckedUpdateWithoutPlanInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ficheNomSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ficheSlugSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  ficheSlugSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PaymentUncheckedUpdateManyWithoutPlanInput = {
@@ -1112,7 +1112,7 @@ export type PaymentUncheckedUpdateManyWithoutPlanInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ficheNomSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ficheSlugSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  ficheSlugSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PaymentCreateManySubscriptionInput = {
@@ -1130,7 +1130,7 @@ export type PaymentCreateManySubscriptionInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ficheNomSnapshot?: string | null
-  ficheSlugSnapshot?: string
+  ficheSlugSnapshot?: string | null
 }
 
 export type PaymentUpdateWithoutSubscriptionInput = {
@@ -1145,7 +1145,7 @@ export type PaymentUpdateWithoutSubscriptionInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ficheNomSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ficheSlugSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  ficheSlugSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fiche?: Prisma.FicheUpdateOneWithoutPaymentsNestedInput
   plan?: Prisma.PlanUpdateOneRequiredWithoutPaymentsNestedInput
 }
@@ -1165,7 +1165,7 @@ export type PaymentUncheckedUpdateWithoutSubscriptionInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ficheNomSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ficheSlugSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  ficheSlugSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PaymentUncheckedUpdateManyWithoutSubscriptionInput = {
@@ -1183,7 +1183,7 @@ export type PaymentUncheckedUpdateManyWithoutSubscriptionInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ficheNomSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ficheSlugSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  ficheSlugSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -1313,7 +1313,7 @@ export type $PaymentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     createdAt: Date
     updatedAt: Date
     ficheNomSnapshot: string | null
-    ficheSlugSnapshot: string
+    ficheSlugSnapshot: string | null
   }, ExtArgs["result"]["payment"]>
   composites: {}
 }
