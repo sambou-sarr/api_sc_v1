@@ -10,7 +10,6 @@ import {
   type Theme,
 } from "../../../database/prisma/generated/prisma/client";
 import { prisma } from "../../../database/prisma/prisma-client";
-import { belongTo } from "../../../lib/access";
 import {
   HttpError,
   conflict,
@@ -639,18 +638,61 @@ export const FicheService = {
     return toFicheDto(updated!, sub);
   },
 
-deleteFiche: async (user: AuthUser, ficheId: number) => {
-  await prisma.$transaction(async (tx) => {
-    const fiche = await tx.fiche.findFirst({
-      where: {
-        id: ficheId,
-        userId: user.id,
-      },
+  deleteFiche: async (user: AuthUser, ficheId: number) => {
+    await prisma.$transaction(async tx => {
+      const fiche = await tx.fiche.findFirst({
+        where: {
+          id: ficheId,
+          userId: user.id,
+        },
+        select: {
+          id: true,
+          prenom: true,
+          nom: true,
+          slug: true,
+        },
+      });
+
+      if (!fiche) {
+        throw notFound("Fiche introuvable");
+      }
+
+      const ficheNom =
+        [fiche.prenom, fiche.nom].filter(Boolean).join(" ").trim() ||
+        fiche.slug;
+
+      // 1. Conserver l'identite de la fiche
+      await tx.subscription.updateMany({
+        where: { ficheId: fiche.id },
+        data: {
+          ficheNomSnapshot: ficheNom,
+          ficheSlugSnapshot: fiche.slug,
+        },
+      });
+
+      await tx.payment.updateMany({
+        where: { ficheId: fiche.id },
+        data: {
+          ficheNomSnapshot: ficheNom,
+          ficheSlugSnapshot: fiche.slug,
+        },
+      });
+
+      // 2. Supprimer la fiche
+      await tx.fiche.delete({
+        where: { id: fiche.id },
+      });
+    });
+  },
+
+  //  Mettre une fiche en brouillon
+  setFicheDraft: async (user: AuthUser, id: number) => {
+    const fiche = await prisma.fiche.findUnique({
+      where: { id },
       select: {
         id: true,
-        prenom: true,
-        nom: true,
-        slug: true,
+        userId: true,
+        statut: true,
       },
     });
 
@@ -658,35 +700,47 @@ deleteFiche: async (user: AuthUser, ficheId: number) => {
       throw notFound("Fiche introuvable");
     }
 
-    const ficheNom =
-      [fiche.prenom, fiche.nom]
-        .filter(Boolean)
-        .join(" ")
-        .trim() || fiche.slug;
+    assertAccess(user, fiche);
 
-    // 1. Conserver l'identite de la fiche
-    await tx.subscription.updateMany({
-      where: { ficheId: fiche.id },
+    if (fiche.statut === "BROUILLON") {
+      throw conflict(
+        "FICHE_DEJA_BROUILLON",
+        "Cette fiche est déjà en brouillon."
+      );
+    }
+
+    if (fiche.statut === "SUSPENDUE") {
+      throw conflict(
+        "FICHE_SUSPENDUE",
+        "Cette fiche est suspendue par l'administration."
+      );
+    }
+
+    const result = await prisma.fiche.updateMany({
+      where: {
+        id: fiche.id,
+        statut: "ACTIVE",
+      },
       data: {
-        ficheNomSnapshot: ficheNom,
-        ficheSlugSnapshot: fiche.slug,
+        statut: "BROUILLON",
       },
     });
 
-    await tx.payment.updateMany({
-      where: { ficheId: fiche.id },
-      data: {
-        ficheNomSnapshot: ficheNom,
-        ficheSlugSnapshot: fiche.slug,
-      },
-    });
+    if (result.count !== 1) {
+      throw conflict(
+        "FICHE_ETAT_MODIFIE",
+        "La fiche a changé d'état. Rechargez-la avant de réessayer."
+      );
+    }
 
-    // 2. Supprimer la fiche
-    await tx.fiche.delete({
-      where: { id: fiche.id },
-    });
-  });
-},
+    const updated = await loadFull(fiche.id);
+
+    if (!updated) {
+      throw notFound("Fiche introuvable");
+    }
+
+    return dtoFor(updated);
+  },
 };
 
 async function effectiveByFiche(ids: number[]) {

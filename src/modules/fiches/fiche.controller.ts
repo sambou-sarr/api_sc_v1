@@ -153,4 +153,10 @@ export const FicheController = {
       fiche: await FicheService.deleteFiche(req.user!, Number(req.params.id)),
     });
   }),
+
+  setFicheDraft: asyncHandler(async (req, res) => {
+    res.json({
+      fiche: await FicheService.setFicheDraft(req.user!, Number(req.params.id)),
+    });
+  }),
 };

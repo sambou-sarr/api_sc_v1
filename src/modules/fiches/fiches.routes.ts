@@ -137,3 +137,9 @@ fichesRouter.delete(
   validate({ params: idParam }),
   FicheController.deleteFiche
 );
+
+fichesRouter.patch(
+  "/draft-fiche/:id",
+  validate({ params: idParam }),
+  FicheController.setFicheDraft
+);
