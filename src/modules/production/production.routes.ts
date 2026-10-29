@@ -3,6 +3,7 @@ import rateLimit from "express-rate-limit";
 import { requireAuth, requireRole } from "../../middlewares/auth";
 import { validate } from "../../middlewares/validate";
 import { idParam } from "../fiches/fiches.schemas";
+import { raw } from "express";
 import { createModeleCarteSchema, patchModeleCarteSchema } from "./card-models.schemas";
 import { ProductionController } from "./production.controller";
 import {
@@ -34,7 +35,9 @@ productionRouter.patch("/cartes/:id", validate({ params: idParam, body: patchCar
 // Modèles de carte (recto / verso affichés au client dans sa demande de carte) — un seul actif par formule
 // GET    /modeles-cartes
 productionRouter.get("/modeles-cartes", ProductionController.listModelesCartes);
-// POST   /modeles-cartes                  { tier, nom, rectoUrl, versoUrl, actif? }
+// POST   /modeles-cartes/images           corps binaire (JPEG, PNG ou WebP, 12 Mo max) → { url } à mettre dans rectoUrl / versoUrl
+productionRouter.post("/modeles-cartes/images", raw({ type: () => true, limit: "13mb" }), ProductionController.uploadModeleCarteImage);
+// POST   /modeles-cartes                  { tier, nom, rectoUrl, versoUrl, actif? }  (image = url renvoyée ci-dessus, ou lien https)
 productionRouter.post("/modeles-cartes", validate({ body: createModeleCarteSchema }), ProductionController.createModeleCarte);
 // PATCH  /modeles-cartes/:id              { nom?, rectoUrl?, versoUrl?, actif? }   actif:true désactive l'ancien
 productionRouter.patch("/modeles-cartes/:id", validate({ params: idParam, body: patchModeleCarteSchema }), ProductionController.updateModeleCarte);

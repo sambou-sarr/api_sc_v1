@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+  storageDelete: vi.fn(),
+  count: vi.fn(),
   transaction: vi.fn(),
   findMany: vi.fn(),
   findFirst: vi.fn(),
@@ -11,8 +13,17 @@ const mocks = vi.hoisted(() => ({
   deleteMany: vi.fn(),
 }));
 
+vi.mock("../../config/env", () => ({ env: { SERVER: "http://localhost:4000/api" } }));
+vi.mock("../../infrastructure/storage/s3.storage", () => ({
+  S3StorageProvider: class {
+    put = vi.fn();
+    get = vi.fn();
+    delete = mocks.storageDelete;
+  },
+}));
 vi.mock("../../database/prisma/prisma-client", () => {
   const cardModel = {
+    count: mocks.count,
     findMany: mocks.findMany,
     findFirst: mocks.findFirst,
     findUnique: mocks.findUnique,
@@ -40,8 +51,15 @@ const row = (over: Record<string, unknown> = {}) => ({
   ...over,
 });
 
+const UUID_A = "0a1b2c3d-0000-4000-8000-000000000001";
+const UUID_B = "0a1b2c3d-0000-4000-8000-000000000002";
+const refA = `/api/media/cartes/${UUID_A}.webp`;
+const refB = `/api/media/cartes/${UUID_B}.webp`;
+
 beforeEach(() => {
   vi.clearAllMocks();
+  mocks.count.mockResolvedValue(0);
+  mocks.storageDelete.mockResolvedValue(undefined);
   const tx = {
     cardModel: {
       findUnique: mocks.findUnique,
@@ -145,11 +163,99 @@ describe("CardModelService.remove / activeFor", () => {
   });
 });
 
+describe("images téléversées", () => {
+  const base = { tier: "pro" as const, nom: "Pro" };
+  /** Modèle existant ; la mise à jour renvoie la ligne complète, comme une vraie base. */
+  const existing = (r: ReturnType<typeof row>) => {
+    mocks.findUnique.mockResolvedValue(r);
+    mocks.update.mockImplementation(async ({ data }: { data: Record<string, unknown> }) => ({ ...r, ...data }));
+  };
+
+  it("enregistre une référence RELATIVE (indépendante de l'origine de l'API)", async () => {
+    await CardModelService.create({
+      ...base,
+      rectoUrl: `http://localhost:4000${refA}`, // l'URL absolue renvoyée par l'envoi
+      versoUrl: refB,
+    });
+    expect(mocks.create.mock.calls[0][0].data).toMatchObject({ rectoUrl: refA, versoUrl: refB });
+  });
+
+  it("renvoie des adresses ABSOLUES à l'administrateur et au client", async () => {
+    mocks.findMany.mockResolvedValue([row({ rectoUrl: refA, versoUrl: "https://res.cloudinary.com/x/v.png", actif: true })]);
+    const { modeles } = await CardModelService.list();
+    expect(modeles[0].rectoUrl).toBe(`http://localhost:4000${refA}`);
+    expect(modeles[0].versoUrl).toBe("https://res.cloudinary.com/x/v.png"); // lien externe inchangé
+    mocks.findFirst.mockResolvedValue(row({ rectoUrl: refA, versoUrl: refB, actif: true }));
+    const actif = await CardModelService.activeFor("PRO");
+    expect(actif?.rectoUrl).toBe(`http://localhost:4000${refA}`);
+  });
+
+  it.each([
+    ["adresse http d'un autre site", "http://autre-site.example/img.png"],
+    ["chemin relatif quelconque", "/etc/passwd"],
+    ["autre dossier de médias", `/api/media/12/${UUID_A}.webp`],
+  ])("refuse : %s", async (_label, bad) => {
+    await expect(CardModelService.create({ ...base, rectoUrl: bad, versoUrl: refB })).rejects.toMatchObject({
+      status: 422,
+      code: "IMAGE_INVALIDE",
+    });
+    expect(mocks.create).not.toHaveBeenCalled();
+  });
+
+  it("remplacer une image supprime l'ancien fichier du stockage", async () => {
+    existing(row({ id: 5, rectoUrl: refA, versoUrl: refB }));
+    const nouvelle = "/api/media/cartes/0a1b2c3d-0000-4000-8000-000000000003.webp";
+    await CardModelService.update(5, { rectoUrl: nouvelle });
+    expect(mocks.storageDelete).toHaveBeenCalledTimes(1);
+    expect(mocks.storageDelete).toHaveBeenCalledWith(`card-models/${UUID_A}.webp`); // l'ancien recto, pas le verso
+  });
+
+  it("ne supprime pas un fichier encore utilisé par un autre modèle", async () => {
+    existing(row({ id: 5, rectoUrl: refA, versoUrl: refB }));
+    mocks.count.mockResolvedValue(1);
+    await CardModelService.update(5, { rectoUrl: "/api/media/cartes/0a1b2c3d-0000-4000-8000-000000000003.webp" });
+    expect(mocks.storageDelete).not.toHaveBeenCalled();
+  });
+
+  it("remplacer un lien externe ne touche pas au stockage", async () => {
+    existing(row({ id: 5, rectoUrl: "https://res.cloudinary.com/x/r.png", versoUrl: refB }));
+    await CardModelService.update(5, { rectoUrl: refA });
+    expect(mocks.storageDelete).not.toHaveBeenCalled();
+  });
+
+  it("garder les mêmes images (simple renommage) ne supprime rien", async () => {
+    existing(row({ id: 5, rectoUrl: refA, versoUrl: refB }));
+    await CardModelService.update(5, { nom: "Autre nom" });
+    expect(mocks.storageDelete).not.toHaveBeenCalled();
+  });
+
+  it("supprimer un modèle supprime ses deux fichiers", async () => {
+    mocks.findUnique.mockResolvedValue(row({ rectoUrl: refA, versoUrl: refB }));
+    mocks.deleteMany.mockResolvedValue({ count: 1 });
+    await CardModelService.remove(1);
+    expect(mocks.storageDelete.mock.calls.map(c => c[0]).sort()).toEqual([`card-models/${UUID_A}.webp`, `card-models/${UUID_B}.webp`]);
+  });
+
+  it("un échec de suppression du fichier ne fait pas échouer l'opération", async () => {
+    mocks.findUnique.mockResolvedValue(row({ rectoUrl: refA, versoUrl: refB }));
+    mocks.deleteMany.mockResolvedValue({ count: 1 });
+    mocks.storageDelete.mockRejectedValue(new Error("S3 indisponible"));
+    await expect(CardModelService.remove(1)).resolves.toEqual({ ok: true });
+  });
+});
+
 describe("validation des modèles de carte", () => {
   const ok = { tier: "pro", nom: "Pro", rectoUrl: "https://cdn.exemple.sn/r.png", versoUrl: "https://cdn.exemple.sn/v.png" };
 
   it("accepte un modèle valide", () => {
     expect(createModeleCarteSchema.safeParse(ok).success).toBe(true);
+  });
+  it("accepte une image téléversée, en URL absolue (http en local) ou relative", () => {
+    const own = `http://localhost:4000/api/media/cartes/${UUID_A}.webp`;
+    expect(createModeleCarteSchema.safeParse({ ...ok, rectoUrl: own, versoUrl: refB }).success).toBe(true);
+  });
+  it("refuse un fichier téléversé hors du dossier des modèles de carte", () => {
+    expect(createModeleCarteSchema.safeParse({ ...ok, rectoUrl: `/api/media/7/${UUID_A}.webp` }).success).toBe(false);
   });
   it.each([
     ["adresse http (non sécurisée)", { ...ok, rectoUrl: "http://cdn.exemple.sn/r.png" }],

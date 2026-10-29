@@ -6,6 +6,8 @@ export const publicMediaParams = z.object({
   key: z.string().regex(/^[0-9a-f-]{36}\.(jpg|png|webp|mp4|webm)$/i),
 });
 
+export const cardImageParams = z.object({ fileName: z.string().regex(/^[0-9a-f-]{36}\.webp$/i) });
+
 // `purpose=menu` : vidéo d'un plat du menu interactif, soumise à une durée maximale (plan_limits.maxMenuVideoSeconds).
 export const mediaUploadQuery = z.object({
   purpose: z.enum(["menu"]).optional(),

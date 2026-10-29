@@ -1,5 +1,7 @@
 import { asyncHandler } from "../../lib/asyncHandler";
+import { HttpError } from "../../lib/httpError";
 import type { CreateModeleCarteInput, PatchModeleCarteInput } from "./card-models.schemas";
+import { CardImageService } from "../media/card-images.service";
 import { CardModelService } from "./card-models.service";
 import type {
   CreateCarteInput,
@@ -37,6 +39,14 @@ export const ProductionController = {
   }),
   updateModeleCarte: asyncHandler(async (req, res) => {
     res.json(await CardModelService.update(Number(req.params.id), req.body as PatchModeleCarteInput));
+  }),
+  /** Envoi d'une image de carte (corps binaire, comme l'envoi de médias de fiche). Renvoie `{ url }`. */
+  uploadModeleCarteImage: asyncHandler(async (req, res) => {
+    if (!Buffer.isBuffer(req.body)) {
+      throw new HttpError(400, "CORPS_MEDIA_INVALIDE", "Le fichier doit être envoyé en binaire");
+    }
+    const contentType = req.headers["content-type"];
+    res.status(201).json(await CardImageService.upload(req.body, Array.isArray(contentType) ? contentType[0] : contentType));
   }),
   deleteModeleCarte: asyncHandler(async (req, res) => {
     res.json(await CardModelService.remove(Number(req.params.id)));

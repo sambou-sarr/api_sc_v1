@@ -1,7 +1,9 @@
 import { Prisma } from "../../database/prisma/generated/prisma/client";
 import type { CardModel, PlanType } from "../../database/prisma/generated/prisma/client";
 import { prisma } from "../../database/prisma/prisma-client";
-import { conflict, notFound } from "../../lib/httpError";
+import { conflict, notFound, unprocessable } from "../../lib/httpError";
+import { normalizeMediaUrl } from "../../lib/media";
+import { CardImageService, isCardImageRef } from "../media/card-images.service";
 import type { CreateModeleCarteInput, PatchModeleCarteInput } from "./card-models.schemas";
 
 /*
@@ -14,13 +16,32 @@ import type { CreateModeleCarteInput, PatchModeleCarteInput } from "./card-model
 const lower = (t: PlanType) => t.toLowerCase() as "essentielle" | "pro" | "signature";
 const upper = (t: string) => t.toUpperCase() as PlanType;
 
+/**
+ * Valeur à persister : référence relative pour nos propres images (indépendante de l'origine de l'API),
+ * adresse https pour un lien externe. Tout le reste est refusé.
+ */
+const storedRef = (value: string): string => {
+  const ref = normalizeMediaUrl(value.trim())!;
+  if (isCardImageRef(ref) || ref.startsWith("https://")) return ref;
+  throw unprocessable("IMAGE_INVALIDE", "Image invalide : téléversez un fichier ou indiquez une adresse https");
+};
+
+/** Supprime les fichiers qui ne sont plus référencés par aucun modèle (au mieux, sans bloquer l'administrateur). */
+const releaseImages = async (refs: string[]) => {
+  for (const ref of new Set(refs)) {
+    if (!isCardImageRef(ref)) continue;
+    const stillUsed = await prisma.cardModel.count({ where: { OR: [{ rectoUrl: ref }, { versoUrl: ref }] } });
+    if (stillUsed === 0) await CardImageService.deleteRef(ref);
+  }
+};
+
 /** Vue administrateur. */
 const dto = (m: CardModel) => ({
   id: m.id,
   tier: lower(m.tier),
   nom: m.nom,
-  rectoUrl: m.rectoUrl,
-  versoUrl: m.versoUrl,
+  rectoUrl: CardImageService.toAbsolute(m.rectoUrl),
+  versoUrl: CardImageService.toAbsolute(m.versoUrl),
   actif: m.actif,
   createdAt: m.createdAt,
   updatedAt: m.updatedAt,
@@ -31,8 +52,8 @@ const publicDto = (m: CardModel) => ({
   id: m.id,
   tier: lower(m.tier),
   nom: m.nom,
-  rectoUrl: m.rectoUrl,
-  versoUrl: m.versoUrl,
+  rectoUrl: CardImageService.toAbsolute(m.rectoUrl),
+  versoUrl: CardImageService.toAbsolute(m.versoUrl),
 });
 
 const isUniqueViolation = (e: unknown) =>
@@ -51,6 +72,8 @@ export const CardModelService = {
 
   async create(input: CreateModeleCarteInput) {
     const tier = upper(input.tier);
+    const rectoUrl = storedRef(input.rectoUrl);
+    const versoUrl = storedRef(input.versoUrl);
     try {
       return await prisma.$transaction(async tx => {
         if (input.actif) {
@@ -60,8 +83,8 @@ export const CardModelService = {
           data: {
             tier,
             nom: input.nom,
-            rectoUrl: input.rectoUrl,
-            versoUrl: input.versoUrl,
+            rectoUrl,
+            versoUrl,
             actif: input.actif ?? false,
           },
         });
@@ -74,8 +97,10 @@ export const CardModelService = {
   },
 
   async update(id: number, input: PatchModeleCarteInput) {
+    const rectoUrl = input.rectoUrl !== undefined ? storedRef(input.rectoUrl) : undefined;
+    const versoUrl = input.versoUrl !== undefined ? storedRef(input.versoUrl) : undefined;
     try {
-      return await prisma.$transaction(async tx => {
+      const result = await prisma.$transaction(async tx => {
         const existant = await tx.cardModel.findUnique({ where: { id } });
         if (!existant) throw notFound("Modèle de carte introuvable");
         if (input.actif === true) {
@@ -88,13 +113,16 @@ export const CardModelService = {
           where: { id },
           data: {
             ...(input.nom !== undefined && { nom: input.nom }),
-            ...(input.rectoUrl !== undefined && { rectoUrl: input.rectoUrl }),
-            ...(input.versoUrl !== undefined && { versoUrl: input.versoUrl }),
+            ...(rectoUrl !== undefined && { rectoUrl }),
+            ...(versoUrl !== undefined && { versoUrl }),
             ...(input.actif !== undefined && { actif: input.actif }),
           },
         });
-        return { modele: dto(modele) };
+        return { modele: dto(modele), replaced: [existant.rectoUrl, existant.versoUrl].filter(ref => ref !== modele.rectoUrl && ref !== modele.versoUrl) };
       });
+      // Les images remplacées ne servent plus à rien : on les retire du stockage.
+      await releaseImages(result.replaced);
+      return { modele: result.modele };
     } catch (e) {
       if (isUniqueViolation(e)) throw ACTIF_EXISTANT();
       throw e;
@@ -106,8 +134,10 @@ export const CardModelService = {
    * Supprimer le modèle actif laisse la formule sans modèle : le client voit alors l'aperçu par défaut.
    */
   async remove(id: number) {
+    const existant = await prisma.cardModel.findUnique({ where: { id } });
     const { count } = await prisma.cardModel.deleteMany({ where: { id } });
     if (count === 0) throw notFound("Modèle de carte introuvable");
+    if (existant) await releaseImages([existant.rectoUrl, existant.versoUrl]);
     return { ok: true as const };
   },
 

@@ -111,11 +111,16 @@ Authentification : en-tête `Authorization: Bearer <token>`.
 
 L'administration définit, **par formule** (essentielle, pro, signature), le recto et le verso de la carte que le client
 voit quand il demande une carte. Un seul modèle est **actif** par formule (index unique partiel en base ; activer un modèle
-désactive l'ancien). Les images sont des adresses `https://` déjà hébergées (Cloudinary…), comme les fichiers d'impression.
+désactive l'ancien). Les images sont **téléversées** par l'administration : même chaîne que les médias de fiche (type
+vérifié sur les premiers octets, conversion WebP par FFmpeg, stockage S3 sous `card-models/`), images seulement, 12 Mo max.
+La base garde une référence relative `/api/media/cartes/<uuid>.webp` ; les réponses la rendent absolue. Les anciens modèles
+créés avec un lien `https://` restent valides. Un fichier remplacé ou supprimé est retiré du stockage (au mieux).
 
 | Méthode | Route | Accès | Rôle |
 |---|---|---|---|
 | GET | `/admin/production/modeles-cartes` | admin | tous les modèles, par formule (actif en premier) |
+| POST | `/admin/production/modeles-cartes/images` | admin | corps binaire (JPEG, PNG, WebP) → `{ url }` à placer dans `rectoUrl` / `versoUrl` |
+| GET | `/api/media/cartes/:fileName` | public | sert l'image (balise `<img>` du client, sans jeton) |
 | POST | `/admin/production/modeles-cartes` | admin | `{ tier, nom, rectoUrl, versoUrl, actif? }` |
 | PATCH | `/admin/production/modeles-cartes/:id` | admin | `{ nom?, rectoUrl?, versoUrl?, actif? }` (`actif: true` désactive l'ancien) |
 | DELETE | `/admin/production/modeles-cartes/:id` | admin | supprime le modèle (les demandes passées ne sont pas touchées) |
