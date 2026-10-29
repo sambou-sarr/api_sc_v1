@@ -1,0 +1,774 @@
+From 45245df8b34678d3a7d8c39036245c96a4dbeaa7 Mon Sep 17 00:00:00 2001
+From: Claude <claude@users.noreply.anthropic.com>
+Date: Thu, 29 Oct 2026 19:12:23 +0000
+Subject: [PATCH] =?UTF-8?q?feat(cartes):=20t=C3=A9l=C3=A9versement=20des?=
+ =?UTF-8?q?=20images=20de=20mod=C3=A8le=20de=20carte=20(recto=20/=20verso)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- POST /admin/production/modeles-cartes/images : corps binaire (JPEG, PNG, WebP, 12 Mo) → { url } ; même chaîne que
+  les médias de fiche (signature vérifiée, WebP par FFmpeg, S3 sous card-models/), images seulement
+- GET /api/media/cartes/:fileName : service public des images (déclaré avant la route générique)
+- les modèles acceptent un fichier téléversé ou un lien https (anciens modèles) ; référence relative persistée,
+  adresses absolues en réponse ; un fichier remplacé ou supprimé est retiré du stockage (sauf s'il sert encore)
+- extraction de streamPublicMedia (en-têtes de cache / plage / CORP) partagée entre médias de fiche et images de carte
+- tests : 116 au total, dont envoi, service public, nettoyage et ordre des routes
+---
+ README.md                                     |   7 +-
+ src/modules/media/card-images.service.test.ts | 130 ++++++++++++++++++
+ src/modules/media/card-images.service.ts      |  86 ++++++++++++
+ src/modules/media/media.controller.ts         |  55 +++++---
+ src/modules/media/media.routes.ts             |   9 +-
+ src/modules/media/media.validation.ts         |   2 +
+ .../production/card-models.client.test.ts     |   2 +
+ src/modules/production/card-models.schemas.ts |  18 ++-
+ .../production/card-models.service.test.ts    | 106 ++++++++++++++
+ src/modules/production/card-models.service.ts |  52 +++++--
+ .../production/production.controller.ts       |  10 ++
+ src/modules/production/production.routes.ts   |   5 +-
+ 12 files changed, 444 insertions(+), 38 deletions(-)
+ create mode 100644 src/modules/media/card-images.service.test.ts
+ create mode 100644 src/modules/media/card-images.service.ts
+
+diff --git a/README.md b/README.md
+index 38a4e12..38f8bb8 100644
+--- a/README.md
++++ b/README.md
+@@ -111,11 +111,16 @@ Authentification : en-tête `Authorization: Bearer <token>`.
+ 
+ L'administration définit, **par formule** (essentielle, pro, signature), le recto et le verso de la carte que le client
+ voit quand il demande une carte. Un seul modèle est **actif** par formule (index unique partiel en base ; activer un modèle
+-désactive l'ancien). Les images sont des adresses `https://` déjà hébergées (Cloudinary…), comme les fichiers d'impression.
++désactive l'ancien). Les images sont **téléversées** par l'administration : même chaîne que les médias de fiche (type
++vérifié sur les premiers octets, conversion WebP par FFmpeg, stockage S3 sous `card-models/`), images seulement, 12 Mo max.
++La base garde une référence relative `/api/media/cartes/<uuid>.webp` ; les réponses la rendent absolue. Les anciens modèles
++créés avec un lien `https://` restent valides. Un fichier remplacé ou supprimé est retiré du stockage (au mieux).
+ 
+ | Méthode | Route | Accès | Rôle |
+ |---|---|---|---|
+ | GET | `/admin/production/modeles-cartes` | admin | tous les modèles, par formule (actif en premier) |
++| POST | `/admin/production/modeles-cartes/images` | admin | corps binaire (JPEG, PNG, WebP) → `{ url }` à placer dans `rectoUrl` / `versoUrl` |
++| GET | `/api/media/cartes/:fileName` | public | sert l'image (balise `<img>` du client, sans jeton) |
+ | POST | `/admin/production/modeles-cartes` | admin | `{ tier, nom, rectoUrl, versoUrl, actif? }` |
+ | PATCH | `/admin/production/modeles-cartes/:id` | admin | `{ nom?, rectoUrl?, versoUrl?, actif? }` (`actif: true` désactive l'ancien) |
+ | DELETE | `/admin/production/modeles-cartes/:id` | admin | supprime le modèle (les demandes passées ne sont pas touchées) |
+diff --git a/src/modules/media/card-images.service.test.ts b/src/modules/media/card-images.service.test.ts
+new file mode 100644
+index 0000000..c294c7a
+--- /dev/null
++++ b/src/modules/media/card-images.service.test.ts
+@@ -0,0 +1,130 @@
++import { beforeEach, describe, expect, it, vi } from "vitest";
++
++const mocks = vi.hoisted(() => ({
++  put: vi.fn(),
++  get: vi.fn(),
++  del: vi.fn(),
++  optimize: vi.fn(),
++}));
++
++vi.mock("../../config/env", () => ({ env: { SERVER: "http://localhost:4000/api" } }));
++vi.mock("../../infrastructure/storage/s3.storage", () => ({
++  S3StorageProvider: class {
++    put = mocks.put;
++    get = mocks.get;
++    delete = mocks.del;
++  },
++}));
++vi.mock("./media.processor", () => ({ optimizeMedia: mocks.optimize, probeDurationSeconds: vi.fn() }));
++vi.mock("../../database/prisma/prisma-client", () => ({ prisma: {} }));
++
++import { CardImageService } from "./card-images.service";
++import { mediaRouter } from "./media.routes";
++
++const PNG = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.alloc(64)]);
++const UUID = "0a1b2c3d-0000-4000-8000-000000000001";
++
++beforeEach(() => {
++  vi.clearAllMocks();
++  mocks.put.mockResolvedValue(undefined);
++  mocks.del.mockResolvedValue(undefined);
++  mocks.optimize.mockResolvedValue({ body: Buffer.from("webp-optimise"), mime: "image/webp" });
++});
++
++describe("CardImageService.upload", () => {
++  it("optimise l'image, la range sous card-models/ en WebP et renvoie l'adresse publique", async () => {
++    const { url } = await CardImageService.upload(PNG, "image/png");
++    expect(mocks.optimize).toHaveBeenCalledWith(PNG, "image/png");
++    const call = mocks.put.mock.calls[0][0];
++    expect(call.key).toMatch(/^card-models\/[0-9a-f-]{36}\.webp$/);
++    expect(call).toMatchObject({ body: Buffer.from("webp-optimise"), contentType: "image/webp" });
++    expect(url).toBe(`http://localhost:4000/api/media/cartes/${call.key.replace("card-models/", "")}`);
++  });
++
++  it("deux envois ne s'écrasent jamais (noms uniques)", async () => {
++    await CardImageService.upload(PNG, "image/png");
++    await CardImageService.upload(PNG, "image/png");
++    expect(mocks.put.mock.calls[0][0].key).not.toBe(mocks.put.mock.calls[1][0].key);
++  });
++
++  it.each([
++    ["fichier vide", Buffer.alloc(0), "image/png", "FICHIER_VIDE"],
++    ["vidéo (images seulement)", Buffer.from("....ftypisom"), "video/mp4", "FORMAT_IMAGE_REQUIS"],
++    ["format inconnu", PNG, "application/pdf", "FORMAT_MEDIA_INVALIDE"],
++    ["contenu qui n'est pas un PNG malgré l'en-tête", Buffer.from("<html>pas une image</html>"), "image/png", expect.any(String)],
++  ])("refuse : %s", async (_label, body, mime, code) => {
++    await expect(CardImageService.upload(body as Buffer, mime)).rejects.toMatchObject({ status: 422, code });
++    expect(mocks.put).not.toHaveBeenCalled();
++  });
++
++  it("refuse une image de plus de 12 Mo", async () => {
++    const big = Buffer.concat([PNG, Buffer.alloc(12 * 1024 * 1024)]);
++    await expect(CardImageService.upload(big, "image/png")).rejects.toMatchObject({ code: "MEDIA_TROP_LOURD" });
++    expect(mocks.optimize).not.toHaveBeenCalled();
++  });
++
++  it("laisse remonter l'erreur de l'optimiseur sans rien stocker", async () => {
++    mocks.optimize.mockRejectedValue(Object.assign(new Error("ffmpeg"), { status: 503, code: "MEDIA_PROCESSOR_UNAVAILABLE" }));
++    await expect(CardImageService.upload(PNG, "image/png")).rejects.toMatchObject({ code: "MEDIA_PROCESSOR_UNAVAILABLE" });
++    expect(mocks.put).not.toHaveBeenCalled();
++  });
++});
++
++describe("CardImageService.getPublic", () => {
++  it("lit l'image dans card-models/ et la renvoie en WebP par défaut", async () => {
++    mocks.get.mockResolvedValue({ body: {}, contentType: undefined, contentLength: 12 });
++    const media = await CardImageService.getPublic(`${UUID}.webp`, "bytes=0-9");
++    expect(mocks.get).toHaveBeenCalledWith(`card-models/${UUID}.webp`, "bytes=0-9");
++    expect(media.contentType).toBe("image/webp");
++  });
++
++  it.each(["../secret.webp", `${UUID}.png`, "x.webp", `${UUID}.webp/../a`])("refuse le nom %s sans toucher au stockage", async name => {
++    await expect(CardImageService.getPublic(name)).rejects.toMatchObject({ status: 404 });
++    expect(mocks.get).not.toHaveBeenCalled();
++  });
++
++  it("une image absente du stockage donne 404 (et non 500)", async () => {
++    mocks.get.mockRejectedValue(Object.assign(new Error("nope"), { name: "NoSuchKey" }));
++    await expect(CardImageService.getPublic(`${UUID}.webp`)).rejects.toMatchObject({ status: 404 });
++  });
++
++  it("une panne du stockage reste une erreur serveur", async () => {
++    mocks.get.mockRejectedValue(new Error("réseau"));
++    await expect(CardImageService.getPublic(`${UUID}.webp`)).rejects.toThrow("réseau");
++  });
++});
++
++describe("CardImageService.deleteRef / toAbsolute", () => {
++  it("supprime le fichier d'une référence relative ou absolue de l'API", async () => {
++    await CardImageService.deleteRef(`/api/media/cartes/${UUID}.webp`);
++    await CardImageService.deleteRef(`http://localhost:4000/api/media/cartes/${UUID}.webp`);
++    expect(mocks.del).toHaveBeenCalledTimes(2);
++    expect(mocks.del).toHaveBeenCalledWith(`card-models/${UUID}.webp`);
++  });
++
++  it.each(["https://res.cloudinary.com/x/r.png", "/api/media/12/" + UUID + ".webp", "", null, undefined])(
++    "ignore ce qui n'est pas une image de modèle de carte : %s",
++    async ref => {
++      await CardImageService.deleteRef(ref);
++      expect(mocks.del).not.toHaveBeenCalled();
++    }
++  );
++
++  it("un échec de suppression ne lève pas d'erreur", async () => {
++    mocks.del.mockRejectedValue(new Error("S3 indisponible"));
++    await expect(CardImageService.deleteRef(`/api/media/cartes/${UUID}.webp`)).resolves.toBeUndefined();
++  });
++
++  it("toAbsolute n'ajoute l'origine qu'aux références de l'API", () => {
++    expect(CardImageService.toAbsolute(`/api/media/cartes/${UUID}.webp`)).toBe(`http://localhost:4000/api/media/cartes/${UUID}.webp`);
++    expect(CardImageService.toAbsolute("https://res.cloudinary.com/x/r.png")).toBe("https://res.cloudinary.com/x/r.png");
++  });
++});
++
++describe("route publique des images de carte", () => {
++  it("est déclarée AVANT la route générique, sinon « cartes » serait lu comme un identifiant de fiche", () => {
++    const paths = (mediaRouter.stack as { route?: { path: string } }[]).map(l => l.route?.path);
++    expect(paths.indexOf("/cartes/:fileName")).toBeGreaterThanOrEqual(0);
++    expect(paths.indexOf("/cartes/:fileName")).toBeLessThan(paths.indexOf("/:ficheId/:key"));
++  });
++});
+diff --git a/src/modules/media/card-images.service.ts b/src/modules/media/card-images.service.ts
+new file mode 100644
+index 0000000..54d8364
+--- /dev/null
++++ b/src/modules/media/card-images.service.ts
+@@ -0,0 +1,86 @@
++import { randomUUID } from "node:crypto";
++import { env } from "../../config/env";
++import { S3StorageProvider } from "../../infrastructure/storage/s3.storage";
++import { notFound, unprocessable } from "../../lib/httpError";
++import { logger } from "../../lib/logger";
++import { optimizeMedia } from "./media.processor";
++import {
++  MEDIA_FORMATS,
++  mediaMaxBytes,
++  resolveMediaMime,
++  validateMediaSignature,
++} from "./media.validation";
++
++/*
++  Images des modèles de carte (recto / verso) téléversées par l'administration.
++  Même chaîne que les médias de fiche (type vérifié sur les premiers octets, conversion WebP par FFmpeg, stockage S3),
++  mais : images seulement, rangées sous `card-models/`, servies publiquement (le navigateur du client les charge
++  directement avec une balise <img>, sans jeton).
++  Référence persistée : `/api/media/cartes/<uuid>.webp` (relative, comme les médias de fiche).
++*/
++const PREFIX = "card-models/";
++
++/** Référence relative d'une image de modèle de carte, éventuellement précédée de l'origine de l'API. */
++const REF = /^(?:https?:\/\/[^/\s]+)?(\/api\/media\/cartes\/([0-9a-f-]{36}\.webp))$/i;
++export const CARD_IMAGE_FILE = /^[0-9a-f-]{36}\.webp$/i;
++export const isCardImageRef = (value: string) => /^\/api\/media\/cartes\/[0-9a-f-]{36}\.webp$/i.test(value);
++
++let storage: S3StorageProvider | undefined;
++const getStorage = () => (storage ??= new S3StorageProvider());
++
++const apiOrigin = () => env.SERVER.replace(/\/api\/?$/, "").replace(/\/$/, "");
++
++export const CardImageService = {
++  async upload(body: Buffer, rawMime?: string) {
++    if (!Buffer.isBuffer(body) || body.length === 0) {
++      throw unprocessable("FICHIER_VIDE", "Le fichier envoyé est vide");
++    }
++    const mime = resolveMediaMime(rawMime);
++    if (MEDIA_FORMATS[mime].kind !== "image") {
++      throw unprocessable("FORMAT_IMAGE_REQUIS", "Une image est attendue (JPEG, PNG ou WebP)");
++    }
++    if (body.length > mediaMaxBytes("image")) {
++      throw unprocessable("MEDIA_TROP_LOURD", "Une image ne peut pas dépasser 12 Mo");
++    }
++    validateMediaSignature(body, mime);
++
++    const optimized = await optimizeMedia(body, mime);
++    if (optimized.body.length > mediaMaxBytes("image")) {
++      throw unprocessable("MEDIA_TROP_LOURD_APRES_OPTIMISATION", "L’image optimisée dépasse 12 Mo");
++    }
++    const fileName = `${randomUUID()}.webp`;
++    await getStorage().put({ key: `${PREFIX}${fileName}`, body: optimized.body, contentType: "image/webp" });
++    return { url: `${apiOrigin()}/api/media/cartes/${fileName}` };
++  },
++
++  async getPublic(fileName: string, range?: string) {
++    if (!CARD_IMAGE_FILE.test(fileName)) throw notFound("Image introuvable");
++    try {
++      const object = await getStorage().get(`${PREFIX}${fileName}`, range);
++      return { ...object, contentType: object.contentType ?? "image/webp" };
++    } catch (e) {
++      const err = e as { name?: string; $metadata?: { httpStatusCode?: number } };
++      if (err.name === "NoSuchKey" || err.$metadata?.httpStatusCode === 404) throw notFound("Image introuvable");
++      throw e;
++    }
++  },
++
++  /** Rend absolue une référence relative (affichage) ; les adresses https externes restent telles quelles. */
++  toAbsolute(ref: string) {
++    return ref.startsWith("/api/media/") ? `${apiOrigin()}${ref}` : ref;
++  },
++
++  /**
++   * Supprime le fichier d'une référence qui nous appartient. Sans effet pour une adresse externe.
++   * Au mieux : un échec de suppression ne doit jamais faire échouer l'opération de l'administrateur.
++   */
++  async deleteRef(ref: string | null | undefined) {
++    const match = ref ? REF.exec(ref) : null;
++    if (!match) return;
++    try {
++      await getStorage().delete(`${PREFIX}${match[2]}`);
++    } catch (e) {
++      logger.warn(`Suppression de l'image de modèle de carte impossible (${match[2]}) : ${(e as Error).message}`);
++    }
++  },
++};
+diff --git a/src/modules/media/media.controller.ts b/src/modules/media/media.controller.ts
+index 0929608..13bcccd 100644
+--- a/src/modules/media/media.controller.ts
++++ b/src/modules/media/media.controller.ts
+@@ -1,9 +1,35 @@
+ import type { Request, Response } from "express";
+ import { asyncHandler } from "../../lib/asyncHandler";
+ import { HttpError } from "../../lib/httpError";
++import { CardImageService } from "./card-images.service";
+ import { MediaService } from "./media.service";
+ import type { MediaPurpose } from "./media.validation";
+ 
++type PublicMedia = Awaited<ReturnType<typeof MediaService.getPublic>>;
++
++/** Envoie un média public en flux (en-têtes de cache, plage d'octets, ressource inter-origines). */
++function streamPublicMedia(res: Response, media: PublicMedia) {
++  res.setHeader("Content-Type", media.contentType);
++  res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
++  res.setHeader("Accept-Ranges", "bytes");
++  if (media.contentRange) {
++    res.status(206);
++    res.setHeader("Content-Range", media.contentRange);
++  }
++  res.setHeader("X-Content-Type-Options", "nosniff");
++  // helmet() pose « same-origin » par défaut : le navigateur bloquerait alors <img src="http://api…/api/media/…">
++  // dès que le front est sur une autre origine (ex. :5173 → :4000). Ces médias sont publics par conception.
++  res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
++  if (media.contentLength !== undefined) {
++    res.setHeader("Content-Length", String(media.contentLength));
++  }
++  media.body.on("error", () => {
++    if (!res.headersSent) res.status(502);
++    res.end();
++  });
++  media.body.pipe(res);
++}
++
+ export const MediaController = {
+   upload: asyncHandler(async (req: Request, res: Response) => {
+     if (!Buffer.isBuffer(req.body)) {
+@@ -26,24 +52,15 @@ export const MediaController = {
+       String(req.params.key),
+       typeof req.headers.range === "string" ? req.headers.range : undefined
+     );
+-    res.setHeader("Content-Type", media.contentType);
+-    res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+-    res.setHeader("Accept-Ranges", "bytes");
+-    if (media.contentRange) {
+-      res.status(206);
+-      res.setHeader("Content-Range", media.contentRange);
+-    }
+-    res.setHeader("X-Content-Type-Options", "nosniff");
+-    // helmet() pose « same-origin » par défaut : le navigateur bloquerait alors <img src="http://api…/api/media/…">
+-    // dès que le front est sur une autre origine (ex. :5173 → :4000). Ces médias sont publics par conception.
+-    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+-    if (media.contentLength !== undefined) {
+-      res.setHeader("Content-Length", String(media.contentLength));
+-    }
+-    media.body.on("error", () => {
+-      if (!res.headersSent) res.status(502);
+-      res.end();
+-    });
+-    media.body.pipe(res);
++    streamPublicMedia(res, media);
++  }),
++
++  /** Image d'un modèle de carte (publique : chargée par une balise <img>, sans jeton). */
++  getCardImage: asyncHandler(async (req: Request, res: Response) => {
++    const media = await CardImageService.getPublic(
++      String(req.params.fileName),
++      typeof req.headers.range === "string" ? req.headers.range : undefined
++    );
++    streamPublicMedia(res, media);
+   }),
+ }
+diff --git a/src/modules/media/media.routes.ts b/src/modules/media/media.routes.ts
+index 1526bcd..b2f5b8c 100644
+--- a/src/modules/media/media.routes.ts
++++ b/src/modules/media/media.routes.ts
+@@ -1,10 +1,17 @@
+ import { Router } from "express";
+ import { validate } from "../../middlewares/validate";
+ import { MediaController } from "./media.controller";
+-import { publicMediaParams } from "./media.validation";
++import { cardImageParams, publicMediaParams } from "./media.validation";
+ 
+ export const mediaRouter = Router();
+ 
++// Avant la route générique : « cartes » ne doit pas être lu comme un identifiant de fiche.
++mediaRouter.get(
++  "/cartes/:fileName",
++  validate({ params: cardImageParams }),
++  MediaController.getCardImage
++);
++
+ mediaRouter.get(
+   "/:ficheId/:key",
+   validate({ params: publicMediaParams }),
+diff --git a/src/modules/media/media.validation.ts b/src/modules/media/media.validation.ts
+index a897f86..3bb3b31 100644
+--- a/src/modules/media/media.validation.ts
++++ b/src/modules/media/media.validation.ts
+@@ -6,6 +6,8 @@ export const publicMediaParams = z.object({
+   key: z.string().regex(/^[0-9a-f-]{36}\.(jpg|png|webp|mp4|webm)$/i),
+ });
+ 
++export const cardImageParams = z.object({ fileName: z.string().regex(/^[0-9a-f-]{36}\.webp$/i) });
++
+ // `purpose=menu` : vidéo d'un plat du menu interactif, soumise à une durée maximale (plan_limits.maxMenuVideoSeconds).
+ export const mediaUploadQuery = z.object({ purpose: z.enum(["menu"]).optional() });
+ export type MediaPurpose = z.infer<typeof mediaUploadQuery>["purpose"];
+diff --git a/src/modules/production/card-models.client.test.ts b/src/modules/production/card-models.client.test.ts
+index 516d2e8..7ecace6 100644
+--- a/src/modules/production/card-models.client.test.ts
++++ b/src/modules/production/card-models.client.test.ts
+@@ -6,6 +6,8 @@ const mocks = vi.hoisted(() => ({
+   printJobFindFirst: vi.fn(),
+   cardModelFindFirst: vi.fn(),
+ }));
++vi.mock("../../config/env", () => ({ env: { SERVER: "http://localhost:4000/api" } }));
++vi.mock("../../infrastructure/storage/s3.storage", () => ({ S3StorageProvider: class {} }));
+ vi.mock("../../database/prisma/prisma-client", () => ({
+   prisma: {
+     fiche: { findFirst: mocks.ficheFindFirst },
+diff --git a/src/modules/production/card-models.schemas.ts b/src/modules/production/card-models.schemas.ts
+index 4d36749..1554794 100644
+--- a/src/modules/production/card-models.schemas.ts
++++ b/src/modules/production/card-models.schemas.ts
+@@ -2,15 +2,23 @@ import { z } from "zod";
+ import { tier, urlImage } from "./production.schemas";
+ 
+ // ───────── Modèles de carte (recto / verso) ─────────
+-// Images déjà hébergées (Cloudinary…) : adresse https uniquement, comme les fichiers d'impression.
++// Une image est soit un fichier téléversé par l'administration (POST /modeles-cartes/images, référence
++// `/api/media/cartes/<uuid>.webp`, avec ou sans l'origine de l'API), soit une adresse https déjà hébergée
++// (anciens modèles créés avec un lien).
++const uploadedImage = z
++  .string()
++  .trim()
++  .regex(/^(https?:\/\/[^\s/]+)?\/api\/media\/cartes\/[0-9a-f-]{36}\.webp$/i, "image invalide");
++export const imageRef = z.union([urlImage, uploadedImage]);
++
+ const nom = z.string().trim().min(1, "nom requis").max(80);
+ 
+ export const createModeleCarteSchema = z
+   .object({
+     tier,
+     nom,
+-    rectoUrl: urlImage,
+-    versoUrl: urlImage,
++    rectoUrl: imageRef,
++    versoUrl: imageRef,
+     /** Vrai : ce modèle devient celui que voient les clients de cette formule (l'ancien est désactivé). */
+     actif: z.boolean().optional(),
+   })
+@@ -19,8 +27,8 @@ export const createModeleCarteSchema = z
+ export const patchModeleCarteSchema = z
+   .object({
+     nom: nom.optional(),
+-    rectoUrl: urlImage.optional(),
+-    versoUrl: urlImage.optional(),
++    rectoUrl: imageRef.optional(),
++    versoUrl: imageRef.optional(),
+     actif: z.boolean().optional(),
+   })
+   .strict()
+diff --git a/src/modules/production/card-models.service.test.ts b/src/modules/production/card-models.service.test.ts
+index b70a639..cd052d6 100644
+--- a/src/modules/production/card-models.service.test.ts
++++ b/src/modules/production/card-models.service.test.ts
+@@ -1,6 +1,8 @@
+ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
+ const mocks = vi.hoisted(() => ({
++  storageDelete: vi.fn(),
++  count: vi.fn(),
+   transaction: vi.fn(),
+   findMany: vi.fn(),
+   findFirst: vi.fn(),
+@@ -11,8 +13,17 @@ const mocks = vi.hoisted(() => ({
+   deleteMany: vi.fn(),
+ }));
+ 
++vi.mock("../../config/env", () => ({ env: { SERVER: "http://localhost:4000/api" } }));
++vi.mock("../../infrastructure/storage/s3.storage", () => ({
++  S3StorageProvider: class {
++    put = vi.fn();
++    get = vi.fn();
++    delete = mocks.storageDelete;
++  },
++}));
+ vi.mock("../../database/prisma/prisma-client", () => {
+   const cardModel = {
++    count: mocks.count,
+     findMany: mocks.findMany,
+     findFirst: mocks.findFirst,
+     findUnique: mocks.findUnique,
+@@ -40,8 +51,15 @@ const row = (over: Record<string, unknown> = {}) => ({
+   ...over,
+ });
+ 
++const UUID_A = "0a1b2c3d-0000-4000-8000-000000000001";
++const UUID_B = "0a1b2c3d-0000-4000-8000-000000000002";
++const refA = `/api/media/cartes/${UUID_A}.webp`;
++const refB = `/api/media/cartes/${UUID_B}.webp`;
++
+ beforeEach(() => {
+   vi.clearAllMocks();
++  mocks.count.mockResolvedValue(0);
++  mocks.storageDelete.mockResolvedValue(undefined);
+   const tx = {
+     cardModel: {
+       findUnique: mocks.findUnique,
+@@ -145,12 +163,100 @@ describe("CardModelService.remove / activeFor", () => {
+   });
+ });
+ 
++describe("images téléversées", () => {
++  const base = { tier: "pro" as const, nom: "Pro" };
++  /** Modèle existant ; la mise à jour renvoie la ligne complète, comme une vraie base. */
++  const existing = (r: ReturnType<typeof row>) => {
++    mocks.findUnique.mockResolvedValue(r);
++    mocks.update.mockImplementation(async ({ data }: { data: Record<string, unknown> }) => ({ ...r, ...data }));
++  };
++
++  it("enregistre une référence RELATIVE (indépendante de l'origine de l'API)", async () => {
++    await CardModelService.create({
++      ...base,
++      rectoUrl: `http://localhost:4000${refA}`, // l'URL absolue renvoyée par l'envoi
++      versoUrl: refB,
++    });
++    expect(mocks.create.mock.calls[0][0].data).toMatchObject({ rectoUrl: refA, versoUrl: refB });
++  });
++
++  it("renvoie des adresses ABSOLUES à l'administrateur et au client", async () => {
++    mocks.findMany.mockResolvedValue([row({ rectoUrl: refA, versoUrl: "https://res.cloudinary.com/x/v.png", actif: true })]);
++    const { modeles } = await CardModelService.list();
++    expect(modeles[0].rectoUrl).toBe(`http://localhost:4000${refA}`);
++    expect(modeles[0].versoUrl).toBe("https://res.cloudinary.com/x/v.png"); // lien externe inchangé
++    mocks.findFirst.mockResolvedValue(row({ rectoUrl: refA, versoUrl: refB, actif: true }));
++    const actif = await CardModelService.activeFor("PRO");
++    expect(actif?.rectoUrl).toBe(`http://localhost:4000${refA}`);
++  });
++
++  it.each([
++    ["adresse http d'un autre site", "http://autre-site.example/img.png"],
++    ["chemin relatif quelconque", "/etc/passwd"],
++    ["autre dossier de médias", `/api/media/12/${UUID_A}.webp`],
++  ])("refuse : %s", async (_label, bad) => {
++    await expect(CardModelService.create({ ...base, rectoUrl: bad, versoUrl: refB })).rejects.toMatchObject({
++      status: 422,
++      code: "IMAGE_INVALIDE",
++    });
++    expect(mocks.create).not.toHaveBeenCalled();
++  });
++
++  it("remplacer une image supprime l'ancien fichier du stockage", async () => {
++    existing(row({ id: 5, rectoUrl: refA, versoUrl: refB }));
++    const nouvelle = "/api/media/cartes/0a1b2c3d-0000-4000-8000-000000000003.webp";
++    await CardModelService.update(5, { rectoUrl: nouvelle });
++    expect(mocks.storageDelete).toHaveBeenCalledTimes(1);
++    expect(mocks.storageDelete).toHaveBeenCalledWith(`card-models/${UUID_A}.webp`); // l'ancien recto, pas le verso
++  });
++
++  it("ne supprime pas un fichier encore utilisé par un autre modèle", async () => {
++    existing(row({ id: 5, rectoUrl: refA, versoUrl: refB }));
++    mocks.count.mockResolvedValue(1);
++    await CardModelService.update(5, { rectoUrl: "/api/media/cartes/0a1b2c3d-0000-4000-8000-000000000003.webp" });
++    expect(mocks.storageDelete).not.toHaveBeenCalled();
++  });
++
++  it("remplacer un lien externe ne touche pas au stockage", async () => {
++    existing(row({ id: 5, rectoUrl: "https://res.cloudinary.com/x/r.png", versoUrl: refB }));
++    await CardModelService.update(5, { rectoUrl: refA });
++    expect(mocks.storageDelete).not.toHaveBeenCalled();
++  });
++
++  it("garder les mêmes images (simple renommage) ne supprime rien", async () => {
++    existing(row({ id: 5, rectoUrl: refA, versoUrl: refB }));
++    await CardModelService.update(5, { nom: "Autre nom" });
++    expect(mocks.storageDelete).not.toHaveBeenCalled();
++  });
++
++  it("supprimer un modèle supprime ses deux fichiers", async () => {
++    mocks.findUnique.mockResolvedValue(row({ rectoUrl: refA, versoUrl: refB }));
++    mocks.deleteMany.mockResolvedValue({ count: 1 });
++    await CardModelService.remove(1);
++    expect(mocks.storageDelete.mock.calls.map(c => c[0]).sort()).toEqual([`card-models/${UUID_A}.webp`, `card-models/${UUID_B}.webp`]);
++  });
++
++  it("un échec de suppression du fichier ne fait pas échouer l'opération", async () => {
++    mocks.findUnique.mockResolvedValue(row({ rectoUrl: refA, versoUrl: refB }));
++    mocks.deleteMany.mockResolvedValue({ count: 1 });
++    mocks.storageDelete.mockRejectedValue(new Error("S3 indisponible"));
++    await expect(CardModelService.remove(1)).resolves.toEqual({ ok: true });
++  });
++});
++
+ describe("validation des modèles de carte", () => {
+   const ok = { tier: "pro", nom: "Pro", rectoUrl: "https://cdn.exemple.sn/r.png", versoUrl: "https://cdn.exemple.sn/v.png" };
+ 
+   it("accepte un modèle valide", () => {
+     expect(createModeleCarteSchema.safeParse(ok).success).toBe(true);
+   });
++  it("accepte une image téléversée, en URL absolue (http en local) ou relative", () => {
++    const own = `http://localhost:4000/api/media/cartes/${UUID_A}.webp`;
++    expect(createModeleCarteSchema.safeParse({ ...ok, rectoUrl: own, versoUrl: refB }).success).toBe(true);
++  });
++  it("refuse un fichier téléversé hors du dossier des modèles de carte", () => {
++    expect(createModeleCarteSchema.safeParse({ ...ok, rectoUrl: `/api/media/7/${UUID_A}.webp` }).success).toBe(false);
++  });
+   it.each([
+     ["adresse http (non sécurisée)", { ...ok, rectoUrl: "http://cdn.exemple.sn/r.png" }],
+     ["adresse javascript:", { ...ok, versoUrl: "javascript:alert(1)" }],
+diff --git a/src/modules/production/card-models.service.ts b/src/modules/production/card-models.service.ts
+index 7c379d2..4b67855 100644
+--- a/src/modules/production/card-models.service.ts
++++ b/src/modules/production/card-models.service.ts
+@@ -1,7 +1,9 @@
+ import { Prisma } from "../../database/prisma/generated/prisma/client";
+ import type { CardModel, PlanType } from "../../database/prisma/generated/prisma/client";
+ import { prisma } from "../../database/prisma/prisma-client";
+-import { conflict, notFound } from "../../lib/httpError";
++import { conflict, notFound, unprocessable } from "../../lib/httpError";
++import { normalizeMediaUrl } from "../../lib/media";
++import { CardImageService, isCardImageRef } from "../media/card-images.service";
+ import type { CreateModeleCarteInput, PatchModeleCarteInput } from "./card-models.schemas";
+ 
+ /*
+@@ -14,13 +16,32 @@ import type { CreateModeleCarteInput, PatchModeleCarteInput } from "./card-model
+ const lower = (t: PlanType) => t.toLowerCase() as "essentielle" | "pro" | "signature";
+ const upper = (t: string) => t.toUpperCase() as PlanType;
+ 
++/**
++ * Valeur à persister : référence relative pour nos propres images (indépendante de l'origine de l'API),
++ * adresse https pour un lien externe. Tout le reste est refusé.
++ */
++const storedRef = (value: string): string => {
++  const ref = normalizeMediaUrl(value.trim())!;
++  if (isCardImageRef(ref) || ref.startsWith("https://")) return ref;
++  throw unprocessable("IMAGE_INVALIDE", "Image invalide : téléversez un fichier ou indiquez une adresse https");
++};
++
++/** Supprime les fichiers qui ne sont plus référencés par aucun modèle (au mieux, sans bloquer l'administrateur). */
++const releaseImages = async (refs: string[]) => {
++  for (const ref of new Set(refs)) {
++    if (!isCardImageRef(ref)) continue;
++    const stillUsed = await prisma.cardModel.count({ where: { OR: [{ rectoUrl: ref }, { versoUrl: ref }] } });
++    if (stillUsed === 0) await CardImageService.deleteRef(ref);
++  }
++};
++
+ /** Vue administrateur. */
+ const dto = (m: CardModel) => ({
+   id: m.id,
+   tier: lower(m.tier),
+   nom: m.nom,
+-  rectoUrl: m.rectoUrl,
+-  versoUrl: m.versoUrl,
++  rectoUrl: CardImageService.toAbsolute(m.rectoUrl),
++  versoUrl: CardImageService.toAbsolute(m.versoUrl),
+   actif: m.actif,
+   createdAt: m.createdAt,
+   updatedAt: m.updatedAt,
+@@ -31,8 +52,8 @@ const publicDto = (m: CardModel) => ({
+   id: m.id,
+   tier: lower(m.tier),
+   nom: m.nom,
+-  rectoUrl: m.rectoUrl,
+-  versoUrl: m.versoUrl,
++  rectoUrl: CardImageService.toAbsolute(m.rectoUrl),
++  versoUrl: CardImageService.toAbsolute(m.versoUrl),
+ });
+ 
+ const isUniqueViolation = (e: unknown) =>
+@@ -51,6 +72,8 @@ export const CardModelService = {
+ 
+   async create(input: CreateModeleCarteInput) {
+     const tier = upper(input.tier);
++    const rectoUrl = storedRef(input.rectoUrl);
++    const versoUrl = storedRef(input.versoUrl);
+     try {
+       return await prisma.$transaction(async tx => {
+         if (input.actif) {
+@@ -60,8 +83,8 @@ export const CardModelService = {
+           data: {
+             tier,
+             nom: input.nom,
+-            rectoUrl: input.rectoUrl,
+-            versoUrl: input.versoUrl,
++            rectoUrl,
++            versoUrl,
+             actif: input.actif ?? false,
+           },
+         });
+@@ -74,8 +97,10 @@ export const CardModelService = {
+   },
+ 
+   async update(id: number, input: PatchModeleCarteInput) {
++    const rectoUrl = input.rectoUrl !== undefined ? storedRef(input.rectoUrl) : undefined;
++    const versoUrl = input.versoUrl !== undefined ? storedRef(input.versoUrl) : undefined;
+     try {
+-      return await prisma.$transaction(async tx => {
++      const result = await prisma.$transaction(async tx => {
+         const existant = await tx.cardModel.findUnique({ where: { id } });
+         if (!existant) throw notFound("Modèle de carte introuvable");
+         if (input.actif === true) {
+@@ -88,13 +113,16 @@ export const CardModelService = {
+           where: { id },
+           data: {
+             ...(input.nom !== undefined && { nom: input.nom }),
+-            ...(input.rectoUrl !== undefined && { rectoUrl: input.rectoUrl }),
+-            ...(input.versoUrl !== undefined && { versoUrl: input.versoUrl }),
++            ...(rectoUrl !== undefined && { rectoUrl }),
++            ...(versoUrl !== undefined && { versoUrl }),
+             ...(input.actif !== undefined && { actif: input.actif }),
+           },
+         });
+-        return { modele: dto(modele) };
++        return { modele: dto(modele), replaced: [existant.rectoUrl, existant.versoUrl].filter(ref => ref !== modele.rectoUrl && ref !== modele.versoUrl) };
+       });
++      // Les images remplacées ne servent plus à rien : on les retire du stockage.
++      await releaseImages(result.replaced);
++      return { modele: result.modele };
+     } catch (e) {
+       if (isUniqueViolation(e)) throw ACTIF_EXISTANT();
+       throw e;
+@@ -106,8 +134,10 @@ export const CardModelService = {
+    * Supprimer le modèle actif laisse la formule sans modèle : le client voit alors l'aperçu par défaut.
+    */
+   async remove(id: number) {
++    const existant = await prisma.cardModel.findUnique({ where: { id } });
+     const { count } = await prisma.cardModel.deleteMany({ where: { id } });
+     if (count === 0) throw notFound("Modèle de carte introuvable");
++    if (existant) await releaseImages([existant.rectoUrl, existant.versoUrl]);
+     return { ok: true as const };
+   },
+ 
+diff --git a/src/modules/production/production.controller.ts b/src/modules/production/production.controller.ts
+index 3957267..0801e97 100644
+--- a/src/modules/production/production.controller.ts
++++ b/src/modules/production/production.controller.ts
+@@ -1,5 +1,7 @@
+ import { asyncHandler } from "../../lib/asyncHandler";
++import { HttpError } from "../../lib/httpError";
+ import type { CreateModeleCarteInput, PatchModeleCarteInput } from "./card-models.schemas";
++import { CardImageService } from "../media/card-images.service";
+ import { CardModelService } from "./card-models.service";
+ import type {
+   CreateCarteInput,
+@@ -38,6 +40,14 @@ export const ProductionController = {
+   updateModeleCarte: asyncHandler(async (req, res) => {
+     res.json(await CardModelService.update(Number(req.params.id), req.body as PatchModeleCarteInput));
+   }),
++  /** Envoi d'une image de carte (corps binaire, comme l'envoi de médias de fiche). Renvoie `{ url }`. */
++  uploadModeleCarteImage: asyncHandler(async (req, res) => {
++    if (!Buffer.isBuffer(req.body)) {
++      throw new HttpError(400, "CORPS_MEDIA_INVALIDE", "Le fichier doit être envoyé en binaire");
++    }
++    const contentType = req.headers["content-type"];
++    res.status(201).json(await CardImageService.upload(req.body, Array.isArray(contentType) ? contentType[0] : contentType));
++  }),
+   deleteModeleCarte: asyncHandler(async (req, res) => {
+     res.json(await CardModelService.remove(Number(req.params.id)));
+   }),
+diff --git a/src/modules/production/production.routes.ts b/src/modules/production/production.routes.ts
+index c288da8..d631546 100644
+--- a/src/modules/production/production.routes.ts
++++ b/src/modules/production/production.routes.ts
+@@ -3,6 +3,7 @@ import rateLimit from "express-rate-limit";
+ import { requireAuth, requireRole } from "../../middlewares/auth";
+ import { validate } from "../../middlewares/validate";
+ import { idParam } from "../fiches/fiches.schemas";
++import { raw } from "express";
+ import { createModeleCarteSchema, patchModeleCarteSchema } from "./card-models.schemas";
+ import { ProductionController } from "./production.controller";
+ import {
+@@ -34,7 +35,9 @@ productionRouter.patch("/cartes/:id", validate({ params: idParam, body: patchCar
+ // Modèles de carte (recto / verso affichés au client dans sa demande de carte) — un seul actif par formule
+ // GET    /modeles-cartes
+ productionRouter.get("/modeles-cartes", ProductionController.listModelesCartes);
+-// POST   /modeles-cartes                  { tier, nom, rectoUrl, versoUrl, actif? }
++// POST   /modeles-cartes/images           corps binaire (JPEG, PNG ou WebP, 12 Mo max) → { url } à mettre dans rectoUrl / versoUrl
++productionRouter.post("/modeles-cartes/images", raw({ type: () => true, limit: "13mb" }), ProductionController.uploadModeleCarteImage);
++// POST   /modeles-cartes                  { tier, nom, rectoUrl, versoUrl, actif? }  (image = url renvoyée ci-dessus, ou lien https)
+ productionRouter.post("/modeles-cartes", validate({ body: createModeleCarteSchema }), ProductionController.createModeleCarte);
+ // PATCH  /modeles-cartes/:id              { nom?, rectoUrl?, versoUrl?, actif? }   actif:true désactive l'ancien
+ productionRouter.patch("/modeles-cartes/:id", validate({ params: idParam, body: patchModeleCarteSchema }), ProductionController.updateModeleCarte);
+-- 
+2.43.0
+
