@@ -358,7 +358,9 @@ export const SubscriptionScalarFieldEnum = {
   canceledAt: 'canceledAt',
   amountFcfa: 'amountFcfa',
   paymentRef: 'paymentRef',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  ficheNomSnapshot: 'ficheNomSnapshot',
+  ficheSlugSnapshot: 'ficheSlugSnapshot'
 } as const
 
 export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
@@ -378,7 +380,9 @@ export const PaymentScalarFieldEnum = {
   failureReason: 'failureReason',
   paidAt: 'paidAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  ficheNomSnapshot: 'ficheNomSnapshot',
+  ficheSlugSnapshot: 'ficheSlugSnapshot'
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]

@@ -307,8 +307,8 @@ model Subscription {
   plan       Plan               @relation(fields: [planId], references: [id])
 
 
-  // ficheNomSnapshot  String?
-  // ficheSlugSnapshot String
+  ficheNomSnapshot  String? 
+  ficheSlugSnapshot String @default("valeur-par-defaut")
   payments   Payment[]
 
   @@index([ficheId, status])
@@ -336,8 +336,8 @@ model Payment {
   subscription      Subscription?   @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
 
 
-  // ficheNomSnapshot  String?
-  // ficheSlugSnapshot String
+  ficheNomSnapshot  String?
+  ficheSlugSnapshot String @default("valeur-par-defaut")
 
   @@index([ficheId, status, createdAt])
   @@map("payments")

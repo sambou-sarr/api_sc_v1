@@ -10,6 +10,7 @@ import {
   type Theme,
 } from "../../../database/prisma/generated/prisma/client";
 import { prisma } from "../../../database/prisma/prisma-client";
+import { belongTo } from "../../../lib/access";
 import {
   HttpError,
   conflict,
@@ -634,43 +635,48 @@ export const FicheService = {
   },
 
   deleteFiche: async (user: AuthUser, ficheId: number) => {
-    console.log({ user, ficheId });
-
-    const fiche = await prisma.fiche.findFirst({
-      where: {
-        id: ficheId,
-        userId: user.id,
-      },
-      include: {
-        subscriptions: {
-          where: {
-            status: "ACTIVE",
-          },
-          select: {
-            id: true,
-            status: true,
-            endsAt: true,
+    prisma.$transaction(async tx => {
+      const fiche = await tx.fiche.findFirst({
+        where: {
+          id: ficheId,
+          userId: user.id,
+        },
+        include: {
+          subscriptions: {
+            where: {
+              status: "ACTIVE",
+            },
+            select: {
+              id: true,
+              status: true,
+              endsAt: true,
+            },
           },
         },
-      },
+      });
+
+      if (!fiche) {
+        throw notFound("Fiche introuvable");
+      }
+      belongTo(user, fiche);
+
+      console.log(fiche);
+
+      // save snapshot
+      // delete fiche
+
+
+     
+
+      // await prisma.fiche.delete({
+      //   where: {
+      //     id: fiche.id,
+      //   },
+      // });
     });
-
-    // if (!fiche) {
-    //   throw notFound("Fiche introuvable");
-    // }
-
-    console.log(fiche);
-    return fiche;
-    //     ficheNomSnapshot
-    // ficheSlugSnapshot
-
-    // await prisma.fiche.delete({
-    //   where: {
-    //     id: fiche.id,
-    //   },
-    // });
   },
 };
+
 async function effectiveByFiche(ids: number[]) {
   const rows = await prisma.subscription.findMany({
     where: {
