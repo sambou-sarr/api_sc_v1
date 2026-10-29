@@ -7,7 +7,11 @@ import type { MediaPurpose } from "./media.validation";
 export const MediaController = {
   upload: asyncHandler(async (req: Request, res: Response) => {
     if (!Buffer.isBuffer(req.body)) {
-      throw new HttpError(400, "CORPS_MEDIA_INVALIDE", "Le fichier doit être envoyé en binaire");
+      throw new HttpError(
+        400,
+        "CORPS_MEDIA_INVALIDE",
+        "Le fichier doit être envoyé en binaire"
+      );
     }
     const contentType = req.headers["content-type"];
     const media = await MediaService.upload(
@@ -26,6 +30,7 @@ export const MediaController = {
       String(req.params.key),
       typeof req.headers.range === "string" ? req.headers.range : undefined
     );
+
     res.setHeader("Content-Type", media.contentType);
     res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
     res.setHeader("Accept-Ranges", "bytes");
@@ -46,4 +51,4 @@ export const MediaController = {
     });
     media.body.pipe(res);
   }),
-}
+};
