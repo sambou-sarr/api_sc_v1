@@ -167,7 +167,7 @@ export async function createPurchasedFiches(
   const endsAt = dureeMois ? addMonths(now, dureeMois) : null;
   const items = amountsFcfa.map((amountFcfa, index) => ({
     amountFcfa,
-    slug: `nouvelle-fiche-${randomBytes(8).toString("hex")}`,
+    slug: `${randomBytes(8).toString("hex")}`,
     paymentRef: amountFcfa > 0 ? `${purchaseReference}-${index + 1}` : null,
   }));
   const created = await tx.fiche.createManyAndReturn({
@@ -634,6 +634,8 @@ export const FicheService = {
   },
 
   deleteFiche: async (user: AuthUser, ficheId: number) => {
+    console.log({ user, ficheId });
+
     const fiche = await prisma.fiche.findFirst({
       where: {
         id: ficheId,
@@ -653,15 +655,20 @@ export const FicheService = {
       },
     });
 
-    if (!fiche) {
-      throw notFound("Fiche introuvable");
-    }
+    // if (!fiche) {
+    //   throw notFound("Fiche introuvable");
+    // }
 
-    await prisma.fiche.delete({
-      where: {
-        id: fiche.id,
-      },
-    });
+    console.log(fiche);
+    return fiche;
+    //     ficheNomSnapshot
+    // ficheSlugSnapshot
+
+    // await prisma.fiche.delete({
+    //   where: {
+    //     id: fiche.id,
+    //   },
+    // });
   },
 };
 async function effectiveByFiche(ids: number[]) {
