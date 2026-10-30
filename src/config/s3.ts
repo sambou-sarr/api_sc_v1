@@ -1,5 +1,6 @@
 import { S3Client } from "@aws-sdk/client-s3";
-import { env as  ENV } from "./env";
+import { logger } from "../lib/logger";
+import { env as ENV } from "./env";
 
 /**
  * Valide et instancie le client S3
@@ -12,9 +13,10 @@ export function getS3Client(): { s3Client: S3Client; bucketName: string } {
   const endpoint = ENV.S3_ENDPOINT; // Requis pour Cloudflare R2, MinIO, Scaleway, etc.
 
   if (!accessKeyId || !secretAccessKey || !bucketName) {
-    throw new Error(
+    logger.error(
       "Configuration S3 manquante : Définissez S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY et S3_BUCKET_NAME dans le .env"
     );
+    throw new Error("Erreur de stockage");
   }
 
   const s3Client = new S3Client({
@@ -27,5 +29,4 @@ export function getS3Client(): { s3Client: S3Client; bucketName: string } {
   });
 
   return { s3Client, bucketName };
-
 }

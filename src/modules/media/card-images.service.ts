@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { env } from "../../config/env";
-import { S3StorageProvider } from "../../infrastructure/storage/s3.storage";
+import { s3Storage } from "../../infrastructure/storage/s3.storage";
 import { notFound, unprocessable } from "../../lib/httpError";
 import { logger } from "../../lib/logger";
 import { optimizeMedia } from "./media.processor";
@@ -21,12 +21,13 @@ import {
 const PREFIX = "card-models/";
 
 /** Référence relative d'une image de modèle de carte, éventuellement précédée de l'origine de l'API. */
-const REF = /^(?:https?:\/\/[^/\s]+)?(\/api\/media\/cartes\/([0-9a-f-]{36}\.webp))$/i;
+const REF =
+  /^(?:https?:\/\/[^/\s]+)?(\/api\/media\/cartes\/([0-9a-f-]{36}\.webp))$/i;
 export const CARD_IMAGE_FILE = /^[0-9a-f-]{36}\.webp$/i;
-export const isCardImageRef = (value: string) => /^\/api\/media\/cartes\/[0-9a-f-]{36}\.webp$/i.test(value);
+export const isCardImageRef = (value: string) =>
+  /^\/api\/media\/cartes\/[0-9a-f-]{36}\.webp$/i.test(value);
 
-let storage: S3StorageProvider | undefined;
-const getStorage = () => (storage ??= new S3StorageProvider());
+const getStorage = s3Storage;
 
 const apiOrigin = () => env.SERVER.replace(/\/api\/?$/, "").replace(/\/$/, "");
 
@@ -37,19 +38,32 @@ export const CardImageService = {
     }
     const mime = resolveMediaMime(rawMime);
     if (MEDIA_FORMATS[mime].kind !== "image") {
-      throw unprocessable("FORMAT_IMAGE_REQUIS", "Une image est attendue (JPEG, PNG ou WebP)");
+      throw unprocessable(
+        "FORMAT_IMAGE_REQUIS",
+        "Une image est attendue (JPEG, PNG ou WebP)"
+      );
     }
     if (body.length > mediaMaxBytes("image")) {
-      throw unprocessable("MEDIA_TROP_LOURD", "Une image ne peut pas dépasser 12 Mo");
+      throw unprocessable(
+        "MEDIA_TROP_LOURD",
+        "Une image ne peut pas dépasser 12 Mo"
+      );
     }
     validateMediaSignature(body, mime);
 
     const optimized = await optimizeMedia(body, mime);
     if (optimized.body.length > mediaMaxBytes("image")) {
-      throw unprocessable("MEDIA_TROP_LOURD_APRES_OPTIMISATION", "L’image optimisée dépasse 12 Mo");
+      throw unprocessable(
+        "MEDIA_TROP_LOURD_APRES_OPTIMISATION",
+        "L’image optimisée dépasse 12 Mo"
+      );
     }
     const fileName = `${randomUUID()}.webp`;
-    await getStorage().put({ key: `${PREFIX}${fileName}`, body: optimized.body, contentType: "image/webp" });
+    await getStorage().put({
+      key: `${PREFIX}${fileName}`,
+      body: optimized.body,
+      contentType: "image/webp",
+    });
     return { url: `${apiOrigin()}/api/media/cartes/${fileName}` };
   },
 
@@ -59,8 +73,12 @@ export const CardImageService = {
       const object = await getStorage().get(`${PREFIX}${fileName}`, range);
       return { ...object, contentType: object.contentType ?? "image/webp" };
     } catch (e) {
-      const err = e as { name?: string; $metadata?: { httpStatusCode?: number } };
-      if (err.name === "NoSuchKey" || err.$metadata?.httpStatusCode === 404) throw notFound("Image introuvable");
+      const err = e as {
+        name?: string;
+        $metadata?: { httpStatusCode?: number };
+      };
+      if (err.name === "NoSuchKey" || err.$metadata?.httpStatusCode === 404)
+        throw notFound("Image introuvable");
       throw e;
     }
   },
@@ -80,7 +98,9 @@ export const CardImageService = {
     try {
       await getStorage().delete(`${PREFIX}${match[2]}`);
     } catch (e) {
-      logger.warn(`Suppression de l'image de modèle de carte impossible (${match[2]}) : ${(e as Error).message}`);
+      logger.warn(
+        `Suppression de l'image de modèle de carte impossible (${match[2]}) : ${(e as Error).message}`
+      );
     }
   },
 };

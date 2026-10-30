@@ -1,3 +1,5 @@
+import { env } from "../../config/env";
+
 // emails/password-reset.template.ts
 const escapeHtml = (value: string): string =>
   value
@@ -12,7 +14,7 @@ export function resetPasswordEmailTemplate(
   prenom: string,
   reset_url: string,
   expiration: string,
-  annee: string = String(new Date().getFullYear()),
+  annee: string = String(new Date().getFullYear())
 ) {
   const safeLogo = escapeHtml(logo_url);
   const safePrenom = escapeHtml(prenom);
@@ -45,7 +47,7 @@ export function resetPasswordEmailTemplate(
 
           <tr>
             <td align="center" style="padding:32px 24px 8px 24px;background-color:#ffffff;">
-              <img src="${safeLogo}" alt="Support Connecté" width="200" style="display:block;width:200px;max-width:100%;height:auto;border:0;outline:none;" />
+              <img src="${env.S3_ENDPOINT}/ficheimage/logo.png" alt="Support Connecté" width="200" style="display:block;width:200px;max-width:100%;height:auto;border:0;outline:none;" />
             </td>
           </tr>
 

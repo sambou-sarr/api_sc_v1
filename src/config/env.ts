@@ -28,6 +28,9 @@ const schema = z.object({
   S3_REGION: z.string(),
   S3_BUCKET: z.string().default("ficheImage"),
   FFMPEG_PATH: z.string().default("/usr/bin/ffmpeg"),
+
+  // lOGO PATH
+  LOGO_PATH: z.string().default(`${process.env.SERVER}/logo.png`),
 });
 
 const parsed = schema.safeParse(process.env);

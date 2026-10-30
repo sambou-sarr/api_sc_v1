@@ -1,6 +1,6 @@
 import { prisma } from "../../database/prisma/prisma-client";
+import { s3Storage } from "../../infrastructure/storage/s3.storage";
 import { logger } from "../../lib/logger";
-import { S3StorageProvider } from "../../infrastructure/storage/s3.storage";
 import { ficheInclude } from "../fiches/fiches.dto";
 import { collectStoredMediaKeys } from "./media.validation";
 
@@ -11,7 +11,7 @@ const ORPHAN_GRACE_PERIOD_MS = 24 * 60 * 60 * 1000;
  * when an editor is closed before saving. Runs as a low-frequency background job.
  */
 export async function cleanupOrphanedMedia(now = new Date()): Promise<number> {
-  const storage = new S3StorageProvider();
+  const storage = s3Storage();
   const fiches = await prisma.fiche.findMany({ include: ficheInclude });
   const referenced = new Set<string>();
 
@@ -26,8 +26,15 @@ export async function cleanupOrphanedMedia(now = new Date()): Promise<number> {
   let removed = 0;
 
   for (const object of objects) {
-    const match = object.key.match(/^fiches\/(\d+)\/([0-9a-f-]{36}\.(?:jpg|png|webp|mp4|webm))$/i);
-    if (!match || !object.lastModified || object.lastModified.getTime() > cutoff) continue;
+    const match = object.key.match(
+      /^fiches\/(\d+)\/([0-9a-f-]{36}\.(?:jpg|png|webp|mp4|webm))$/i
+    );
+    if (
+      !match ||
+      !object.lastModified ||
+      object.lastModified.getTime() > cutoff
+    )
+      continue;
     if (referenced.has(object.key)) continue;
 
     try {
@@ -41,6 +48,7 @@ export async function cleanupOrphanedMedia(now = new Date()): Promise<number> {
     }
   }
 
-  if (removed > 0) logger.info("Orphan media objects removed", { count: removed });
+  if (removed > 0)
+    logger.info("Orphan media objects removed", { count: removed });
   return removed;
 }

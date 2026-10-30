@@ -1,15 +1,18 @@
 import { randomUUID } from "node:crypto";
 import { env } from "../../config/env";
 import { prisma } from "../../database/prisma/prisma-client";
-import { S3StorageProvider } from "../../infrastructure/storage/s3.storage";
+import {
+  s3Storage,
+  S3StorageProvider,
+} from "../../infrastructure/storage/s3.storage";
 import { forbidden, notFound, unprocessable } from "../../lib/httpError";
 import type { AuthUser } from "../../types/user";
 import { getPublicSubscription } from "../fiches/services/fiche-public-access";
 import { getEffectiveSubscription } from "../subscriptions/subscriptions.service";
 import { optimizeMedia, probeDurationSeconds } from "./media.processor";
 import {
-  MEDIA_FORMATS,
   assertMenuVideoDuration,
+  MEDIA_FORMATS,
   mediaMaxBytes,
   resolveMediaMime,
   validateMediaSignature,
@@ -17,7 +20,7 @@ import {
 } from "./media.validation";
 
 let storage: S3StorageProvider | undefined;
-const getStorage = () => (storage ??= new S3StorageProvider());
+const getStorage = s3Storage;
 
 function assertAccess(user: AuthUser, fiche: { userId: number | null }) {
   if (user.role !== "ADMIN" && fiche.userId !== user.id) {

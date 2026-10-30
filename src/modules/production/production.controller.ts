@@ -1,7 +1,10 @@
 import { asyncHandler } from "../../lib/asyncHandler";
 import { HttpError } from "../../lib/httpError";
-import type { CreateModeleCarteInput, PatchModeleCarteInput } from "./card-models.schemas";
 import { CardImageService } from "../media/card-images.service";
+import type {
+  CreateModeleCarteInput,
+  PatchModeleCarteInput,
+} from "./card-models.schemas";
 import { CardModelService } from "./card-models.service";
 import type {
   CreateCarteInput,
@@ -21,13 +24,24 @@ export const ProductionController = {
 
   // ───── Cartes ─────
   listCartes: asyncHandler(async (req, res) => {
-    res.json(await ProductionService.listCartes(req.query as unknown as ListCartesQuery));
+    res.json(
+      await ProductionService.listCartes(
+        req.query as unknown as ListCartesQuery
+      )
+    );
   }),
   createCarte: asyncHandler(async (req, res) => {
-    res.status(201).json(await ProductionService.createCarte(req.body as CreateCarteInput));
+    res
+      .status(201)
+      .json(await ProductionService.createCarte(req.body as CreateCarteInput));
   }),
   updateCarte: asyncHandler(async (req, res) => {
-    res.json(await ProductionService.updateCarte(Number(req.params.id), req.body as PatchCarteInput));
+    res.json(
+      await ProductionService.updateCarte(
+        Number(req.params.id),
+        req.body as PatchCarteInput
+      )
+    );
   }),
 
   // ───── Modèles de carte (recto / verso) ─────
@@ -35,18 +49,36 @@ export const ProductionController = {
     res.json(await CardModelService.list());
   }),
   createModeleCarte: asyncHandler(async (req, res) => {
-    res.status(201).json(await CardModelService.create(req.body as CreateModeleCarteInput));
+    res
+      .status(201)
+      .json(await CardModelService.create(req.body as CreateModeleCarteInput));
   }),
   updateModeleCarte: asyncHandler(async (req, res) => {
-    res.json(await CardModelService.update(Number(req.params.id), req.body as PatchModeleCarteInput));
+    res.json(
+      await CardModelService.update(
+        Number(req.params.id),
+        req.body as PatchModeleCarteInput
+      )
+    );
   }),
   /** Envoi d'une image de carte (corps binaire, comme l'envoi de médias de fiche). Renvoie `{ url }`. */
   uploadModeleCarteImage: asyncHandler(async (req, res) => {
     if (!Buffer.isBuffer(req.body)) {
-      throw new HttpError(400, "CORPS_MEDIA_INVALIDE", "Le fichier doit être envoyé en binaire");
+      throw new HttpError(
+        400,
+        "CORPS_MEDIA_INVALIDE",
+        "Le fichier doit être envoyé en binaire"
+      );
     }
     const contentType = req.headers["content-type"];
-    res.status(201).json(await CardImageService.upload(req.body, Array.isArray(contentType) ? contentType[0] : contentType));
+    res
+      .status(201)
+      .json(
+        await CardImageService.upload(
+          req.body,
+          Array.isArray(contentType) ? contentType[0] : contentType
+        )
+      );
   }),
   deleteModeleCarte: asyncHandler(async (req, res) => {
     res.json(await CardModelService.remove(Number(req.params.id)));
@@ -54,13 +86,26 @@ export const ProductionController = {
 
   // ───── Stickers ─────
   listStickers: asyncHandler(async (req, res) => {
-    res.json(await ProductionService.listStickers(req.query as unknown as ListStickersQuery));
+    res.json(
+      await ProductionService.listStickers(
+        req.query as unknown as ListStickersQuery
+      )
+    );
   }),
   createSticker: asyncHandler(async (req, res) => {
-    res.status(201).json(await ProductionService.createSticker(req.body as CreateStickerInput));
+    res
+      .status(201)
+      .json(
+        await ProductionService.createSticker(req.body as CreateStickerInput)
+      );
   }),
   updateSticker: asyncHandler(async (req, res) => {
-    res.json(await ProductionService.updateSticker(Number(req.params.id), req.body as PatchStickerInput));
+    res.json(
+      await ProductionService.updateSticker(
+        Number(req.params.id),
+        req.body as PatchStickerInput
+      )
+    );
   }),
 
   // ───── QR dynamiques ─────
@@ -68,12 +113,20 @@ export const ProductionController = {
     res.json(await ProductionService.listQr());
   }),
   updateQr: asyncHandler(async (req, res) => {
-    res.json(await ProductionService.updateQr(req.params.code as string, req.body as PatchQrInput));
+    res.json(
+      await ProductionService.updateQr(
+        req.params.code as string,
+        req.body as PatchQrInput
+      )
+    );
   }),
 
   // ───── Public : GET /q/:code ─────
   redirect: asyncHandler(async (req, res) => {
-    const cible = await ProductionService.resoudre(req.params.code as string, req.get("user-agent") ?? "");
+    const cible = await ProductionService.resoudre(
+      req.params.code as string,
+      req.get("user-agent") ?? ""
+    );
     if (!cible) {
       res.status(404).type("text/plain").send("Ce lien n'est pas disponible.");
       return;

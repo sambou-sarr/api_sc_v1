@@ -31,7 +31,7 @@ export const AuthService = {
   }) => {
     const exists = await prisma.user.findUnique({
       where: { email: input.email },
-    });
+    }); 
     if (exists)
       throw conflict(
         "EMAIL_DEJA_UTILISE",
@@ -73,7 +73,7 @@ export const AuthService = {
         userId: user.id,
         expectedRole,
       });
-      throw unauthorized("Identifiants invalides pour cet espace");
+      throw unauthorized("Identifiants invalides");
     }
     logger.info("User authenticated", { userId: user.id });
     return { user: publicUser(user), token: signToken(user.id) };

@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import {
   Disposition,
   PlanType,
@@ -6,6 +7,7 @@ import {
   Theme,
 } from "../database/prisma/generated/prisma/client";
 import { prisma } from "../database/prisma/prisma-client";
+import { s3Storage } from "../infrastructure/storage/s3.storage";
 import { logger } from "../lib/logger";
 import {
   DEFAULT_PLAN_DUREES,
@@ -222,6 +224,17 @@ async function main() {
 
     logger.info("Plan seeded", { planId: plan.id, plan: p.nom });
   }
+
+  // add image
+
+  const getStoage = s3Storage();
+  const logoBuffer = await readFile("src/assets/images/Logo.png");
+  await getStoage.put({
+    key: `logo.png`,
+    body: logoBuffer,
+    contentType: "image/png",
+  });
+  logger.info("Logo uploaded");
 }
 
 main()

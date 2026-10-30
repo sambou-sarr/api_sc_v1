@@ -67,3 +67,7 @@ export class S3StorageProvider implements StorageProvider {
     return objects;
   }
 }
+
+// Initialized once 
+let storage: S3StorageProvider | undefined;
+export const s3Storage = () => (storage ??= new S3StorageProvider());

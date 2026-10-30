@@ -1,3 +1,6 @@
+import { env } from "../../config/env";
+import { s3Storage } from "../../infrastructure/storage/s3.storage";
+
 const escapeHtml = (value: string): string =>
   value
     .replace(/&/g, "&amp;")
@@ -16,6 +19,7 @@ export function verificationEmailTemplate(
   const safePrenom = escapeHtml(prenom);
   const safeUrl = escapeHtml(verification_url); // protège les "&" dans les query params
   const safeLogo = escapeHtml(logo_url);
+  const getStorage = s3Storage();
 
   return `
     <!DOCTYPE html>
@@ -47,7 +51,7 @@ export function verificationEmailTemplate(
           <!-- Logo -->
           <tr>
             <td align="center" style="padding:32px 24px 8px 24px;background-color:#ffffff;">
-              <img src="${logo_url}" alt="Support Connecté" width="200" style="display:block;width:200px;max-width:100%;height:auto;border:0;outline:none;" />
+              <img src="${env.S3_ENDPOINT}/ficheimage/logo.png" alt="Support Connecté" width="200" style="display:block;width:200px;max-width:100%;height:auto;border:0;outline:none;" />
             </td>
           </tr>
 
