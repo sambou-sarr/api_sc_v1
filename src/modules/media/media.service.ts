@@ -136,6 +136,8 @@ export const MediaService = {
       where: { id: ficheId },
       select: { id: true, statut: true },
     });
+
+    console.log(fiche);
     if (!fiche || !(await getPublicSubscription(fiche.id, fiche.statut))) {
       throw notFound("Média introuvable");
     }
