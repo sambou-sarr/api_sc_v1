@@ -287,6 +287,8 @@ export async function confirmSimulatedPayment(
     const dureeMois = payment.dureeMois ?? payment.plan.dureeMois;
     const endsAt = dureeMois ? addMonths(now, dureeMois) : null;
 
+
+
     const subscription = await tx.subscription.create({
       data: {
         ficheId: payment.ficheId,
