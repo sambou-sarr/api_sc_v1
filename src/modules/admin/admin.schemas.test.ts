@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { patchFicheSchema } from "./admin.schemas";
+import { listFichesQuery, patchFicheSchema } from "./admin.schemas";
+
+describe("listFichesQuery", () => {
+  it("accepts the pending sticker request filter only", () => {
+    expect(listFichesQuery.safeParse({ sticker: "demande" }).success).toBe(true);
+    expect(listFichesQuery.safeParse({ sticker: "active" }).success).toBe(false);
+  });
+});
 
 describe("patchFicheSchema", () => {
   it("accepts a validated slug before a client account is created", () => {

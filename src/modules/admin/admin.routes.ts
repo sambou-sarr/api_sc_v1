@@ -25,7 +25,7 @@ adminRouter.use(requireAuth, requireRole("ADMIN"));
 adminRouter.get("/stats", AdminController.stats);
 
 // ───────── Fiches ─────────
-// GET    /api/admin/fiches?search=&statut=&formule=&expiration=&userId=&tri=&page=&limit=
+// GET    /api/admin/fiches?search=&statut=&formule=&expiration=&userId=&sticker=demande&tri=&page=&limit=
 adminRouter.get(
   "/fiches",
   validate({ query: listFichesQuery }),

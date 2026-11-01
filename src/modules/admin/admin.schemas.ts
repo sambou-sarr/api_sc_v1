@@ -37,6 +37,7 @@ export const listFichesQuery = z.object({
   // expiree = plus d'abonnement valable ; bientot = expire dans les 30 jours
   expiration: z.enum(["expiree", "bientot"]).optional(),
   userId: z.coerce.number().int().positive().optional(), // les fiches d'un client précis
+  sticker: z.enum(["demande"]).optional(),
   tri: z.enum(["recent", "scans", "nom"]).default("recent"),
   page,
   limit,

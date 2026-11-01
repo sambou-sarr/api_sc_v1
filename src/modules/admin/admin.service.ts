@@ -147,6 +147,9 @@ export const AdminService = {
     if (q.expiration === "expiree") conditions.push(estExpiree(now));
     if (q.expiration === "bientot") conditions.push(expireBientot(now));
     if (q.userId) conditions.push({ userId: q.userId });
+    if (q.sticker === "demande") {
+      conditions.push({ sectionStickers: { some: { statut: "DEMANDE" } } });
+    }
 
     const where: Prisma.FicheWhereInput = conditions.length
       ? { AND: conditions }
@@ -179,6 +182,11 @@ export const AdminService = {
             take: 1,
             select: { endsAt: true, plan: { select: { type: true } } },
           },
+          sectionStickers: {
+            where: { statut: "DEMANDE" },
+            orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+            select: { id: true, section: true, quantite: true, createdAt: true },
+          },
         },
         // le 2e tri (id) garde l'ordre stable d'une page à l'autre
         orderBy: [triPrincipal, { id: "desc" }],
@@ -206,6 +214,7 @@ export const AdminService = {
           scansTotal: f.scansTotal,
           createdAt: f.createdAt,
           proprietaire: f.user,
+          demandesSticker: f.sectionStickers,
         };
       }),
       pagination: {
