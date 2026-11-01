@@ -1,5 +1,5 @@
-import { Prisma } from "../../database/prisma/generated/prisma/client";
 import type { SectionStickerStatus } from "../../database/prisma/generated/prisma/client";
+import { Prisma } from "../../database/prisma/generated/prisma/client";
 import { prisma } from "../../database/prisma/prisma-client";
 import { conflict, notFound, unprocessable } from "../../lib/httpError";
 import type { AuthUser } from "../../types/user";
@@ -35,10 +35,14 @@ const clientDto = (r: Row) => ({
 });
 
 const ADMIN_INCLUDE = {
-  fiche: { select: { id: true, slug: true, prenom: true, nom: true, entreprise: true } },
+  fiche: {
+    select: { id: true, slug: true, prenom: true, nom: true, entreprise: true },
+  },
   user: { select: { id: true, nom: true, email: true } },
 } as const;
-type AdminRow = Prisma.SectionStickerRequestGetPayload<{ include: typeof ADMIN_INCLUDE }>;
+type AdminRow = Prisma.SectionStickerRequestGetPayload<{
+  include: typeof ADMIN_INCLUDE;
+}>;
 
 const adminDto = (r: AdminRow) => ({
   ...clientDto(r),
@@ -68,7 +72,10 @@ export const SectionStickerService = {
   /** Demandes de stickers d'une fiche, vue client (le propriétaire, ou un administrateur). */
   async listForFiche(user: AuthUser, ficheId: number) {
     const fiche = await prisma.fiche.findFirst({
-      where: user.role === "ADMIN" ? { id: ficheId } : { id: ficheId, userId: user.id },
+      where:
+        user.role === "ADMIN"
+          ? { id: ficheId }
+          : { id: ficheId, userId: user.id },
       select: { id: true },
     });
     if (!fiche) throw notFound("Fiche introuvable");
@@ -80,7 +87,11 @@ export const SectionStickerService = {
   },
 
   /** Le client demande un devis pour N stickers ouvrant une section de sa fiche. */
-  async create(user: AuthUser, ficheId: number, input: CreateSectionStickerInput) {
+  async create(
+    user: AuthUser,
+    ficheId: number,
+    input: CreateSectionStickerInput
+  ) {
     const fiche = await prisma.fiche.findFirst({
       where: { id: ficheId, userId: user.id },
       select: {
@@ -96,7 +107,10 @@ export const SectionStickerService = {
     });
     if (!fiche) throw notFound("Fiche introuvable");
     if (fiche.statut !== "ACTIVE") {
-      throw unprocessable("FICHE_NON_PUBLIEE", "Publiez la fiche avant de demander des stickers.");
+      throw unprocessable(
+        "FICHE_NON_PUBLIEE",
+        "Publiez la fiche avant de demander des stickers."
+      );
     }
     const plan = fiche.subscriptions[0]?.plan.type;
     if (plan !== "PRO" && plan !== "SIGNATURE") {
@@ -130,7 +144,11 @@ export const SectionStickerService = {
       return { demande: clientDto(demande) };
     } catch (e) {
       // deux envois simultanés : l'index unique partiel refuse le second
-      if (isUniqueViolation(e)) throw conflict("DEMANDE_DEJA_EN_COURS", "Une demande est déjà en cours pour cette section.");
+      if (isUniqueViolation(e))
+        throw conflict(
+          "DEMANDE_DEJA_EN_COURS",
+          "Une demande est déjà en cours pour cette section."
+        );
       throw e;
     }
   },
@@ -152,7 +170,10 @@ export const SectionStickerService = {
   /** L'administration active, désactive ou refuse une demande. */
   async adminSetStatus(id: number, input: PatchSectionStickerInput) {
     const next = upper(input.statut);
-    const current = await prisma.sectionStickerRequest.findUnique({ where: { id }, select: { statut: true } });
+    const current = await prisma.sectionStickerRequest.findUnique({
+      where: { id },
+      select: { statut: true },
+    });
     if (!current) throw notFound("Demande introuvable");
     if (!TRANSITIONS[current.statut].includes(next)) {
       throw conflict(
@@ -163,14 +184,20 @@ export const SectionStickerService = {
     try {
       const updated = await prisma.sectionStickerRequest.update({
         where: { id },
-        data: { statut: next, ...(next === "ACTIVE" && { activatedAt: new Date() }) },
+        data: {
+          statut: next,
+          ...(next === "ACTIVE" && { activatedAt: new Date() }),
+        },
         include: ADMIN_INCLUDE,
       });
       return { demande: adminDto(updated) };
     } catch (e) {
       // réactiver une demande désactivée alors qu'une nouvelle est ouverte sur la même section
       if (isUniqueViolation(e)) {
-        throw conflict("DEMANDE_DEJA_EN_COURS", "Une autre demande est déjà ouverte pour cette section de la fiche.");
+        throw conflict(
+          "DEMANDE_DEJA_EN_COURS",
+          "Une autre demande est déjà ouverte pour cette section de la fiche."
+        );
       }
       throw e;
     }

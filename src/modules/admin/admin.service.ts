@@ -88,6 +88,7 @@ export const AdminService = {
       signature,
       scans,
       clients,
+      demandesSticker,
     ] = await Promise.all([
       prisma.fiche.count(),
       prisma.fiche.count({ where: { statut: "SUSPENDUE" } }),
@@ -100,6 +101,7 @@ export const AdminService = {
       prisma.fiche.count({ where: aLaFormule(now, "SIGNATURE") }),
       prisma.fiche.aggregate({ _sum: { scansTotal: true } }),
       prisma.user.count({ where: { role: "CLIENT" } }),
+      prisma.sectionStickerRequest.count({ where: { statut: "DEMANDE" } }),
     ]);
 
     return {
@@ -114,6 +116,7 @@ export const AdminService = {
       formules: { essentielle, pro, signature }, // abonnements valables uniquement
       scansTotal: scans._sum.scansTotal ?? 0,
       clients,
+      demandesSticker: demandesSticker,
     };
   },
 
@@ -272,7 +275,10 @@ export const AdminService = {
         select: { id: true },
       });
       if (pris)
-        throw conflict("SLUG_PRIS", "Ce slug est déjà utilisé par une autre fiche");
+        throw conflict(
+          "SLUG_PRIS",
+          "Ce slug est déjà utilisé par une autre fiche"
+        );
 
       const updated = await prisma.fiche.updateMany({
         where: { id, userId: null },
