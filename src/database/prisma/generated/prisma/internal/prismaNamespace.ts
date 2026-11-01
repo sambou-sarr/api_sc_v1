@@ -3789,14 +3789,14 @@ export type ListEnumStickerStatusFieldRefInput<$PrismaModel> = FieldRefInputType
  * Reference to a field of type 'SectionStickerStatus'
  */
 export type EnumSectionStickerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SectionStickerStatus'>
-
+    
 
 
 /**
  * Reference to a field of type 'SectionStickerStatus[]'
  */
 export type ListEnumSectionStickerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SectionStickerStatus[]'>
-
+    
 
 
 /**

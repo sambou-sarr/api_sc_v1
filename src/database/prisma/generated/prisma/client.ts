@@ -161,7 +161,7 @@ export type PrintJob = Prisma.PrintJobModel
 export type StickerOrder = Prisma.StickerOrderModel
 /**
  * Model SectionStickerRequest
- *
+ * 
  */
 export type SectionStickerRequest = Prisma.SectionStickerRequestModel
 /**
