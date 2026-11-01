@@ -644,6 +644,23 @@ export type EnumStickerStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumStickerStatusFilter<$PrismaModel>
 }
 
+export type EnumSectionStickerStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.SectionStickerStatus | Prisma.EnumSectionStickerStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SectionStickerStatus[] | Prisma.ListEnumSectionStickerStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SectionStickerStatus[] | Prisma.ListEnumSectionStickerStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSectionStickerStatusFilter<$PrismaModel> | $Enums.SectionStickerStatus
+}
+
+export type EnumSectionStickerStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SectionStickerStatus | Prisma.EnumSectionStickerStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SectionStickerStatus[] | Prisma.ListEnumSectionStickerStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SectionStickerStatus[] | Prisma.ListEnumSectionStickerStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSectionStickerStatusWithAggregatesFilter<$PrismaModel> | $Enums.SectionStickerStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSectionStickerStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSectionStickerStatusFilter<$PrismaModel>
+}
+
 export type JsonFilter<$PrismaModel = never> =
 | Prisma.PatchUndefined<
     Prisma.Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
@@ -1326,6 +1343,23 @@ export type NestedEnumStickerStatusWithAggregatesFilter<$PrismaModel = never> = 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumStickerStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumStickerStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumSectionStickerStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.SectionStickerStatus | Prisma.EnumSectionStickerStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SectionStickerStatus[] | Prisma.ListEnumSectionStickerStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SectionStickerStatus[] | Prisma.ListEnumSectionStickerStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSectionStickerStatusFilter<$PrismaModel> | $Enums.SectionStickerStatus
+}
+
+export type NestedEnumSectionStickerStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SectionStickerStatus | Prisma.EnumSectionStickerStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SectionStickerStatus[] | Prisma.ListEnumSectionStickerStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SectionStickerStatus[] | Prisma.ListEnumSectionStickerStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSectionStickerStatusWithAggregatesFilter<$PrismaModel> | $Enums.SectionStickerStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSectionStickerStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSectionStickerStatusFilter<$PrismaModel>
 }
 
 export type NestedJsonFilter<$PrismaModel = never> =

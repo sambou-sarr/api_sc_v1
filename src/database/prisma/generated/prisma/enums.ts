@@ -223,6 +223,16 @@ export const QrMode = {
 export type QrMode = (typeof QrMode)[keyof typeof QrMode]
 
 
+export const SectionStickerStatus = {
+  DEMANDE: 'DEMANDE',
+  ACTIVE: 'ACTIVE',
+  DESACTIVEE: 'DESACTIVEE',
+  REFUSEE: 'REFUSEE'
+} as const
+
+export type SectionStickerStatus = (typeof SectionStickerStatus)[keyof typeof SectionStickerStatus]
+
+
 export const LeadStatus = {
   NEW: 'NEW',
   CONTACTED: 'CONTACTED',

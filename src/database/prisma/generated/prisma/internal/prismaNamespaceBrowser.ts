@@ -75,6 +75,7 @@ export const ModelName = {
   CardModel: 'CardModel',
   PrintJob: 'PrintJob',
   StickerOrder: 'StickerOrder',
+  SectionStickerRequest: 'SectionStickerRequest',
   QrLink: 'QrLink',
   PlanDuree: 'PlanDuree',
   PlanRemise: 'PlanRemise',
@@ -503,6 +504,22 @@ export const StickerOrderScalarFieldEnum = {
 } as const
 
 export type StickerOrderScalarFieldEnum = (typeof StickerOrderScalarFieldEnum)[keyof typeof StickerOrderScalarFieldEnum]
+
+
+export const SectionStickerRequestScalarFieldEnum = {
+  id: 'id',
+  ficheId: 'ficheId',
+  userId: 'userId',
+  section: 'section',
+  quantite: 'quantite',
+  message: 'message',
+  statut: 'statut',
+  activatedAt: 'activatedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SectionStickerRequestScalarFieldEnum = (typeof SectionStickerRequestScalarFieldEnum)[keyof typeof SectionStickerRequestScalarFieldEnum]
 
 
 export const QrLinkScalarFieldEnum = {

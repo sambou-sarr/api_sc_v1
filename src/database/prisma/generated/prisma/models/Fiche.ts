@@ -435,6 +435,7 @@ export type FicheWhereInput = {
   menuSections?: Prisma.MenuSectionListRelationFilter
   printJobs?: Prisma.PrintJobListRelationFilter
   stickers?: Prisma.StickerOrderListRelationFilter
+  sectionStickers?: Prisma.SectionStickerRequestListRelationFilter
   subscriptions?: Prisma.SubscriptionListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
   passages?: Prisma.FichePassageListRelationFilter
@@ -483,6 +484,7 @@ export type FicheOrderByWithRelationInput = {
   menuSections?: Prisma.MenuSectionOrderByRelationAggregateInput
   printJobs?: Prisma.PrintJobOrderByRelationAggregateInput
   stickers?: Prisma.StickerOrderOrderByRelationAggregateInput
+  sectionStickers?: Prisma.SectionStickerRequestOrderByRelationAggregateInput
   subscriptions?: Prisma.SubscriptionOrderByRelationAggregateInput
   payments?: Prisma.PaymentOrderByRelationAggregateInput
   passages?: Prisma.FichePassageOrderByRelationAggregateInput
@@ -534,6 +536,7 @@ export type FicheWhereUniqueInput = Prisma.AtLeast<{
   menuSections?: Prisma.MenuSectionListRelationFilter
   printJobs?: Prisma.PrintJobListRelationFilter
   stickers?: Prisma.StickerOrderListRelationFilter
+  sectionStickers?: Prisma.SectionStickerRequestListRelationFilter
   subscriptions?: Prisma.SubscriptionListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
   passages?: Prisma.FichePassageListRelationFilter
@@ -654,6 +657,7 @@ export type FicheCreateInput = {
   menuSections?: Prisma.MenuSectionCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageCreateNestedManyWithoutFicheInput
@@ -701,6 +705,7 @@ export type FicheUncheckedCreateInput = {
   menuSections?: Prisma.MenuSectionUncheckedCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderUncheckedCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageUncheckedCreateNestedManyWithoutFicheInput
@@ -747,6 +752,7 @@ export type FicheUpdateInput = {
   menuSections?: Prisma.MenuSectionUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUpdateManyWithoutFicheNestedInput
@@ -794,6 +800,7 @@ export type FicheUncheckedUpdateInput = {
   menuSections?: Prisma.MenuSectionUncheckedUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUncheckedUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUncheckedUpdateManyWithoutFicheNestedInput
@@ -1330,6 +1337,20 @@ export type FicheUpdateOneWithoutStickersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.FicheUpdateToOneWithWhereWithoutStickersInput, Prisma.FicheUpdateWithoutStickersInput>, Prisma.FicheUncheckedUpdateWithoutStickersInput>
 }
 
+export type FicheCreateNestedOneWithoutSectionStickersInput = {
+  create?: Prisma.XOR<Prisma.FicheCreateWithoutSectionStickersInput, Prisma.FicheUncheckedCreateWithoutSectionStickersInput>
+  connectOrCreate?: Prisma.FicheCreateOrConnectWithoutSectionStickersInput
+  connect?: Prisma.FicheWhereUniqueInput
+}
+
+export type FicheUpdateOneRequiredWithoutSectionStickersNestedInput = {
+  create?: Prisma.XOR<Prisma.FicheCreateWithoutSectionStickersInput, Prisma.FicheUncheckedCreateWithoutSectionStickersInput>
+  connectOrCreate?: Prisma.FicheCreateOrConnectWithoutSectionStickersInput
+  upsert?: Prisma.FicheUpsertWithoutSectionStickersInput
+  connect?: Prisma.FicheWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.FicheUpdateToOneWithWhereWithoutSectionStickersInput, Prisma.FicheUpdateWithoutSectionStickersInput>, Prisma.FicheUncheckedUpdateWithoutSectionStickersInput>
+}
+
 export type FicheCreateWithoutOngletsInput = {
   slug: string
   prenom: string
@@ -1369,6 +1390,7 @@ export type FicheCreateWithoutOngletsInput = {
   menuSections?: Prisma.MenuSectionCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageCreateNestedManyWithoutFicheInput
@@ -1415,6 +1437,7 @@ export type FicheUncheckedCreateWithoutOngletsInput = {
   menuSections?: Prisma.MenuSectionUncheckedCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderUncheckedCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageUncheckedCreateNestedManyWithoutFicheInput
@@ -1476,6 +1499,7 @@ export type FicheUpdateWithoutOngletsInput = {
   menuSections?: Prisma.MenuSectionUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUpdateManyWithoutFicheNestedInput
@@ -1522,6 +1546,7 @@ export type FicheUncheckedUpdateWithoutOngletsInput = {
   menuSections?: Prisma.MenuSectionUncheckedUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUncheckedUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUncheckedUpdateManyWithoutFicheNestedInput
@@ -1567,6 +1592,7 @@ export type FicheCreateWithoutReseauxInput = {
   menuSections?: Prisma.MenuSectionCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageCreateNestedManyWithoutFicheInput
@@ -1613,6 +1639,7 @@ export type FicheUncheckedCreateWithoutReseauxInput = {
   menuSections?: Prisma.MenuSectionUncheckedCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderUncheckedCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageUncheckedCreateNestedManyWithoutFicheInput
@@ -1674,6 +1701,7 @@ export type FicheUpdateWithoutReseauxInput = {
   menuSections?: Prisma.MenuSectionUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUpdateManyWithoutFicheNestedInput
@@ -1720,6 +1748,7 @@ export type FicheUncheckedUpdateWithoutReseauxInput = {
   menuSections?: Prisma.MenuSectionUncheckedUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUncheckedUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUncheckedUpdateManyWithoutFicheNestedInput
@@ -1765,6 +1794,7 @@ export type FicheCreateWithoutLiensInput = {
   menuSections?: Prisma.MenuSectionCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageCreateNestedManyWithoutFicheInput
@@ -1811,6 +1841,7 @@ export type FicheUncheckedCreateWithoutLiensInput = {
   menuSections?: Prisma.MenuSectionUncheckedCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderUncheckedCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageUncheckedCreateNestedManyWithoutFicheInput
@@ -1872,6 +1903,7 @@ export type FicheUpdateWithoutLiensInput = {
   menuSections?: Prisma.MenuSectionUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUpdateManyWithoutFicheNestedInput
@@ -1918,6 +1950,7 @@ export type FicheUncheckedUpdateWithoutLiensInput = {
   menuSections?: Prisma.MenuSectionUncheckedUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUncheckedUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUncheckedUpdateManyWithoutFicheNestedInput
@@ -1963,6 +1996,7 @@ export type FicheCreateWithoutHorairesInput = {
   menuSections?: Prisma.MenuSectionCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageCreateNestedManyWithoutFicheInput
@@ -2009,6 +2043,7 @@ export type FicheUncheckedCreateWithoutHorairesInput = {
   menuSections?: Prisma.MenuSectionUncheckedCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderUncheckedCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageUncheckedCreateNestedManyWithoutFicheInput
@@ -2070,6 +2105,7 @@ export type FicheUpdateWithoutHorairesInput = {
   menuSections?: Prisma.MenuSectionUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUpdateManyWithoutFicheNestedInput
@@ -2116,6 +2152,7 @@ export type FicheUncheckedUpdateWithoutHorairesInput = {
   menuSections?: Prisma.MenuSectionUncheckedUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUncheckedUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUncheckedUpdateManyWithoutFicheNestedInput
@@ -2161,6 +2198,7 @@ export type FicheCreateWithoutMediasInput = {
   menuSections?: Prisma.MenuSectionCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageCreateNestedManyWithoutFicheInput
@@ -2207,6 +2245,7 @@ export type FicheUncheckedCreateWithoutMediasInput = {
   menuSections?: Prisma.MenuSectionUncheckedCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderUncheckedCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageUncheckedCreateNestedManyWithoutFicheInput
@@ -2268,6 +2307,7 @@ export type FicheUpdateWithoutMediasInput = {
   menuSections?: Prisma.MenuSectionUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUpdateManyWithoutFicheNestedInput
@@ -2314,6 +2354,7 @@ export type FicheUncheckedUpdateWithoutMediasInput = {
   menuSections?: Prisma.MenuSectionUncheckedUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUncheckedUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUncheckedUpdateManyWithoutFicheNestedInput
@@ -2359,6 +2400,7 @@ export type FicheCreateWithoutCatalogueSectionsInput = {
   menuSections?: Prisma.MenuSectionCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageCreateNestedManyWithoutFicheInput
@@ -2405,6 +2447,7 @@ export type FicheUncheckedCreateWithoutCatalogueSectionsInput = {
   menuSections?: Prisma.MenuSectionUncheckedCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderUncheckedCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageUncheckedCreateNestedManyWithoutFicheInput
@@ -2466,6 +2509,7 @@ export type FicheUpdateWithoutCatalogueSectionsInput = {
   menuSections?: Prisma.MenuSectionUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUpdateManyWithoutFicheNestedInput
@@ -2512,6 +2556,7 @@ export type FicheUncheckedUpdateWithoutCatalogueSectionsInput = {
   menuSections?: Prisma.MenuSectionUncheckedUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUncheckedUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUncheckedUpdateManyWithoutFicheNestedInput
@@ -2557,6 +2602,7 @@ export type FicheCreateWithoutMenuSectionsInput = {
   user?: Prisma.UserCreateNestedOneWithoutFichesInput
   printJobs?: Prisma.PrintJobCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageCreateNestedManyWithoutFicheInput
@@ -2603,6 +2649,7 @@ export type FicheUncheckedCreateWithoutMenuSectionsInput = {
   reseaux?: Prisma.FicheReseauUncheckedCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderUncheckedCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageUncheckedCreateNestedManyWithoutFicheInput
@@ -2664,6 +2711,7 @@ export type FicheUpdateWithoutMenuSectionsInput = {
   user?: Prisma.UserUpdateOneWithoutFichesNestedInput
   printJobs?: Prisma.PrintJobUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUpdateManyWithoutFicheNestedInput
@@ -2710,6 +2758,7 @@ export type FicheUncheckedUpdateWithoutMenuSectionsInput = {
   reseaux?: Prisma.FicheReseauUncheckedUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUncheckedUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUncheckedUpdateManyWithoutFicheNestedInput
@@ -2755,6 +2804,7 @@ export type FicheCreateWithoutBiensInput = {
   menuSections?: Prisma.MenuSectionCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageCreateNestedManyWithoutFicheInput
@@ -2801,6 +2851,7 @@ export type FicheUncheckedCreateWithoutBiensInput = {
   menuSections?: Prisma.MenuSectionUncheckedCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderUncheckedCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageUncheckedCreateNestedManyWithoutFicheInput
@@ -2862,6 +2913,7 @@ export type FicheUpdateWithoutBiensInput = {
   menuSections?: Prisma.MenuSectionUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUpdateManyWithoutFicheNestedInput
@@ -2908,6 +2960,7 @@ export type FicheUncheckedUpdateWithoutBiensInput = {
   menuSections?: Prisma.MenuSectionUncheckedUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUncheckedUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUncheckedUpdateManyWithoutFicheNestedInput
@@ -2953,6 +3006,7 @@ export type FicheCreateWithoutUserInput = {
   menuSections?: Prisma.MenuSectionCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageCreateNestedManyWithoutFicheInput
@@ -2999,6 +3053,7 @@ export type FicheUncheckedCreateWithoutUserInput = {
   menuSections?: Prisma.MenuSectionUncheckedCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderUncheckedCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageUncheckedCreateNestedManyWithoutFicheInput
@@ -3107,6 +3162,7 @@ export type FicheCreateWithoutSubscriptionsInput = {
   menuSections?: Prisma.MenuSectionCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageCreateNestedManyWithoutFicheInput
   demandeRappels?: Prisma.DemandeRappelCreateNestedManyWithoutFicheInput
@@ -3153,6 +3209,7 @@ export type FicheUncheckedCreateWithoutSubscriptionsInput = {
   menuSections?: Prisma.MenuSectionUncheckedCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderUncheckedCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageUncheckedCreateNestedManyWithoutFicheInput
   demandeRappels?: Prisma.DemandeRappelUncheckedCreateNestedManyWithoutFicheInput
@@ -3214,6 +3271,7 @@ export type FicheUpdateWithoutSubscriptionsInput = {
   menuSections?: Prisma.MenuSectionUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUpdateManyWithoutFicheNestedInput
   demandeRappels?: Prisma.DemandeRappelUpdateManyWithoutFicheNestedInput
@@ -3260,6 +3318,7 @@ export type FicheUncheckedUpdateWithoutSubscriptionsInput = {
   menuSections?: Prisma.MenuSectionUncheckedUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUncheckedUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUncheckedUpdateManyWithoutFicheNestedInput
   demandeRappels?: Prisma.DemandeRappelUncheckedUpdateManyWithoutFicheNestedInput
@@ -3305,6 +3364,7 @@ export type FicheCreateWithoutPaymentsInput = {
   menuSections?: Prisma.MenuSectionCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageCreateNestedManyWithoutFicheInput
   demandeRappels?: Prisma.DemandeRappelCreateNestedManyWithoutFicheInput
@@ -3351,6 +3411,7 @@ export type FicheUncheckedCreateWithoutPaymentsInput = {
   menuSections?: Prisma.MenuSectionUncheckedCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderUncheckedCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageUncheckedCreateNestedManyWithoutFicheInput
   demandeRappels?: Prisma.DemandeRappelUncheckedCreateNestedManyWithoutFicheInput
@@ -3412,6 +3473,7 @@ export type FicheUpdateWithoutPaymentsInput = {
   menuSections?: Prisma.MenuSectionUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUpdateManyWithoutFicheNestedInput
   demandeRappels?: Prisma.DemandeRappelUpdateManyWithoutFicheNestedInput
@@ -3458,6 +3520,7 @@ export type FicheUncheckedUpdateWithoutPaymentsInput = {
   menuSections?: Prisma.MenuSectionUncheckedUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUncheckedUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUncheckedUpdateManyWithoutFicheNestedInput
   demandeRappels?: Prisma.DemandeRappelUncheckedUpdateManyWithoutFicheNestedInput
@@ -3503,6 +3566,7 @@ export type FicheCreateWithoutDemandeRappelsInput = {
   menuSections?: Prisma.MenuSectionCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageCreateNestedManyWithoutFicheInput
@@ -3549,6 +3613,7 @@ export type FicheUncheckedCreateWithoutDemandeRappelsInput = {
   menuSections?: Prisma.MenuSectionUncheckedCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderUncheckedCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageUncheckedCreateNestedManyWithoutFicheInput
@@ -3610,6 +3675,7 @@ export type FicheUpdateWithoutDemandeRappelsInput = {
   menuSections?: Prisma.MenuSectionUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUpdateManyWithoutFicheNestedInput
@@ -3656,6 +3722,7 @@ export type FicheUncheckedUpdateWithoutDemandeRappelsInput = {
   menuSections?: Prisma.MenuSectionUncheckedUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUncheckedUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUncheckedUpdateManyWithoutFicheNestedInput
@@ -3701,6 +3768,7 @@ export type FicheCreateWithoutPassagesInput = {
   menuSections?: Prisma.MenuSectionCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFicheInput
   demandeRappels?: Prisma.DemandeRappelCreateNestedManyWithoutFicheInput
@@ -3747,6 +3815,7 @@ export type FicheUncheckedCreateWithoutPassagesInput = {
   menuSections?: Prisma.MenuSectionUncheckedCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderUncheckedCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFicheInput
   demandeRappels?: Prisma.DemandeRappelUncheckedCreateNestedManyWithoutFicheInput
@@ -3808,6 +3877,7 @@ export type FicheUpdateWithoutPassagesInput = {
   menuSections?: Prisma.MenuSectionUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFicheNestedInput
   demandeRappels?: Prisma.DemandeRappelUpdateManyWithoutFicheNestedInput
@@ -3854,6 +3924,7 @@ export type FicheUncheckedUpdateWithoutPassagesInput = {
   menuSections?: Prisma.MenuSectionUncheckedUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUncheckedUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFicheNestedInput
   demandeRappels?: Prisma.DemandeRappelUncheckedUpdateManyWithoutFicheNestedInput
@@ -3898,6 +3969,7 @@ export type FicheCreateWithoutPrintJobsInput = {
   user?: Prisma.UserCreateNestedOneWithoutFichesInput
   menuSections?: Prisma.MenuSectionCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageCreateNestedManyWithoutFicheInput
@@ -3944,6 +4016,7 @@ export type FicheUncheckedCreateWithoutPrintJobsInput = {
   reseaux?: Prisma.FicheReseauUncheckedCreateNestedManyWithoutFicheInput
   menuSections?: Prisma.MenuSectionUncheckedCreateNestedManyWithoutFicheInput
   stickers?: Prisma.StickerOrderUncheckedCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageUncheckedCreateNestedManyWithoutFicheInput
@@ -4005,6 +4078,7 @@ export type FicheUpdateWithoutPrintJobsInput = {
   user?: Prisma.UserUpdateOneWithoutFichesNestedInput
   menuSections?: Prisma.MenuSectionUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUpdateManyWithoutFicheNestedInput
@@ -4051,6 +4125,7 @@ export type FicheUncheckedUpdateWithoutPrintJobsInput = {
   reseaux?: Prisma.FicheReseauUncheckedUpdateManyWithoutFicheNestedInput
   menuSections?: Prisma.MenuSectionUncheckedUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUncheckedUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUncheckedUpdateManyWithoutFicheNestedInput
@@ -4096,6 +4171,7 @@ export type FicheCreateWithoutStickersInput = {
   user?: Prisma.UserCreateNestedOneWithoutFichesInput
   menuSections?: Prisma.MenuSectionCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageCreateNestedManyWithoutFicheInput
@@ -4142,6 +4218,7 @@ export type FicheUncheckedCreateWithoutStickersInput = {
   reseaux?: Prisma.FicheReseauUncheckedCreateNestedManyWithoutFicheInput
   menuSections?: Prisma.MenuSectionUncheckedCreateNestedManyWithoutFicheInput
   printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutFicheInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutFicheInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutFicheInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFicheInput
   passages?: Prisma.FichePassageUncheckedCreateNestedManyWithoutFicheInput
@@ -4203,6 +4280,7 @@ export type FicheUpdateWithoutStickersInput = {
   user?: Prisma.UserUpdateOneWithoutFichesNestedInput
   menuSections?: Prisma.MenuSectionUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUpdateManyWithoutFicheNestedInput
@@ -4249,6 +4327,209 @@ export type FicheUncheckedUpdateWithoutStickersInput = {
   reseaux?: Prisma.FicheReseauUncheckedUpdateManyWithoutFicheNestedInput
   menuSections?: Prisma.MenuSectionUncheckedUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutFicheNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutFicheNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutFicheNestedInput
+  passages?: Prisma.FichePassageUncheckedUpdateManyWithoutFicheNestedInput
+  demandeRappels?: Prisma.DemandeRappelUncheckedUpdateManyWithoutFicheNestedInput
+}
+
+export type FicheCreateWithoutSectionStickersInput = {
+  slug: string
+  prenom: string
+  nom?: string
+  fonction?: string | null
+  entreprise?: string | null
+  photo?: string | null
+  logo?: string | null
+  telephone?: string | null
+  whatsapp?: string | null
+  email?: string | null
+  site?: string | null
+  adresse?: string | null
+  googlePlaceId?: string | null
+  premierBouton?: $Enums.PremierBouton
+  messageWhatsapp?: string | null
+  statut?: $Enums.StatutFiche
+  enLigneSeule?: boolean
+  scansTotal?: number
+  secteur?: $Enums.Secteur | null
+  presentation?: string | null
+  rdvLabel?: string | null
+  rdvUrl?: string | null
+  enteteDisposition?: $Enums.Disposition
+  enteteTaille?: $Enums.Taille
+  enteteTheme?: $Enums.Theme | null
+  enteteCouverture?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  biens?: Prisma.BienCreateNestedManyWithoutFicheInput
+  catalogueSections?: Prisma.CatalogueSectionCreateNestedManyWithoutFicheInput
+  horaires?: Prisma.FicheHoraireCreateNestedManyWithoutFicheInput
+  liens?: Prisma.FicheLienCreateNestedManyWithoutFicheInput
+  medias?: Prisma.FicheMediaCreateNestedManyWithoutFicheInput
+  onglets?: Prisma.FicheOngletCreateNestedManyWithoutFicheInput
+  reseaux?: Prisma.FicheReseauCreateNestedManyWithoutFicheInput
+  user?: Prisma.UserCreateNestedOneWithoutFichesInput
+  menuSections?: Prisma.MenuSectionCreateNestedManyWithoutFicheInput
+  printJobs?: Prisma.PrintJobCreateNestedManyWithoutFicheInput
+  stickers?: Prisma.StickerOrderCreateNestedManyWithoutFicheInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutFicheInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutFicheInput
+  passages?: Prisma.FichePassageCreateNestedManyWithoutFicheInput
+  demandeRappels?: Prisma.DemandeRappelCreateNestedManyWithoutFicheInput
+}
+
+export type FicheUncheckedCreateWithoutSectionStickersInput = {
+  id?: number
+  slug: string
+  prenom: string
+  nom?: string
+  fonction?: string | null
+  entreprise?: string | null
+  photo?: string | null
+  logo?: string | null
+  telephone?: string | null
+  whatsapp?: string | null
+  email?: string | null
+  site?: string | null
+  adresse?: string | null
+  googlePlaceId?: string | null
+  premierBouton?: $Enums.PremierBouton
+  messageWhatsapp?: string | null
+  statut?: $Enums.StatutFiche
+  enLigneSeule?: boolean
+  scansTotal?: number
+  userId?: number | null
+  secteur?: $Enums.Secteur | null
+  presentation?: string | null
+  rdvLabel?: string | null
+  rdvUrl?: string | null
+  enteteDisposition?: $Enums.Disposition
+  enteteTaille?: $Enums.Taille
+  enteteTheme?: $Enums.Theme | null
+  enteteCouverture?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  biens?: Prisma.BienUncheckedCreateNestedManyWithoutFicheInput
+  catalogueSections?: Prisma.CatalogueSectionUncheckedCreateNestedManyWithoutFicheInput
+  horaires?: Prisma.FicheHoraireUncheckedCreateNestedManyWithoutFicheInput
+  liens?: Prisma.FicheLienUncheckedCreateNestedManyWithoutFicheInput
+  medias?: Prisma.FicheMediaUncheckedCreateNestedManyWithoutFicheInput
+  onglets?: Prisma.FicheOngletUncheckedCreateNestedManyWithoutFicheInput
+  reseaux?: Prisma.FicheReseauUncheckedCreateNestedManyWithoutFicheInput
+  menuSections?: Prisma.MenuSectionUncheckedCreateNestedManyWithoutFicheInput
+  printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutFicheInput
+  stickers?: Prisma.StickerOrderUncheckedCreateNestedManyWithoutFicheInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutFicheInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutFicheInput
+  passages?: Prisma.FichePassageUncheckedCreateNestedManyWithoutFicheInput
+  demandeRappels?: Prisma.DemandeRappelUncheckedCreateNestedManyWithoutFicheInput
+}
+
+export type FicheCreateOrConnectWithoutSectionStickersInput = {
+  where: Prisma.FicheWhereUniqueInput
+  create: Prisma.XOR<Prisma.FicheCreateWithoutSectionStickersInput, Prisma.FicheUncheckedCreateWithoutSectionStickersInput>
+}
+
+export type FicheUpsertWithoutSectionStickersInput = {
+  update: Prisma.XOR<Prisma.FicheUpdateWithoutSectionStickersInput, Prisma.FicheUncheckedUpdateWithoutSectionStickersInput>
+  create: Prisma.XOR<Prisma.FicheCreateWithoutSectionStickersInput, Prisma.FicheUncheckedCreateWithoutSectionStickersInput>
+  where?: Prisma.FicheWhereInput
+}
+
+export type FicheUpdateToOneWithWhereWithoutSectionStickersInput = {
+  where?: Prisma.FicheWhereInput
+  data: Prisma.XOR<Prisma.FicheUpdateWithoutSectionStickersInput, Prisma.FicheUncheckedUpdateWithoutSectionStickersInput>
+}
+
+export type FicheUpdateWithoutSectionStickersInput = {
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  fonction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  entreprise?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telephone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  site?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresse?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googlePlaceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  premierBouton?: Prisma.EnumPremierBoutonFieldUpdateOperationsInput | $Enums.PremierBouton
+  messageWhatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
+  enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
+  secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
+  presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rdvUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  enteteDisposition?: Prisma.EnumDispositionFieldUpdateOperationsInput | $Enums.Disposition
+  enteteTaille?: Prisma.EnumTailleFieldUpdateOperationsInput | $Enums.Taille
+  enteteTheme?: Prisma.NullableEnumThemeFieldUpdateOperationsInput | $Enums.Theme | null
+  enteteCouverture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  biens?: Prisma.BienUpdateManyWithoutFicheNestedInput
+  catalogueSections?: Prisma.CatalogueSectionUpdateManyWithoutFicheNestedInput
+  horaires?: Prisma.FicheHoraireUpdateManyWithoutFicheNestedInput
+  liens?: Prisma.FicheLienUpdateManyWithoutFicheNestedInput
+  medias?: Prisma.FicheMediaUpdateManyWithoutFicheNestedInput
+  onglets?: Prisma.FicheOngletUpdateManyWithoutFicheNestedInput
+  reseaux?: Prisma.FicheReseauUpdateManyWithoutFicheNestedInput
+  user?: Prisma.UserUpdateOneWithoutFichesNestedInput
+  menuSections?: Prisma.MenuSectionUpdateManyWithoutFicheNestedInput
+  printJobs?: Prisma.PrintJobUpdateManyWithoutFicheNestedInput
+  stickers?: Prisma.StickerOrderUpdateManyWithoutFicheNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutFicheNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutFicheNestedInput
+  passages?: Prisma.FichePassageUpdateManyWithoutFicheNestedInput
+  demandeRappels?: Prisma.DemandeRappelUpdateManyWithoutFicheNestedInput
+}
+
+export type FicheUncheckedUpdateWithoutSectionStickersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  prenom?: Prisma.StringFieldUpdateOperationsInput | string
+  nom?: Prisma.StringFieldUpdateOperationsInput | string
+  fonction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  entreprise?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telephone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  site?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adresse?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googlePlaceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  premierBouton?: Prisma.EnumPremierBoutonFieldUpdateOperationsInput | $Enums.PremierBouton
+  messageWhatsapp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statut?: Prisma.EnumStatutFicheFieldUpdateOperationsInput | $Enums.StatutFiche
+  enLigneSeule?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scansTotal?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  secteur?: Prisma.NullableEnumSecteurFieldUpdateOperationsInput | $Enums.Secteur | null
+  presentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rdvLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rdvUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  enteteDisposition?: Prisma.EnumDispositionFieldUpdateOperationsInput | $Enums.Disposition
+  enteteTaille?: Prisma.EnumTailleFieldUpdateOperationsInput | $Enums.Taille
+  enteteTheme?: Prisma.NullableEnumThemeFieldUpdateOperationsInput | $Enums.Theme | null
+  enteteCouverture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  biens?: Prisma.BienUncheckedUpdateManyWithoutFicheNestedInput
+  catalogueSections?: Prisma.CatalogueSectionUncheckedUpdateManyWithoutFicheNestedInput
+  horaires?: Prisma.FicheHoraireUncheckedUpdateManyWithoutFicheNestedInput
+  liens?: Prisma.FicheLienUncheckedUpdateManyWithoutFicheNestedInput
+  medias?: Prisma.FicheMediaUncheckedUpdateManyWithoutFicheNestedInput
+  onglets?: Prisma.FicheOngletUncheckedUpdateManyWithoutFicheNestedInput
+  reseaux?: Prisma.FicheReseauUncheckedUpdateManyWithoutFicheNestedInput
+  menuSections?: Prisma.MenuSectionUncheckedUpdateManyWithoutFicheNestedInput
+  printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutFicheNestedInput
+  stickers?: Prisma.StickerOrderUncheckedUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUncheckedUpdateManyWithoutFicheNestedInput
@@ -4326,6 +4607,7 @@ export type FicheUpdateWithoutUserInput = {
   menuSections?: Prisma.MenuSectionUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUpdateManyWithoutFicheNestedInput
@@ -4372,6 +4654,7 @@ export type FicheUncheckedUpdateWithoutUserInput = {
   menuSections?: Prisma.MenuSectionUncheckedUpdateManyWithoutFicheNestedInput
   printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutFicheNestedInput
   stickers?: Prisma.StickerOrderUncheckedUpdateManyWithoutFicheNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutFicheNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutFicheNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutFicheNestedInput
   passages?: Prisma.FichePassageUncheckedUpdateManyWithoutFicheNestedInput
@@ -4426,6 +4709,7 @@ export type FicheCountOutputType = {
   menuSections: number
   printJobs: number
   stickers: number
+  sectionStickers: number
   subscriptions: number
   payments: number
   passages: number
@@ -4443,6 +4727,7 @@ export type FicheCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   menuSections?: boolean | FicheCountOutputTypeCountMenuSectionsArgs
   printJobs?: boolean | FicheCountOutputTypeCountPrintJobsArgs
   stickers?: boolean | FicheCountOutputTypeCountStickersArgs
+  sectionStickers?: boolean | FicheCountOutputTypeCountSectionStickersArgs
   subscriptions?: boolean | FicheCountOutputTypeCountSubscriptionsArgs
   payments?: boolean | FicheCountOutputTypeCountPaymentsArgs
   passages?: boolean | FicheCountOutputTypeCountPassagesArgs
@@ -4532,6 +4817,13 @@ export type FicheCountOutputTypeCountStickersArgs<ExtArgs extends runtime.Types.
 /**
  * FicheCountOutputType without action
  */
+export type FicheCountOutputTypeCountSectionStickersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SectionStickerRequestWhereInput
+}
+
+/**
+ * FicheCountOutputType without action
+ */
 export type FicheCountOutputTypeCountSubscriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.SubscriptionWhereInput
 }
@@ -4600,6 +4892,7 @@ export type FicheSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   menuSections?: boolean | Prisma.Fiche$menuSectionsArgs<ExtArgs>
   printJobs?: boolean | Prisma.Fiche$printJobsArgs<ExtArgs>
   stickers?: boolean | Prisma.Fiche$stickersArgs<ExtArgs>
+  sectionStickers?: boolean | Prisma.Fiche$sectionStickersArgs<ExtArgs>
   subscriptions?: boolean | Prisma.Fiche$subscriptionsArgs<ExtArgs>
   payments?: boolean | Prisma.Fiche$paymentsArgs<ExtArgs>
   passages?: boolean | Prisma.Fiche$passagesArgs<ExtArgs>
@@ -4721,6 +5014,7 @@ export type FicheInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   menuSections?: boolean | Prisma.Fiche$menuSectionsArgs<ExtArgs>
   printJobs?: boolean | Prisma.Fiche$printJobsArgs<ExtArgs>
   stickers?: boolean | Prisma.Fiche$stickersArgs<ExtArgs>
+  sectionStickers?: boolean | Prisma.Fiche$sectionStickersArgs<ExtArgs>
   subscriptions?: boolean | Prisma.Fiche$subscriptionsArgs<ExtArgs>
   payments?: boolean | Prisma.Fiche$paymentsArgs<ExtArgs>
   passages?: boolean | Prisma.Fiche$passagesArgs<ExtArgs>
@@ -4748,6 +5042,7 @@ export type $FichePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     menuSections: Prisma.$MenuSectionPayload<ExtArgs>[]
     printJobs: Prisma.$PrintJobPayload<ExtArgs>[]
     stickers: Prisma.$StickerOrderPayload<ExtArgs>[]
+    sectionStickers: Prisma.$SectionStickerRequestPayload<ExtArgs>[]
     subscriptions: Prisma.$SubscriptionPayload<ExtArgs>[]
     payments: Prisma.$PaymentPayload<ExtArgs>[]
     passages: Prisma.$FichePassagePayload<ExtArgs>[]
@@ -5189,6 +5484,7 @@ export interface Prisma__FicheClient<T, Null = never, ExtArgs extends runtime.Ty
   menuSections<T extends Prisma.Fiche$menuSectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fiche$menuSectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MenuSectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   printJobs<T extends Prisma.Fiche$printJobsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fiche$printJobsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrintJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   stickers<T extends Prisma.Fiche$stickersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fiche$stickersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StickerOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sectionStickers<T extends Prisma.Fiche$sectionStickersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fiche$sectionStickersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SectionStickerRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   subscriptions<T extends Prisma.Fiche$subscriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fiche$subscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   payments<T extends Prisma.Fiche$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fiche$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   passages<T extends Prisma.Fiche$passagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fiche$passagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FichePassagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5909,6 +6205,30 @@ export type Fiche$stickersArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.StickerOrderScalarFieldEnum | Prisma.StickerOrderScalarFieldEnum[]
+}
+
+/**
+ * Fiche.sectionStickers
+ */
+export type Fiche$sectionStickersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SectionStickerRequest
+   */
+  select?: Prisma.SectionStickerRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SectionStickerRequest
+   */
+  omit?: Prisma.SectionStickerRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SectionStickerRequestInclude<ExtArgs> | null
+  where?: Prisma.SectionStickerRequestWhereInput
+  orderBy?: Prisma.SectionStickerRequestOrderByWithRelationInput | Prisma.SectionStickerRequestOrderByWithRelationInput[]
+  cursor?: Prisma.SectionStickerRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SectionStickerRequestScalarFieldEnum | Prisma.SectionStickerRequestScalarFieldEnum[]
 }
 
 /**

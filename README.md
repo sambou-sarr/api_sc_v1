@@ -107,6 +107,23 @@ scripts/create-admin.ts
 
 Authentification : en-tête `Authorization: Bearer <token>`.
 
+### Stickers par section (demandes de devis)
+
+Le client demande un devis pour N stickers ouvrant UNE section de sa fiche ; l'administration traite la demande et
+**active la section**. Seules les sections **activées** sont servies par le front en `/s/:slug/:section` : la fiche
+publique expose `stickerSections` (clés activées ; vide si l'abonnement est échu).
+
+| Méthode | Route | Accès | Rôle |
+|---|---|---|---|
+| GET | `/fiches/:id/section-stickers` | client (propriétaire) / admin | demandes de la fiche, récentes d'abord |
+| POST | `/fiches/:id/section-stickers` | client | `{ section, quantite 1..500, message? }` → demande `demande` (Pro / Signature, fiche publiée, abonnement valide) |
+| GET | `/admin/production/section-stickers?statut=&ficheId=&limit=` | admin | toutes les demandes, avec fiche et client |
+| PATCH | `/admin/production/section-stickers/:id` | admin | `{ statut: "active" \| "desactivee" \| "refusee" }` |
+
+Statuts : `demande → active | refusee`, `active → desactivee`, `desactivee → active` (`TRANSITION_INVALIDE` sinon). Une seule
+demande ouverte (`demande` ou `active`) par fiche et par section (index unique partiel, `DEMANDE_DEJA_EN_COURS`).
+Migration : `20261029120000_section_sticker_requests` (puis `prisma generate`).
+
 ### Modèles de carte (recto / verso) et demande de carte
 
 L'administration définit, **par formule** (essentielle, pro, signature), le recto et le verso de la carte que le client

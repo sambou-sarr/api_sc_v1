@@ -234,6 +234,7 @@ export type UserWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   tokens?: Prisma.AuthTokenListRelationFilter
   fiches?: Prisma.FicheListRelationFilter
+  sectionStickers?: Prisma.SectionStickerRequestListRelationFilter
   qrStyles?: Prisma.QrStyleListRelationFilter
   fichePurchases?: Prisma.FichePurchaseListRelationFilter
 }
@@ -248,6 +249,7 @@ export type UserOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   tokens?: Prisma.AuthTokenOrderByRelationAggregateInput
   fiches?: Prisma.FicheOrderByRelationAggregateInput
+  sectionStickers?: Prisma.SectionStickerRequestOrderByRelationAggregateInput
   qrStyles?: Prisma.QrStyleOrderByRelationAggregateInput
   fichePurchases?: Prisma.FichePurchaseOrderByRelationAggregateInput
 }
@@ -265,6 +267,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   tokens?: Prisma.AuthTokenListRelationFilter
   fiches?: Prisma.FicheListRelationFilter
+  sectionStickers?: Prisma.SectionStickerRequestListRelationFilter
   qrStyles?: Prisma.QrStyleListRelationFilter
   fichePurchases?: Prisma.FichePurchaseListRelationFilter
 }, "id" | "email">
@@ -306,6 +309,7 @@ export type UserCreateInput = {
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
 }
@@ -320,6 +324,7 @@ export type UserUncheckedCreateInput = {
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenUncheckedCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
 }
@@ -333,6 +338,7 @@ export type UserUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
 }
@@ -347,6 +353,7 @@ export type UserUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUncheckedUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -480,6 +487,22 @@ export type UserUpdateOneRequiredWithoutFichePurchasesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutFichePurchasesInput, Prisma.UserUpdateWithoutFichePurchasesInput>, Prisma.UserUncheckedUpdateWithoutFichePurchasesInput>
 }
 
+export type UserCreateNestedOneWithoutSectionStickersInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSectionStickersInput, Prisma.UserUncheckedCreateWithoutSectionStickersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSectionStickersInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutSectionStickersNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSectionStickersInput, Prisma.UserUncheckedCreateWithoutSectionStickersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSectionStickersInput
+  upsert?: Prisma.UserUpsertWithoutSectionStickersInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSectionStickersInput, Prisma.UserUpdateWithoutSectionStickersInput>, Prisma.UserUncheckedUpdateWithoutSectionStickersInput>
+}
+
 export type UserCreateNestedOneWithoutQrStylesInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutQrStylesInput, Prisma.UserUncheckedCreateWithoutQrStylesInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutQrStylesInput
@@ -502,6 +525,7 @@ export type UserCreateWithoutFichesInput = {
   emailVerifiedAt?: Date | string | null
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenCreateNestedManyWithoutUserInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
 }
@@ -515,6 +539,7 @@ export type UserUncheckedCreateWithoutFichesInput = {
   emailVerifiedAt?: Date | string | null
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenUncheckedCreateNestedManyWithoutUserInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
 }
@@ -543,6 +568,7 @@ export type UserUpdateWithoutFichesInput = {
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUpdateManyWithoutUserNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
 }
@@ -556,6 +582,7 @@ export type UserUncheckedUpdateWithoutFichesInput = {
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUncheckedUpdateManyWithoutUserNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -568,6 +595,7 @@ export type UserCreateWithoutTokensInput = {
   emailVerifiedAt?: Date | string | null
   createdAt?: Date | string
   fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
 }
@@ -581,6 +609,7 @@ export type UserUncheckedCreateWithoutTokensInput = {
   emailVerifiedAt?: Date | string | null
   createdAt?: Date | string
   fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
 }
@@ -609,6 +638,7 @@ export type UserUpdateWithoutTokensInput = {
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
 }
@@ -622,6 +652,7 @@ export type UserUncheckedUpdateWithoutTokensInput = {
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -635,6 +666,7 @@ export type UserCreateWithoutFichePurchasesInput = {
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
 }
 
@@ -648,6 +680,7 @@ export type UserUncheckedCreateWithoutFichePurchasesInput = {
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenUncheckedCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -676,6 +709,7 @@ export type UserUpdateWithoutFichePurchasesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
 }
 
@@ -689,7 +723,78 @@ export type UserUncheckedUpdateWithoutFichePurchasesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUncheckedUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutSectionStickersInput = {
+  email: string
+  passwordHash: string
+  role?: $Enums.Role
+  nom?: string | null
+  emailVerifiedAt?: Date | string | null
+  createdAt?: Date | string
+  tokens?: Prisma.AuthTokenCreateNestedManyWithoutUserInput
+  fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
+  qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
+  fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutSectionStickersInput = {
+  id?: number
+  email: string
+  passwordHash: string
+  role?: $Enums.Role
+  nom?: string | null
+  emailVerifiedAt?: Date | string | null
+  createdAt?: Date | string
+  tokens?: Prisma.AuthTokenUncheckedCreateNestedManyWithoutUserInput
+  fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
+  qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
+  fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutSectionStickersInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSectionStickersInput, Prisma.UserUncheckedCreateWithoutSectionStickersInput>
+}
+
+export type UserUpsertWithoutSectionStickersInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSectionStickersInput, Prisma.UserUncheckedUpdateWithoutSectionStickersInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSectionStickersInput, Prisma.UserUncheckedCreateWithoutSectionStickersInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSectionStickersInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSectionStickersInput, Prisma.UserUncheckedUpdateWithoutSectionStickersInput>
+}
+
+export type UserUpdateWithoutSectionStickersInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tokens?: Prisma.AuthTokenUpdateManyWithoutUserNestedInput
+  fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
+  qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
+  fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSectionStickersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tokens?: Prisma.AuthTokenUncheckedUpdateManyWithoutUserNestedInput
+  fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
+  qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
+  fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutQrStylesInput = {
@@ -701,6 +806,7 @@ export type UserCreateWithoutQrStylesInput = {
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
 }
 
@@ -714,6 +820,7 @@ export type UserUncheckedCreateWithoutQrStylesInput = {
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenUncheckedCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -742,6 +849,7 @@ export type UserUpdateWithoutQrStylesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
 }
 
@@ -755,6 +863,7 @@ export type UserUncheckedUpdateWithoutQrStylesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUncheckedUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -766,6 +875,7 @@ export type UserUncheckedUpdateWithoutQrStylesInput = {
 export type UserCountOutputType = {
   tokens: number
   fiches: number
+  sectionStickers: number
   qrStyles: number
   fichePurchases: number
 }
@@ -773,6 +883,7 @@ export type UserCountOutputType = {
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tokens?: boolean | UserCountOutputTypeCountTokensArgs
   fiches?: boolean | UserCountOutputTypeCountFichesArgs
+  sectionStickers?: boolean | UserCountOutputTypeCountSectionStickersArgs
   qrStyles?: boolean | UserCountOutputTypeCountQrStylesArgs
   fichePurchases?: boolean | UserCountOutputTypeCountFichePurchasesArgs
 }
@@ -804,6 +915,13 @@ export type UserCountOutputTypeCountFichesArgs<ExtArgs extends runtime.Types.Ext
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountSectionStickersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SectionStickerRequestWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountQrStylesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.QrStyleWhereInput
 }
@@ -826,6 +944,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdAt?: boolean
   tokens?: boolean | Prisma.User$tokensArgs<ExtArgs>
   fiches?: boolean | Prisma.User$fichesArgs<ExtArgs>
+  sectionStickers?: boolean | Prisma.User$sectionStickersArgs<ExtArgs>
   qrStyles?: boolean | Prisma.User$qrStylesArgs<ExtArgs>
   fichePurchases?: boolean | Prisma.User$fichePurchasesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -865,6 +984,7 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tokens?: boolean | Prisma.User$tokensArgs<ExtArgs>
   fiches?: boolean | Prisma.User$fichesArgs<ExtArgs>
+  sectionStickers?: boolean | Prisma.User$sectionStickersArgs<ExtArgs>
   qrStyles?: boolean | Prisma.User$qrStylesArgs<ExtArgs>
   fichePurchases?: boolean | Prisma.User$fichePurchasesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -877,6 +997,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     tokens: Prisma.$AuthTokenPayload<ExtArgs>[]
     fiches: Prisma.$FichePayload<ExtArgs>[]
+    sectionStickers: Prisma.$SectionStickerRequestPayload<ExtArgs>[]
     qrStyles: Prisma.$QrStylePayload<ExtArgs>[]
     fichePurchases: Prisma.$FichePurchasePayload<ExtArgs>[]
   }
@@ -1284,6 +1405,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   tokens<T extends Prisma.User$tokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuthTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   fiches<T extends Prisma.User$fichesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$fichesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FichePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sectionStickers<T extends Prisma.User$sectionStickersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sectionStickersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SectionStickerRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   qrStyles<T extends Prisma.User$qrStylesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$qrStylesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QrStylePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   fichePurchases<T extends Prisma.User$fichePurchasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$fichePurchasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FichePurchasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1760,6 +1882,30 @@ export type User$fichesArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   distinct?: Prisma.FicheScalarFieldEnum | Prisma.FicheScalarFieldEnum[]
+}
+
+/**
+ * User.sectionStickers
+ */
+export type User$sectionStickersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SectionStickerRequest
+   */
+  select?: Prisma.SectionStickerRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SectionStickerRequest
+   */
+  omit?: Prisma.SectionStickerRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SectionStickerRequestInclude<ExtArgs> | null
+  where?: Prisma.SectionStickerRequestWhereInput
+  orderBy?: Prisma.SectionStickerRequestOrderByWithRelationInput | Prisma.SectionStickerRequestOrderByWithRelationInput[]
+  cursor?: Prisma.SectionStickerRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SectionStickerRequestScalarFieldEnum | Prisma.SectionStickerRequestScalarFieldEnum[]
 }
 
 /**

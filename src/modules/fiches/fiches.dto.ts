@@ -5,6 +5,13 @@ import type { EffectiveSubscription } from "../subscriptions/subscriptions.servi
 import { toPlanCapabilities } from "./plan-capabilities";
 
 // Tout ce qu'il faut charger pour reconstruire l'objet attendu par le front.
+/** Sections de stickers activées par l'administration (seules servies en page /s/:slug/:section). */
+const STICKER_SECTIONS_INCLUDE = {
+  where: { statut: "ACTIVE" },
+  select: { section: true },
+  orderBy: { id: "asc" },
+} as const;
+
 export const ficheInclude = {
   onglets: { orderBy: { position: "asc" } },
   reseaux: { orderBy: { position: "asc" } },
@@ -23,6 +30,7 @@ export const ficheInclude = {
     orderBy: { position: "asc" },
     include: { photos: { orderBy: { position: "asc" } } },
   },
+  sectionStickers: STICKER_SECTIONS_INCLUDE,
 } satisfies Prisma.FicheInclude;
 
 export type FicheFull = Prisma.FicheGetPayload<{
@@ -51,6 +59,8 @@ export function toFicheDto(f: FicheFull, sub: EffectiveSubscription | null) {
     formule: sub ? lower(sub.plan.type) : "essentielle", // repli d'affichage si l'abonnement a expiré
     statut: lower(f.statut),
     expiree: sub === null,
+    // Sections de stickers activées par l'administration : seules celles-ci sont servies en page /s/:slug/:section.
+    stickerSections: sub ? f.sectionStickers.map(s => s.section) : [],
     // Droits réels de la formule (table plan_limits) ; null si expirée : le front retombe sur son repli.
     planCapabilities: sub?.plan.limits
       ? toPlanCapabilities(sub.plan, sub.plan.limits)

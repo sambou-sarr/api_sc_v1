@@ -4,6 +4,7 @@ import { requireAuth, requireRole } from "../../middlewares/auth";
 import { validate } from "../../middlewares/validate";
 import { idParam } from "../fiches/fiches.schemas";
 import { raw } from "express";
+import { listSectionStickersQuery, patchSectionStickerSchema } from "./section-stickers.schemas";
 import { createModeleCarteSchema, patchModeleCarteSchema } from "./card-models.schemas";
 import { ProductionController } from "./production.controller";
 import {
@@ -31,6 +32,12 @@ productionRouter.get("/cartes", validate({ query: listCartesQuery }), Production
 productionRouter.post("/cartes", validate({ body: createCarteSchema }), ProductionController.createCarte);
 // PATCH /cartes/:id                       { statut?, notes?, design? }
 productionRouter.patch("/cartes/:id", validate({ params: idParam, body: patchCarteSchema }), ProductionController.updateCarte);
+
+// Stickers « par section » : demandes de devis des clients ; activer une demande ouvre la section en page publique
+// GET   /section-stickers?statut=&ficheId=&limit=
+productionRouter.get("/section-stickers", validate({ query: listSectionStickersQuery }), ProductionController.listSectionStickers);
+// PATCH /section-stickers/:id             { statut: "active" | "desactivee" | "refusee" }
+productionRouter.patch("/section-stickers/:id", validate({ params: idParam, body: patchSectionStickerSchema }), ProductionController.updateSectionSticker);
 
 // Modèles de carte (recto / verso affichés au client dans sa demande de carte) — un seul actif par formule
 // GET    /modeles-cartes

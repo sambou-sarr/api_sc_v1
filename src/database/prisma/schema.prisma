@@ -49,6 +49,7 @@ model Fiche {
   menuSections      MenuSection[]
   printJobs         PrintJob[]
   stickers          StickerOrder[]
+  sectionStickers   SectionStickerRequest[]
   subscriptions     Subscription[]
   payments          Payment[]
   passages          FichePassage[]
@@ -220,6 +221,7 @@ model User {
   createdAt       DateTime    @default(now())
   tokens          AuthToken[]
   fiches          Fiche[]
+  sectionStickers SectionStickerRequest[]
   qrStyles        QrStyle[]
   fichePurchases  FichePurchase[]
   @@map("users")
@@ -623,6 +625,36 @@ model StickerOrder {
   @@index([kind, statut, createdAt])
   @@index([qrCode])
   @@map("sticker_orders")
+}
+
+// Demande de stickers « par section » : le client demande un devis (nombre de stickers) pour qu'un QR ouvre UNE section de
+// sa fiche. Tant que l'administration ne l'a pas ACTIVÉE, la section n'est pas servie en page /s/:slug/:section.
+// Une seule demande « ouverte » (DEMANDE ou ACTIVE) par fiche et par section : index unique partiel dans la migration.
+enum SectionStickerStatus {
+  DEMANDE
+  ACTIVE
+  DESACTIVEE
+  REFUSEE
+}
+
+model SectionStickerRequest {
+  id          Int                  @id @default(autoincrement())
+  ficheId     Int
+  userId      Int?
+  // Clé de la section dans l'URL : type d'onglet (menu, biens…) ou identifiant d'un onglet personnalisé.
+  section     String
+  quantite    Int
+  message     String?
+  statut      SectionStickerStatus @default(DEMANDE)
+  activatedAt DateTime?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  fiche       Fiche                @relation(fields: [ficheId], references: [id], onDelete: Cascade)
+  user        User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([ficheId, section])
+  @@index([statut, createdAt])
+  @@map("section_sticker_requests")
 }
 
 // QR dynamique : /q/<code> redirige vers une cible modifiable à distance.

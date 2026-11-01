@@ -6,6 +6,8 @@ import type {
   PatchModeleCarteInput,
 } from "./card-models.schemas";
 import { CardModelService } from "./card-models.service";
+import type { ListSectionStickersQuery, PatchSectionStickerInput } from "./section-stickers.schemas";
+import { SectionStickerService } from "./section-stickers.service";
 import type {
   CreateCarteInput,
   CreateStickerInput,
@@ -42,6 +44,14 @@ export const ProductionController = {
         req.body as PatchCarteInput
       )
     );
+  }),
+
+  // ───── Stickers par section (demandes de devis des clients) ─────
+  listSectionStickers: asyncHandler(async (req, res) => {
+    res.json(await SectionStickerService.adminList(req.query as unknown as ListSectionStickersQuery));
+  }),
+  updateSectionSticker: asyncHandler(async (req, res) => {
+    res.json(await SectionStickerService.adminSetStatus(Number(req.params.id), req.body as PatchSectionStickerInput));
   }),
 
   // ───── Modèles de carte (recto / verso) ─────

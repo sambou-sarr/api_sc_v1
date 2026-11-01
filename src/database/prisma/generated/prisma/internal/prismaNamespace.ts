@@ -421,6 +421,7 @@ export const ModelName = {
   CardModel: 'CardModel',
   PrintJob: 'PrintJob',
   StickerOrder: 'StickerOrder',
+  SectionStickerRequest: 'SectionStickerRequest',
   QrLink: 'QrLink',
   PlanDuree: 'PlanDuree',
   PlanRemise: 'PlanRemise',
@@ -443,7 +444,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "fiche" | "ficheOnglet" | "ficheReseau" | "ficheLien" | "ficheHoraire" | "ficheMedia" | "catalogueSection" | "catalogueArticle" | "menuSection" | "menuPlat" | "bien" | "bienPhoto" | "user" | "authToken" | "plan" | "planLimit" | "subscription" | "payment" | "fichePurchase" | "demandeRappel" | "fichePassage" | "cardModel" | "printJob" | "stickerOrder" | "qrLink" | "planDuree" | "planRemise" | "emplacementConfig" | "emplacementPack" | "qrStyle" | "leadRequest"
+    modelProps: "fiche" | "ficheOnglet" | "ficheReseau" | "ficheLien" | "ficheHoraire" | "ficheMedia" | "catalogueSection" | "catalogueArticle" | "menuSection" | "menuPlat" | "bien" | "bienPhoto" | "user" | "authToken" | "plan" | "planLimit" | "subscription" | "payment" | "fichePurchase" | "demandeRappel" | "fichePassage" | "cardModel" | "printJob" | "stickerOrder" | "sectionStickerRequest" | "qrLink" | "planDuree" | "planRemise" | "emplacementConfig" | "emplacementPack" | "qrStyle" | "leadRequest"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2223,6 +2224,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SectionStickerRequest: {
+      payload: Prisma.$SectionStickerRequestPayload<ExtArgs>
+      fields: Prisma.SectionStickerRequestFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SectionStickerRequestFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionStickerRequestPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SectionStickerRequestFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionStickerRequestPayload>
+        }
+        findFirst: {
+          args: Prisma.SectionStickerRequestFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionStickerRequestPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SectionStickerRequestFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionStickerRequestPayload>
+        }
+        findMany: {
+          args: Prisma.SectionStickerRequestFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionStickerRequestPayload>[]
+        }
+        create: {
+          args: Prisma.SectionStickerRequestCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionStickerRequestPayload>
+        }
+        createMany: {
+          args: Prisma.SectionStickerRequestCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SectionStickerRequestCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionStickerRequestPayload>[]
+        }
+        delete: {
+          args: Prisma.SectionStickerRequestDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionStickerRequestPayload>
+        }
+        update: {
+          args: Prisma.SectionStickerRequestUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionStickerRequestPayload>
+        }
+        deleteMany: {
+          args: Prisma.SectionStickerRequestDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SectionStickerRequestUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SectionStickerRequestUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionStickerRequestPayload>[]
+        }
+        upsert: {
+          args: Prisma.SectionStickerRequestUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionStickerRequestPayload>
+        }
+        aggregate: {
+          args: Prisma.SectionStickerRequestAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSectionStickerRequest>
+        }
+        groupBy: {
+          args: Prisma.SectionStickerRequestGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SectionStickerRequestGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SectionStickerRequestCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SectionStickerRequestCountAggregateOutputType> | number
+        }
+      }
+    }
     QrLink: {
       payload: Prisma.$QrLinkPayload<ExtArgs>
       fields: Prisma.QrLinkFieldRefs
@@ -3185,6 +3260,22 @@ export const StickerOrderScalarFieldEnum = {
 export type StickerOrderScalarFieldEnum = (typeof StickerOrderScalarFieldEnum)[keyof typeof StickerOrderScalarFieldEnum]
 
 
+export const SectionStickerRequestScalarFieldEnum = {
+  id: 'id',
+  ficheId: 'ficheId',
+  userId: 'userId',
+  section: 'section',
+  quantite: 'quantite',
+  message: 'message',
+  statut: 'statut',
+  activatedAt: 'activatedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SectionStickerRequestScalarFieldEnum = (typeof SectionStickerRequestScalarFieldEnum)[keyof typeof SectionStickerRequestScalarFieldEnum]
+
+
 export const QrLinkScalarFieldEnum = {
   code: 'code',
   targetUrl: 'targetUrl',
@@ -3695,6 +3786,20 @@ export type ListEnumStickerStatusFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'SectionStickerStatus'
+ */
+export type EnumSectionStickerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SectionStickerStatus'>
+
+
+
+/**
+ * Reference to a field of type 'SectionStickerStatus[]'
+ */
+export type ListEnumSectionStickerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SectionStickerStatus[]'>
+
+
+
+/**
  * Reference to a field of type 'LeadStatus'
  */
 export type EnumLeadStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LeadStatus'>
@@ -3896,6 +4001,7 @@ export type GlobalOmitConfig = {
   cardModel?: Prisma.CardModelOmit
   printJob?: Prisma.PrintJobOmit
   stickerOrder?: Prisma.StickerOrderOmit
+  sectionStickerRequest?: Prisma.SectionStickerRequestOmit
   qrLink?: Prisma.QrLinkOmit
   planDuree?: Prisma.PlanDureeOmit
   planRemise?: Prisma.PlanRemiseOmit

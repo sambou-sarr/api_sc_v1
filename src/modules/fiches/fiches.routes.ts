@@ -4,6 +4,7 @@ import { validate } from "../../middlewares/validate";
 import { MediaController } from "../media/media.controller";
 import { mediaUploadQuery } from "../media/media.validation";
 import { clientCarteRequestSchema } from "../production/production.schemas";
+import { createSectionStickerSchema } from "../production/section-stickers.schemas";
 import { fichePurchaseId, fichePurchaseInput } from "./fiche-purchases.schemas";
 import { FicheController } from "./fiche.controller";
 import {
@@ -100,6 +101,19 @@ fichesRouter.get(
   "/:id/rappels",
   validate({ params: idParam }),
   FicheController.listRappels
+);
+
+// Stickers « par section » : demande de devis du client (nombre de stickers) et suivi de ses demandes
+fichesRouter.get(
+  "/:id/section-stickers",
+  validate({ params: idParam }),
+  FicheController.listSectionStickers
+);
+
+fichesRouter.post(
+  "/:id/section-stickers",
+  validate({ params: idParam, body: createSectionStickerSchema }),
+  FicheController.createSectionSticker
 );
 
 fichesRouter.get(
