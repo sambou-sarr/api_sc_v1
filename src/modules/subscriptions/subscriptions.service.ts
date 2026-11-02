@@ -5,7 +5,12 @@ import type {
   Prisma,
 } from "../../database/prisma/generated/prisma/client";
 import { prisma } from "../../database/prisma/prisma-client";
-import { conflict, forbidden, notFound } from "../../lib/httpError";
+import {
+  conflict,
+  forbidden,
+  HttpError,
+  notFound,
+} from "../../lib/httpError";
 import type { AuthUser } from "../../types/user";
 import { ficheInclude, toFicheDto } from "../fiches/fiches.dto";
 import { ParametresService } from "../parametres/parametres.service";
@@ -97,6 +102,81 @@ const PLAN_RANK: Record<PlanType, number> = {
   SIGNATURE: 2,
 };
 
+async function updateDefaultFicheTemplate(
+  tx: Prisma.TransactionClient,
+  ficheId: number,
+  ficheDefaults: {
+    enteteTheme: Prisma.FicheGetPayload<{
+      select: { enteteTheme: true };
+    }>["enteteTheme"];
+    enteteDisposition: Prisma.FicheGetPayload<{
+      select: { enteteDisposition: true };
+    }>["enteteDisposition"];
+  },
+  targetPlan: Prisma.PlanGetPayload<{ include: { limits: true } }>
+) {
+  if (!targetPlan.limits)
+    throw new HttpError(
+      500,
+      "SEED_MANQUANT",
+      "Les capacités de la formule ne sont pas initialisées"
+    );
+
+  const [tabs, plans] = await Promise.all([
+    tx.ficheOnglet.findMany({
+      where: { ficheId },
+      orderBy: { position: "asc" },
+      select: {
+        type: true,
+        titre: true,
+        contenu: true,
+        visible: true,
+      },
+    }),
+    tx.plan.findMany({ include: { limits: true } }),
+  ]);
+  const isDefaultTabs = plans.some(plan => {
+    const defaultTabs = plan.limits?.tabsAutorises;
+    return (
+      !!defaultTabs &&
+      defaultTabs.length === tabs.length &&
+      tabs.every(
+        (tab, position) =>
+          tab.type === defaultTabs[position] &&
+          tab.visible &&
+          tab.titre === null &&
+          tab.contenu === null
+      )
+    );
+  });
+
+  if (isDefaultTabs) {
+    await tx.ficheOnglet.deleteMany({ where: { ficheId } });
+    await tx.ficheOnglet.createMany({
+      data: targetPlan.limits.tabsAutorises.map((type, position) => ({
+        ficheId,
+        type,
+        visible: true,
+        position,
+      })),
+    });
+  }
+
+  const updateFiche: Prisma.FicheUpdateInput = {};
+  if (plans.some(plan => plan.themeDefaut === ficheDefaults.enteteTheme))
+    updateFiche.enteteTheme = targetPlan.themeDefaut;
+  if (
+    plans.some(
+      plan =>
+        plan.limits?.headerLayouts[0] === ficheDefaults.enteteDisposition
+    )
+  )
+    updateFiche.enteteDisposition =
+      targetPlan.limits.headerLayouts[0] ?? "PORTRAIT";
+  if (Object.keys(updateFiche).length > 0)
+    await tx.fiche.update({ where: { id: ficheId }, data: updateFiche });
+}
+
 // Crée une demande de changement de formule et un paiement PENDING.
 // Aucune formule n'est activée à cette étape.
 export async function upgrade(
@@ -167,6 +247,7 @@ export async function upgrade(
 
     const payment = await tx.payment.create({
       data: {
+        userId: user.id,
         ficheId,
         planId: targetPlan.id,
         dureeMois,
@@ -217,8 +298,16 @@ export async function confirmSimulatedPayment(
     const payment = await tx.payment.findUnique({
       where: { id: paymentId },
       include: {
-        fiche: { select: { id: true, userId: true, statut: true } },
-        plan: true,
+        fiche: {
+          select: {
+            id: true,
+            userId: true,
+            statut: true,
+            enteteTheme: true,
+            enteteDisposition: true,
+          },
+        },
+        plan: { include: { limits: true } },
       },
     });
 
@@ -306,6 +395,13 @@ export async function confirmSimulatedPayment(
       data: { subscriptionId: subscription.id },
     });
 
+    await updateDefaultFicheTemplate(
+      tx,
+      payment.ficheId as number,
+      payment.fiche,
+      payment.plan
+    );
+
     const updatedFiche = await tx.fiche.findUnique({
       where: { id: payment.ficheId as number },
       include: ficheInclude,
@@ -353,6 +449,75 @@ export const subscriptionKpi = async (user: AuthUser): Promise<Kpi> => {
 
   return { nbrFiche, nbrFicheActive, nbrPayingFiche };
 };
+
+export async function listPaymentsForUser(
+  user: AuthUser,
+  page = 1,
+  limit = 20
+) {
+  if (user.role !== "CLIENT")
+    throw forbidden("ACCES_REFUSE", "Cette action est réservée aux clients");
+
+  const where = { userId: user.id };
+  const [payments, total] = await prisma.$transaction([
+    prisma.payment.findMany({
+      where,
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      skip: (page - 1) * limit,
+      take: limit,
+      include: {
+        plan: { select: { type: true, nom: true } },
+        fiche: {
+          select: {
+            id: true,
+            slug: true,
+            prenom: true,
+            nom: true,
+            entreprise: true,
+          },
+        },
+      },
+    }),
+    prisma.payment.count({ where }),
+  ]);
+
+  return {
+    items: payments.map(payment => {
+      const ficheNom =
+        payment.fiche &&
+        `${payment.fiche.prenom} ${payment.fiche.nom}`.trim();
+      return {
+        id: payment.id,
+        statut: payment.status.toLowerCase(),
+        formule: payment.plan.type.toLowerCase(),
+        formuleNom: payment.plan.nom,
+        fournisseur: payment.provider.toLowerCase(),
+        montantFcfa: payment.amountFcfa,
+        devise: payment.currency,
+        reference: payment.providerReference,
+        motifEchec: payment.failureReason,
+        createdAt: payment.createdAt,
+        payeLe: payment.paidAt,
+        dureeMois: payment.dureeMois,
+        fiche: {
+          id: payment.fiche?.id ?? null,
+          slug: payment.fiche?.slug ?? payment.ficheSlugSnapshot,
+          nom:
+            ficheNom ||
+            payment.ficheNomSnapshot ||
+            "Fiche supprimée",
+          entreprise: payment.fiche?.entreprise ?? null,
+        },
+      };
+    }),
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.max(1, Math.ceil(total / limit)),
+    },
+  };
+}
 
 export const filter = async (plan: string) => {
   const filterByPlan = await prisma.plan.findMany({

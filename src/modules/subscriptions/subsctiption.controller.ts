@@ -4,6 +4,7 @@ import { asyncHandler } from "../../lib/asyncHandler";
 import {
   confirmSimulatedPayment,
   filter,
+  listPaymentsForUser,
   subscriptionKpi,
   upgrade,
 } from "./subscriptions.service";
@@ -58,5 +59,11 @@ export const SubscriptionController = {
 
     const result = await filter(plan as string);
     responseSuccess(res, result, 200);
+  }),
+
+  listPayments: asyncHandler(async (req, res) => {
+    const page = Number(req.query.page ?? 1);
+    const limit = Number(req.query.limit ?? 20);
+    res.json(await listPaymentsForUser(req.user!, page, limit));
   }),
 };

@@ -214,6 +214,7 @@ describe("FichePurchasesService.create / confirmSimulated", () => {
       expect.objectContaining({
         data: expect.arrayContaining([
           expect.objectContaining({
+            userId: user.id,
             amountFcfa: 1000,
             status: "SUCCEEDED",
             providerReference: "SIMULATED-order-14-2",

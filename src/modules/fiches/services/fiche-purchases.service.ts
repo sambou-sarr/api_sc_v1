@@ -202,6 +202,7 @@ async function fulfillPurchase(
   if (paidFiches.length > 0)
     await tx.payment.createMany({
       data: paidFiches.map(fiche => ({
+        userId,
         ficheId: fiche.ficheId,
         subscriptionId: fiche.subscriptionId,
         planId: purchase.planId,

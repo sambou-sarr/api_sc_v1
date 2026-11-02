@@ -29,7 +29,8 @@ vi.mock("../fiches/fiches.dto", () => ({ ficheInclude: {}, toFicheDto: vi.fn() }
 
 import { upgrade } from "./subscriptions.service";
 
-const user = { id: 7, role: "CLIENT", emailVerified: true } as never;
+const userId = 7;
+const user = { id: userId, role: "CLIENT", emailVerified: true } as never;
 const tx = {
   fiche: { findUnique: mocks.ficheFindUnique },
   subscription: {
@@ -62,7 +63,11 @@ describe("renouvellement d'une fiche expirée", () => {
 
     expect(res.payment).toMatchObject({ status: "pending", dureeMois: 12, amountFcfa: 27000 });
     expect(mocks.tarif).toHaveBeenCalledWith("pro", 12, 1, tx); // prix calculé par le serveur
-    expect(mocks.paymentCreate.mock.calls[0][0].data).toMatchObject({ ficheId: 10, status: "PENDING" });
+    expect(mocks.paymentCreate.mock.calls[0][0].data).toMatchObject({
+      userId,
+      ficheId: 10,
+      status: "PENDING",
+    });
     // aucune formule n'est activée avant la confirmation du paiement
     expect(mocks.subscriptionCreate).not.toHaveBeenCalled();
   });

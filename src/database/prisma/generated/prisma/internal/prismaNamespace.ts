@@ -3123,6 +3123,7 @@ export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[k
 
 export const PaymentScalarFieldEnum = {
   id: 'id',
+  userId: 'userId',
   ficheId: 'ficheId',
   subscriptionId: 'subscriptionId',
   planId: 'planId',

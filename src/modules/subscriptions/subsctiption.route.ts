@@ -14,6 +14,16 @@ const upgradeSchema = z.object({
 
 subscriptionRoute.use(requireAuth);
 subscriptionRoute.get("/kpi", SubscriptionController.subscriptionKpi);
+subscriptionRoute.get(
+  "/payments",
+  validate({
+    query: z.object({
+      page: z.coerce.number().int().positive().default(1),
+      limit: z.coerce.number().int().min(1).max(100).default(20),
+    }),
+  }),
+  SubscriptionController.listPayments
+);
 subscriptionRoute.post(
   "/upgrade",
   validate({ body: upgradeSchema }),

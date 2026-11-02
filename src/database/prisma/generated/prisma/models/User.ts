@@ -237,6 +237,7 @@ export type UserWhereInput = {
   sectionStickers?: Prisma.SectionStickerRequestListRelationFilter
   qrStyles?: Prisma.QrStyleListRelationFilter
   fichePurchases?: Prisma.FichePurchaseListRelationFilter
+  payments?: Prisma.PaymentListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -252,6 +253,7 @@ export type UserOrderByWithRelationInput = {
   sectionStickers?: Prisma.SectionStickerRequestOrderByRelationAggregateInput
   qrStyles?: Prisma.QrStyleOrderByRelationAggregateInput
   fichePurchases?: Prisma.FichePurchaseOrderByRelationAggregateInput
+  payments?: Prisma.PaymentOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -270,6 +272,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   sectionStickers?: Prisma.SectionStickerRequestListRelationFilter
   qrStyles?: Prisma.QrStyleListRelationFilter
   fichePurchases?: Prisma.FichePurchaseListRelationFilter
+  payments?: Prisma.PaymentListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -312,6 +315,7 @@ export type UserCreateInput = {
   sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -327,6 +331,7 @@ export type UserUncheckedCreateInput = {
   sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -341,6 +346,7 @@ export type UserUpdateInput = {
   sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -356,6 +362,7 @@ export type UserUncheckedUpdateInput = {
   sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -473,6 +480,22 @@ export type UserUpdateOneRequiredWithoutTokensNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTokensInput, Prisma.UserUpdateWithoutTokensInput>, Prisma.UserUncheckedUpdateWithoutTokensInput>
 }
 
+export type UserCreateNestedOneWithoutPaymentsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPaymentsInput, Prisma.UserUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPaymentsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutPaymentsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPaymentsInput, Prisma.UserUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPaymentsInput
+  upsert?: Prisma.UserUpsertWithoutPaymentsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPaymentsInput, Prisma.UserUpdateWithoutPaymentsInput>, Prisma.UserUncheckedUpdateWithoutPaymentsInput>
+}
+
 export type UserCreateNestedOneWithoutFichePurchasesInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutFichePurchasesInput, Prisma.UserUncheckedCreateWithoutFichePurchasesInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutFichePurchasesInput
@@ -528,6 +551,7 @@ export type UserCreateWithoutFichesInput = {
   sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutFichesInput = {
@@ -542,6 +566,7 @@ export type UserUncheckedCreateWithoutFichesInput = {
   sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutFichesInput = {
@@ -571,6 +596,7 @@ export type UserUpdateWithoutFichesInput = {
   sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFichesInput = {
@@ -585,6 +611,7 @@ export type UserUncheckedUpdateWithoutFichesInput = {
   sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTokensInput = {
@@ -598,6 +625,7 @@ export type UserCreateWithoutTokensInput = {
   sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTokensInput = {
@@ -612,6 +640,7 @@ export type UserUncheckedCreateWithoutTokensInput = {
   sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTokensInput = {
@@ -641,6 +670,7 @@ export type UserUpdateWithoutTokensInput = {
   sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTokensInput = {
@@ -651,6 +681,81 @@ export type UserUncheckedUpdateWithoutTokensInput = {
   nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutUserNestedInput
+  qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
+  fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPaymentsInput = {
+  email: string
+  passwordHash: string
+  role?: $Enums.Role
+  nom?: string | null
+  emailVerifiedAt?: Date | string | null
+  createdAt?: Date | string
+  tokens?: Prisma.AuthTokenCreateNestedManyWithoutUserInput
+  fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutUserInput
+  qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
+  fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPaymentsInput = {
+  id?: number
+  email: string
+  passwordHash: string
+  role?: $Enums.Role
+  nom?: string | null
+  emailVerifiedAt?: Date | string | null
+  createdAt?: Date | string
+  tokens?: Prisma.AuthTokenUncheckedCreateNestedManyWithoutUserInput
+  fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutUserInput
+  qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
+  fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPaymentsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPaymentsInput, Prisma.UserUncheckedCreateWithoutPaymentsInput>
+}
+
+export type UserUpsertWithoutPaymentsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPaymentsInput, Prisma.UserUncheckedUpdateWithoutPaymentsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPaymentsInput, Prisma.UserUncheckedCreateWithoutPaymentsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPaymentsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPaymentsInput, Prisma.UserUncheckedUpdateWithoutPaymentsInput>
+}
+
+export type UserUpdateWithoutPaymentsInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tokens?: Prisma.AuthTokenUpdateManyWithoutUserNestedInput
+  fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutUserNestedInput
+  qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
+  fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPaymentsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tokens?: Prisma.AuthTokenUncheckedUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
   sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
@@ -668,6 +773,7 @@ export type UserCreateWithoutFichePurchasesInput = {
   fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
   sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutFichePurchasesInput = {
@@ -682,6 +788,7 @@ export type UserUncheckedCreateWithoutFichePurchasesInput = {
   fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
   sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutFichePurchasesInput = {
@@ -711,6 +818,7 @@ export type UserUpdateWithoutFichePurchasesInput = {
   fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
   sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFichePurchasesInput = {
@@ -725,6 +833,7 @@ export type UserUncheckedUpdateWithoutFichePurchasesInput = {
   fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
   sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSectionStickersInput = {
@@ -738,6 +847,7 @@ export type UserCreateWithoutSectionStickersInput = {
   fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSectionStickersInput = {
@@ -752,6 +862,7 @@ export type UserUncheckedCreateWithoutSectionStickersInput = {
   fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSectionStickersInput = {
@@ -781,6 +892,7 @@ export type UserUpdateWithoutSectionStickersInput = {
   fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSectionStickersInput = {
@@ -795,6 +907,7 @@ export type UserUncheckedUpdateWithoutSectionStickersInput = {
   fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutQrStylesInput = {
@@ -808,6 +921,7 @@ export type UserCreateWithoutQrStylesInput = {
   fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
   sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutQrStylesInput = {
@@ -822,6 +936,7 @@ export type UserUncheckedCreateWithoutQrStylesInput = {
   fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
   sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutQrStylesInput = {
@@ -851,6 +966,7 @@ export type UserUpdateWithoutQrStylesInput = {
   fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
   sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutQrStylesInput = {
@@ -865,6 +981,7 @@ export type UserUncheckedUpdateWithoutQrStylesInput = {
   fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
   sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -878,6 +995,7 @@ export type UserCountOutputType = {
   sectionStickers: number
   qrStyles: number
   fichePurchases: number
+  payments: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -886,6 +1004,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   sectionStickers?: boolean | UserCountOutputTypeCountSectionStickersArgs
   qrStyles?: boolean | UserCountOutputTypeCountQrStylesArgs
   fichePurchases?: boolean | UserCountOutputTypeCountFichePurchasesArgs
+  payments?: boolean | UserCountOutputTypeCountPaymentsArgs
 }
 
 /**
@@ -933,6 +1052,13 @@ export type UserCountOutputTypeCountFichePurchasesArgs<ExtArgs extends runtime.T
   where?: Prisma.FichePurchaseWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PaymentWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -947,6 +1073,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   sectionStickers?: boolean | Prisma.User$sectionStickersArgs<ExtArgs>
   qrStyles?: boolean | Prisma.User$qrStylesArgs<ExtArgs>
   fichePurchases?: boolean | Prisma.User$fichePurchasesArgs<ExtArgs>
+  payments?: boolean | Prisma.User$paymentsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -987,6 +1114,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   sectionStickers?: boolean | Prisma.User$sectionStickersArgs<ExtArgs>
   qrStyles?: boolean | Prisma.User$qrStylesArgs<ExtArgs>
   fichePurchases?: boolean | Prisma.User$fichePurchasesArgs<ExtArgs>
+  payments?: boolean | Prisma.User$paymentsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1000,6 +1128,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     sectionStickers: Prisma.$SectionStickerRequestPayload<ExtArgs>[]
     qrStyles: Prisma.$QrStylePayload<ExtArgs>[]
     fichePurchases: Prisma.$FichePurchasePayload<ExtArgs>[]
+    payments: Prisma.$PaymentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1408,6 +1537,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   sectionStickers<T extends Prisma.User$sectionStickersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sectionStickersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SectionStickerRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   qrStyles<T extends Prisma.User$qrStylesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$qrStylesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QrStylePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   fichePurchases<T extends Prisma.User$fichePurchasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$fichePurchasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FichePurchasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  payments<T extends Prisma.User$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1954,6 +2084,30 @@ export type User$fichePurchasesArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.FichePurchaseScalarFieldEnum | Prisma.FichePurchaseScalarFieldEnum[]
+}
+
+/**
+ * User.payments
+ */
+export type User$paymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Payment
+   */
+  select?: Prisma.PaymentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Payment
+   */
+  omit?: Prisma.PaymentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentInclude<ExtArgs> | null
+  where?: Prisma.PaymentWhereInput
+  orderBy?: Prisma.PaymentOrderByWithRelationInput | Prisma.PaymentOrderByWithRelationInput[]
+  cursor?: Prisma.PaymentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PaymentScalarFieldEnum | Prisma.PaymentScalarFieldEnum[]
 }
 
 /**

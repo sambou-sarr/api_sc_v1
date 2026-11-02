@@ -96,8 +96,11 @@ scripts/create-admin.ts
 | GET | `/client/parametres` | connecté | grille des formules, durées/remises et emplacements |
 | POST | `/client/parametres/commande/tarif` | connecté | calcule un tarif pour une commande ou un upgrade unitaire |
 | GET | `/subscription/kpi` | connecté | nombre de fiches, fiches actives, fiches payantes |
+| GET | `/subscription/payments?page=1&limit=20` | client | historique paginé des paiements du client connecté (y compris les fiches supprimées dont le propriétaire est conservé) |
 | POST | `/subscription/upgrade` | client | demande de changement de formule **ou renouvellement d'une fiche échue** `{ ficheId, plan: pro\|signature, dureeMois? }` → paiement `PENDING` au prix serveur (désactivé en production) |
 | POST | `/subscription/payments/:paymentId/simulate-confirmation` | client | confirme un paiement simulé et active la formule (désactivé en production) |
+
+La migration des paiements renseigne leur propriétaire depuis la fiche lorsqu’elle est encore liée. Les paiements dont la fiche avait déjà été supprimée avant cette migration ne peuvent pas être rattachés automatiquement à un compte.
 
 > **Renouvellement d'une fiche arrivée à terme.** Il n'y a pas de route dédiée : une fiche sans abonnement valide
 > (échéance dépassée) est traitée comme Essentielle, donc `/subscription/upgrade` accepte toute formule payante, y

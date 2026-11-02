@@ -224,6 +224,7 @@ model User {
   sectionStickers SectionStickerRequest[]
   qrStyles        QrStyle[]
   fichePurchases  FichePurchase[]
+  payments        Payment[]
   @@map("users")
 }
 
@@ -320,6 +321,7 @@ model Subscription {
 
 model Payment {
   id                Int             @id @default(autoincrement())
+  userId            Int?
   ficheId           Int?
   subscriptionId    Int?
   planId            Int
@@ -333,6 +335,7 @@ model Payment {
   paidAt            DateTime?
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
+  user              User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
   fiche             Fiche?           @relation(fields: [ficheId], references: [id], onDelete: SetNull)
   plan              Plan            @relation(fields: [planId], references: [id])
   subscription      Subscription?   @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
@@ -342,6 +345,7 @@ model Payment {
   ficheSlugSnapshot String? @default("valeur-par-defaut")
 
   @@index([ficheId, status, createdAt])
+  @@index([userId, createdAt])
   @@map("payments")
 }
 
