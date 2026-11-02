@@ -9,7 +9,6 @@ import { createModeleCarteSchema, patchModeleCarteSchema } from "./card-models.s
 import { ProductionController } from "./production.controller";
 import {
   codeParams,
-  createCarteSchema,
   createStickerSchema,
   listCartesQuery,
   listStickersQuery,
@@ -28,8 +27,6 @@ productionRouter.get("/summary", ProductionController.summary);
 // Cartes (Evolis)
 // GET   /cartes?statut=&limit=
 productionRouter.get("/cartes", validate({ query: listCartesQuery }), ProductionController.listCartes);
-// POST  /cartes                           { ficheId, tier?, design? }
-productionRouter.post("/cartes", validate({ body: createCarteSchema }), ProductionController.createCarte);
 // PATCH /cartes/:id                       { statut?, notes?, design? }
 productionRouter.patch("/cartes/:id", validate({ params: idParam, body: patchCarteSchema }), ProductionController.updateCarte);
 

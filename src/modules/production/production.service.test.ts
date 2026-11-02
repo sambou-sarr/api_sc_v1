@@ -266,23 +266,3 @@ describe("ProductionService.requestClientCarte", () => {
     expect(mocks.printCreate).not.toHaveBeenCalled();
   });
 });
-
-describe("ProductionService.createCarte : modèle figé sur la commande", () => {
-  it("uses the active model of the selected formula", async () => {
-    await ProductionService.createCarte({ ficheId: fiche.id, tier: "signature" });
-
-    expect(mocks.cardModelFindFirst).toHaveBeenCalledWith({
-      where: { tier: "SIGNATURE", actif: true },
-      select: { rectoUrl: true, versoUrl: true },
-    });
-    expect(mocks.printCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({
-          tier: "SIGNATURE",
-          rectoUrl: "/api/media/cartes/0a1b2c3d-0000-4000-8000-000000000001.webp",
-          versoUrl: "/api/media/cartes/0a1b2c3d-0000-4000-8000-000000000002.webp",
-        }),
-      })
-    );
-  });
-});

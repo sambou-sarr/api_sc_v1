@@ -13,7 +13,6 @@ import { conflict, forbidden, notFound, unprocessable } from "../../lib/httpErro
 import type { AuthUser } from "../../types/user";
 import type {
   ClientCarteRequestInput,
-  CreateCarteInput,
   CreateStickerInput,
   ListCartesQuery,
   ListStickersQuery,
@@ -325,49 +324,6 @@ export const ProductionService = {
         );
       throw error;
     }
-  },
-
-  async createCarte(input: CreateCarteInput) {
-    const now = new Date();
-    const fiche = await prisma.fiche.findUnique({
-      where: { id: input.ficheId },
-      select: { ...FICHE_SELECT, subscriptions: { where: abonnementValable(now), take: 1, select: { plan: { select: { type: true } } } } },
-    });
-    if (!fiche) throw notFound("Fiche introuvable");
-
-    const enCours = await prisma.printJob.findFirst({
-      where: {
-        ficheId: fiche.id,
-        statut: { notIn: ["ANNULEE", "LIVREE"] },
-      },
-      select: { id: true },
-    });
-    if (enCours) throw conflict("409", "Une carte est déjà en production pour cette fiche");
-
-    const tier: PlanType = input.tier ? upper<PlanType>(input.tier) : (fiche.subscriptions[0]?.plan.type ?? "ESSENTIELLE");
-    const modele = await prisma.cardModel.findFirst({
-      where: { tier, actif: true },
-      select: { rectoUrl: true, versoUrl: true },
-    });
-    const job = await prisma.printJob.create({
-      data: {
-        ficheId: fiche.id,
-        tier,
-        formule: lower(tier),
-        slug: fiche.slug,
-        nfcUrl: ficheUrl(fiche.slug),
-        ...instantane(fiche),
-        rectoUrl: input.rectoUrl
-          ? CardImageService.toStoredRef(input.rectoUrl)
-          : modele?.rectoUrl ?? null,
-        versoUrl: input.versoUrl
-          ? CardImageService.toStoredRef(input.versoUrl)
-          : modele?.versoUrl ?? null,
-        ...(input.design && { design: input.design as Prisma.InputJsonValue }),
-      },
-      include: { fiche: { select: FICHE_SELECT } },
-    });
-    return { carte: carteDto(job) };
   },
 
   async updateCarte(id: number, input: PatchCarteInput) {

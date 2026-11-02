@@ -9,7 +9,6 @@ import { CardModelService } from "./card-models.service";
 import type { ListSectionStickersQuery, PatchSectionStickerInput } from "./section-stickers.schemas";
 import { SectionStickerService } from "./section-stickers.service";
 import type {
-  CreateCarteInput,
   CreateStickerInput,
   ListCartesQuery,
   ListStickersQuery,
@@ -31,11 +30,6 @@ export const ProductionController = {
         req.query as unknown as ListCartesQuery
       )
     );
-  }),
-  createCarte: asyncHandler(async (req, res) => {
-    res
-      .status(201)
-      .json(await ProductionService.createCarte(req.body as CreateCarteInput));
   }),
   updateCarte: asyncHandler(async (req, res) => {
     res.json(

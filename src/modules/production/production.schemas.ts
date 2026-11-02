@@ -38,16 +38,6 @@ export const codeParams = z.object({ code: z.string().regex(/^[a-z0-9]{4,12}$/, 
 // ───────── Cartes ─────────
 export const listCartesQuery = z.object({ statut: statutCarte.optional(), limit });
 
-export const createCarteSchema = z
-  .object({
-    ficheId: z.number().int().positive(),
-    tier: tier.optional(), // par défaut : la formule en cours de la fiche
-    rectoUrl: cardImageRef.optional(),
-    versoUrl: cardImageRef.optional(),
-    design: z.record(z.string(), z.unknown()).refine(jsonLeger(20_000), "design trop volumineux").optional(),
-  })
-  .strict();
-
 export const clientCarteRequestSchema = z
   .object({
     adresseLivraison: z.string().trim().min(5).max(500),
@@ -130,7 +120,6 @@ export const patchQrSchema = z
   .strict()
   .refine(b => b.targetUrl !== undefined || b.actif !== undefined, { message: "Rien à modifier" });
 
-export type CreateCarteInput = z.infer<typeof createCarteSchema>;
 export type ClientCarteRequestInput = z.infer<typeof clientCarteRequestSchema>;
 export type PatchCarteInput = z.infer<typeof patchCarteSchema>;
 export type CreateStickerInput = z.infer<typeof createStickerSchema>;
