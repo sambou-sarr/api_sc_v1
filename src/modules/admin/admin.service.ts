@@ -117,6 +117,7 @@ export const AdminService = {
       scans,
       clients,
       demandesSticker,
+      demandesCarte,
     ] = await Promise.all([
       prisma.fiche.count(),
       prisma.fiche.count({ where: { statut: "SUSPENDUE" } }),
@@ -130,6 +131,9 @@ export const AdminService = {
       prisma.fiche.aggregate({ _sum: { scansTotal: true } }),
       prisma.user.count({ where: { role: "CLIENT" } }),
       prisma.sectionStickerRequest.count({ where: { statut: "DEMANDE" } }),
+      prisma.printJob.count({
+        where: { statut: { in: ["A_IMPRIMER", "IMPRIMEE", "ENCODEE", "TESTEE"] } },
+      }),
     ]);
 
     return {
@@ -145,6 +149,7 @@ export const AdminService = {
       scansTotal: scans._sum.scansTotal ?? 0,
       clients,
       demandesSticker: demandesSticker,
+      demandesCarte,
     };
   },
 

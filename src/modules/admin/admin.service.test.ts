@@ -5,8 +5,12 @@ const mocks = vi.hoisted(() => ({
   ficheFindFirst: vi.fn(),
   ficheFindMany: vi.fn(),
   ficheCount: vi.fn(),
+  ficheAggregate: vi.fn(),
   ficheUpdate: vi.fn(),
   ficheUpdateMany: vi.fn(),
+  printJobCount: vi.fn(),
+  userCount: vi.fn(),
+  sectionStickerCount: vi.fn(),
   transactionFicheFindUnique: vi.fn(),
   transactionFicheDelete: vi.fn(),
   subscriptionUpdateMany: vi.fn(),
@@ -28,6 +32,7 @@ vi.mock("../../database/prisma/prisma-client", () => ({
       findFirst: mocks.ficheFindFirst,
       findMany: mocks.ficheFindMany,
       count: mocks.ficheCount,
+      aggregate: mocks.ficheAggregate,
       update: mocks.ficheUpdate,
       updateMany: mocks.ficheUpdateMany,
     },
@@ -43,6 +48,9 @@ vi.mock("../../database/prisma/prisma-client", () => ({
       count: mocks.paymentCount,
       updateMany: mocks.paymentUpdateMany,
     },
+    printJob: { count: mocks.printJobCount },
+    user: { count: mocks.userCount },
+    sectionStickerRequest: { count: mocks.sectionStickerCount },
     $transaction: mocks.transaction,
   },
 }));
@@ -165,6 +173,22 @@ describe("AdminService.updateFiche", () => {
         data: { statut: "SUSPENDUE" },
       })
     );
+  });
+});
+
+describe("AdminService.stats", () => {
+  it("counts card requests in production but excludes delivered and cancelled cards", async () => {
+    mocks.printJobCount.mockResolvedValue(3);
+    mocks.ficheAggregate.mockResolvedValue({ _sum: { scansTotal: 0 } });
+
+    const result = await AdminService.stats();
+
+    expect(mocks.printJobCount).toHaveBeenCalledWith({
+      where: {
+        statut: { in: ["A_IMPRIMER", "IMPRIMEE", "ENCODEE", "TESTEE"] },
+      },
+    });
+    expect(result.demandesCarte).toBe(3);
   });
 });
 
