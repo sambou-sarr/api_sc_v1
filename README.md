@@ -20,7 +20,7 @@ npx prisma migrate dev        # applique la migration + génère le client Prism
 # 2) Remplir les formules et leurs limites
 npm run prisma:seed
 
-# 3) Créer un compte admin (le seul moyen d'en avoir un)
+# 3) Créer le premier compte admin
 npm run create-admin -- admin@exemple.sn "UnMotDePasseSolide"
 
 # 4) Lancer
@@ -81,6 +81,7 @@ scripts/create-admin.ts
 | PATCH | `/admin/leads/:id` | admin | modifie le statut (`NEW`, `CONTACTED`, `CLOSED`) |
 | GET | `/admin/subscriptions` | admin | liste paginée des abonnements, filtrée par recherche, formule, statut, période et état de la fiche (`ficheSupprimee=oui|non`, `subscriptionId` pour cibler un abonnement) |
 | GET | `/admin/payments` | admin | liste paginée des paiements, filtrée par recherche, formule, statut, période et état de la fiche (`ficheSupprimee=oui|non`, `paymentId` pour cibler un paiement) |
+| POST | `/admin/users/admin` | admin | crée un compte administrateur et envoie un lien à usage unique pour définir son mot de passe |
 | GET | `/fiches/:id` | propriétaire / admin | une fiche |
 | PATCH | `/fiches/:id` | propriétaire / admin | modifie l'identité et `data` (limites de la formule vérifiées) |
 | PATCH | `/admin/fiches/:id` | admin | `slug` avant création du compte client, `statut` (`active`/`suspendue`) |

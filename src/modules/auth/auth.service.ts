@@ -115,9 +115,13 @@ export const AuthService = {
   resetPassword: async (token: string, password: string) => {
     const userId = await consumeAuthToken(token, "reset_password");
     if (!userId) throw badRequest("TOKEN_INVALIDE", "Lien invalide ou expiré");
+    const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
     await prisma.user.update({
       where: { id: userId },
-      data: { passwordHash: await hashPassword(password) },
+      data: {
+        passwordHash: await hashPassword(password),
+        ...(user.role === "ADMIN" ? { emailVerifiedAt: new Date() } : {}),
+      },
     });
     logger.info("User password reset", { userId });
   },

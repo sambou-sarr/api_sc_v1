@@ -6,8 +6,11 @@ import type {
   StatutFiche,
   SubscriptionStatus,
 } from "../../database/prisma/generated/prisma/client";
+import { randomBytes } from "node:crypto";
 import { prisma } from "../../database/prisma/prisma-client";
 import { conflict, notFound, unprocessable } from "../../lib/httpError";
+import { hashPassword } from "../../lib/password";
+import { sendAdminInvitationEmail } from "../../lib/mailer";
 import { ficheInclude, toFicheDto } from "../fiches/fiches.dto";
 import {
   activateSubscription,
@@ -20,6 +23,7 @@ import type {
   ListUsersQuery,
   PatchFicheInput,
   SubscriptionInput,
+  CreateAdminInput,
 } from "./admin.schemas";
 
 // ═══════════════════════ Petits outils ═══════════════════════
@@ -653,6 +657,46 @@ export const AdminService = {
         total,
         totalPages: Math.max(1, Math.ceil(total / q.limit)),
       },
+    };
+  },
+
+  createAdmin: async (input: CreateAdminInput) => {
+    const existing = await prisma.user.findUnique({
+      where: { email: input.email },
+    });
+
+    if (existing && existing.role !== "ADMIN") {
+      throw conflict(
+        "EMAIL_DEJA_UTILISE",
+        "Un compte client utilise déjà cette adresse e-mail."
+      );
+    }
+    if (existing?.emailVerifiedAt) {
+      throw conflict(
+        "ADMIN_DEJA_ACTIVE",
+        "Cet administrateur a déjà activé son compte."
+      );
+    }
+
+    const user =
+      existing ??
+      (await prisma.user.create({
+        data: {
+          email: input.email,
+          nom: input.nom,
+          role: "ADMIN",
+          passwordHash: await hashPassword(randomBytes(48).toString("hex")),
+        },
+      }));
+
+    await prisma.authToken.updateMany({
+      where: { userId: user.id, type: "reset_password", usedAt: null },
+      data: { usedAt: new Date() },
+    });
+    await sendAdminInvitationEmail(user);
+    return {
+      created: !existing,
+      message: "Invitation administrateur envoyée.",
     };
   },
 };

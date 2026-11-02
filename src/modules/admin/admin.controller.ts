@@ -5,6 +5,7 @@ import type {
   ListPaymentsQuery,
   ListSubscriptionsQuery,
   ListUsersQuery,
+  CreateAdminInput,
 } from "./admin.schemas";
 import { AdminService } from "./admin.service";
 
@@ -74,5 +75,10 @@ export const AdminController = {
   listUsers: asyncHandler(async (req, res) => {
     const filtres = req.query as unknown as ListUsersQuery;
     res.json(await AdminService.listUsers(filtres));
+  }),
+
+  createAdmin: asyncHandler(async (req, res) => {
+    const result = await AdminService.createAdmin(req.body as CreateAdminInput);
+    res.status(result.created ? 201 : 200).json(result);
   }),
 };

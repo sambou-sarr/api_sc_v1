@@ -1,5 +1,23 @@
 import { describe, expect, it } from "vitest";
-import { listFichesQuery, patchFicheSchema } from "./admin.schemas";
+import {
+  createAdminSchema,
+  listFichesQuery,
+  patchFicheSchema,
+} from "./admin.schemas";
+
+describe("createAdminSchema", () => {
+  it("normalizes the email and validates the administrator name", () => {
+    expect(
+      createAdminSchema.parse({ email: "  ADMIN@EXAMPLE.COM ", nom: " Awa " })
+    ).toEqual({ email: "admin@example.com", nom: "Awa" });
+  });
+
+  it("rejects invalid addresses and short names", () => {
+    expect(
+      createAdminSchema.safeParse({ email: "invalid", nom: "A" }).success
+    ).toBe(false);
+  });
+});
 
 describe("listFichesQuery", () => {
   it("accepts the pending sticker request filter only", () => {

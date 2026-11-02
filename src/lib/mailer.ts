@@ -64,6 +64,24 @@ export const sendForgotPasswordMail = async (user: User) => {
   await sendMail(forgotPayload);
 };
 
+export const sendAdminInvitationEmail = async (user: User) => {
+  const token = await createAuthToken(user.id, "reset_password", 24 * 60);
+  const setupUrl = `${env.PUBLIC_SITE_URL}/reset-password?token=${token}`;
+  await sendMail({
+    to: user.email,
+    subject: "Votre accès administrateur Support Connecté",
+    html: resetPasswordEmailTemplate(
+      LOGO_URL,
+      user.nom ?? "",
+      setupUrl,
+      "24 heures",
+      String(new Date().getFullYear()),
+      "admin-invitation"
+    ),
+    text: `Bonjour ${user.nom ?? ""}, un accès administrateur Support Connecté a été créé pour vous. Définissez votre mot de passe dans les 24 heures : ${setupUrl}`,
+  });
+};
+
 // ? dynamic send email function
 export const sendMail = async (data: {
   to: string;

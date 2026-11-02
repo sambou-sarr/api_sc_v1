@@ -5,6 +5,7 @@ import { idParam } from "../fiches/fiches.schemas";
 import { AdminController } from "./admin.controller";
 import {
   deleteFicheQuery,
+  createAdminSchema,
   listFichesQuery,
   listPaymentsQuery,
   listSubscriptionsQuery,
@@ -88,4 +89,9 @@ adminRouter.get(
   "/users",
   validate({ query: listUsersQuery }),
   AdminController.listUsers
+);
+adminRouter.post(
+  "/users/admin",
+  validate({ body: createAdminSchema }),
+  AdminController.createAdmin
 );

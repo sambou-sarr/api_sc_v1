@@ -74,6 +74,11 @@ export const listUsersQuery = z.object({
   limit,
 });
 
+export const createAdminSchema = z.object({
+  email: z.string().trim().toLowerCase().email().max(254),
+  nom: z.string().trim().min(2).max(100),
+});
+
 const listBillingQuery = z.object({
   search: z.string().trim().min(1).max(100).optional(),
   formule: z.enum(FORMULES).optional(),
@@ -100,5 +105,6 @@ export type PatchFicheInput = z.infer<typeof patchFicheSchema>;
 export type DeleteFicheQuery = z.infer<typeof deleteFicheQuery>;
 export type SubscriptionInput = z.infer<typeof subscriptionSchema>;
 export type ListUsersQuery = z.infer<typeof listUsersQuery>;
+export type CreateAdminInput = z.infer<typeof createAdminSchema>;
 export type ListSubscriptionsQuery = z.infer<typeof listSubscriptionsQuery>;
 export type ListPaymentsQuery = z.infer<typeof listPaymentsQuery>;
