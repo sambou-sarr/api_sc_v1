@@ -64,6 +64,8 @@ export const ModelName = {
   Bien: 'Bien',
   BienPhoto: 'BienPhoto',
   User: 'User',
+  AdminActionLog: 'AdminActionLog',
+  AppSetting: 'AppSetting',
   AuthToken: 'AuthToken',
   Plan: 'Plan',
   PlanLimit: 'PlanLimit',
@@ -281,10 +283,38 @@ export const UserScalarFieldEnum = {
   role: 'role',
   nom: 'nom',
   emailVerifiedAt: 'emailVerifiedAt',
+  active: 'active',
   createdAt: 'createdAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const AdminActionLogScalarFieldEnum = {
+  id: 'id',
+  adminId: 'adminId',
+  adminName: 'adminName',
+  adminEmail: 'adminEmail',
+  method: 'method',
+  path: 'path',
+  statusCode: 'statusCode',
+  createdAt: 'createdAt'
+} as const
+
+export type AdminActionLogScalarFieldEnum = (typeof AdminActionLogScalarFieldEnum)[keyof typeof AdminActionLogScalarFieldEnum]
+
+
+export const AppSettingScalarFieldEnum = {
+  id: 'id',
+  platformName: 'platformName',
+  supportEmail: 'supportEmail',
+  supportPhone: 'supportPhone',
+  socialLinks: 'socialLinks',
+  maintenance: 'maintenance',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AppSettingScalarFieldEnum = (typeof AppSettingScalarFieldEnum)[keyof typeof AppSettingScalarFieldEnum]
 
 
 export const AuthTokenScalarFieldEnum = {
@@ -629,19 +659,19 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const NullableJsonNullValueInput = {
   DbNull: DbNull,
   JsonNull: JsonNull
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
-
-
-export const JsonNullValueInput = {
-  JsonNull: JsonNull
-} as const
-
-export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

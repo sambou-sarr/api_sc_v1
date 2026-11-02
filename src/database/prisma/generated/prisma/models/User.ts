@@ -41,6 +41,7 @@ export type UserMinAggregateOutputType = {
   role: $Enums.Role | null
   nom: string | null
   emailVerifiedAt: Date | null
+  active: boolean | null
   createdAt: Date | null
 }
 
@@ -51,6 +52,7 @@ export type UserMaxAggregateOutputType = {
   role: $Enums.Role | null
   nom: string | null
   emailVerifiedAt: Date | null
+  active: boolean | null
   createdAt: Date | null
 }
 
@@ -61,6 +63,7 @@ export type UserCountAggregateOutputType = {
   role: number
   nom: number
   emailVerifiedAt: number
+  active: number
   createdAt: number
   _all: number
 }
@@ -81,6 +84,7 @@ export type UserMinAggregateInputType = {
   role?: true
   nom?: true
   emailVerifiedAt?: true
+  active?: true
   createdAt?: true
 }
 
@@ -91,6 +95,7 @@ export type UserMaxAggregateInputType = {
   role?: true
   nom?: true
   emailVerifiedAt?: true
+  active?: true
   createdAt?: true
 }
 
@@ -101,6 +106,7 @@ export type UserCountAggregateInputType = {
   role?: true
   nom?: true
   emailVerifiedAt?: true
+  active?: true
   createdAt?: true
   _all?: true
 }
@@ -198,6 +204,7 @@ export type UserGroupByOutputType = {
   role: $Enums.Role
   nom: string | null
   emailVerifiedAt: Date | null
+  active: boolean
   createdAt: Date
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
@@ -231,6 +238,7 @@ export type UserWhereInput = {
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   nom?: Prisma.StringNullableFilter<"User"> | string | null
   emailVerifiedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  active?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   tokens?: Prisma.AuthTokenListRelationFilter
   fiches?: Prisma.FicheListRelationFilter
@@ -238,6 +246,7 @@ export type UserWhereInput = {
   qrStyles?: Prisma.QrStyleListRelationFilter
   fichePurchases?: Prisma.FichePurchaseListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
+  adminActionLogs?: Prisma.AdminActionLogListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -247,6 +256,7 @@ export type UserOrderByWithRelationInput = {
   role?: Prisma.SortOrder
   nom?: Prisma.SortOrderInput | Prisma.SortOrder
   emailVerifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   tokens?: Prisma.AuthTokenOrderByRelationAggregateInput
   fiches?: Prisma.FicheOrderByRelationAggregateInput
@@ -254,6 +264,7 @@ export type UserOrderByWithRelationInput = {
   qrStyles?: Prisma.QrStyleOrderByRelationAggregateInput
   fichePurchases?: Prisma.FichePurchaseOrderByRelationAggregateInput
   payments?: Prisma.PaymentOrderByRelationAggregateInput
+  adminActionLogs?: Prisma.AdminActionLogOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -266,6 +277,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   nom?: Prisma.StringNullableFilter<"User"> | string | null
   emailVerifiedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  active?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   tokens?: Prisma.AuthTokenListRelationFilter
   fiches?: Prisma.FicheListRelationFilter
@@ -273,6 +285,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   qrStyles?: Prisma.QrStyleListRelationFilter
   fichePurchases?: Prisma.FichePurchaseListRelationFilter
   payments?: Prisma.PaymentListRelationFilter
+  adminActionLogs?: Prisma.AdminActionLogListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -282,6 +295,7 @@ export type UserOrderByWithAggregationInput = {
   role?: Prisma.SortOrder
   nom?: Prisma.SortOrderInput | Prisma.SortOrder
   emailVerifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
@@ -300,6 +314,7 @@ export type UserScalarWhereWithAggregatesInput = {
   role?: Prisma.EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
   nom?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   emailVerifiedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  active?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
 
@@ -309,6 +324,7 @@ export type UserCreateInput = {
   role?: $Enums.Role
   nom?: string | null
   emailVerifiedAt?: Date | string | null
+  active?: boolean
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
@@ -316,6 +332,7 @@ export type UserCreateInput = {
   qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  adminActionLogs?: Prisma.AdminActionLogCreateNestedManyWithoutAdminInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -325,6 +342,7 @@ export type UserUncheckedCreateInput = {
   role?: $Enums.Role
   nom?: string | null
   emailVerifiedAt?: Date | string | null
+  active?: boolean
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenUncheckedCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
@@ -332,6 +350,7 @@ export type UserUncheckedCreateInput = {
   qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  adminActionLogs?: Prisma.AdminActionLogUncheckedCreateNestedManyWithoutAdminInput
 }
 
 export type UserUpdateInput = {
@@ -340,6 +359,7 @@ export type UserUpdateInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
@@ -347,6 +367,7 @@ export type UserUpdateInput = {
   qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  adminActionLogs?: Prisma.AdminActionLogUpdateManyWithoutAdminNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -356,6 +377,7 @@ export type UserUncheckedUpdateInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUncheckedUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
@@ -363,6 +385,7 @@ export type UserUncheckedUpdateInput = {
   qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  adminActionLogs?: Prisma.AdminActionLogUncheckedUpdateManyWithoutAdminNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -372,6 +395,7 @@ export type UserCreateManyInput = {
   role?: $Enums.Role
   nom?: string | null
   emailVerifiedAt?: Date | string | null
+  active?: boolean
   createdAt?: Date | string
 }
 
@@ -381,6 +405,7 @@ export type UserUpdateManyMutationInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -391,6 +416,7 @@ export type UserUncheckedUpdateManyInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -406,6 +432,7 @@ export type UserCountOrderByAggregateInput = {
   role?: Prisma.SortOrder
   nom?: Prisma.SortOrder
   emailVerifiedAt?: Prisma.SortOrder
+  active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -420,6 +447,7 @@ export type UserMaxOrderByAggregateInput = {
   role?: Prisma.SortOrder
   nom?: Prisma.SortOrder
   emailVerifiedAt?: Prisma.SortOrder
+  active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -430,6 +458,7 @@ export type UserMinOrderByAggregateInput = {
   role?: Prisma.SortOrder
   nom?: Prisma.SortOrder
   emailVerifiedAt?: Prisma.SortOrder
+  active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -464,6 +493,22 @@ export type EnumRoleFieldUpdateOperationsInput = {
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
+}
+
+export type UserCreateNestedOneWithoutAdminActionLogsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAdminActionLogsInput, Prisma.UserUncheckedCreateWithoutAdminActionLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAdminActionLogsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutAdminActionLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAdminActionLogsInput, Prisma.UserUncheckedCreateWithoutAdminActionLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAdminActionLogsInput
+  upsert?: Prisma.UserUpsertWithoutAdminActionLogsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAdminActionLogsInput, Prisma.UserUpdateWithoutAdminActionLogsInput>, Prisma.UserUncheckedUpdateWithoutAdminActionLogsInput>
 }
 
 export type UserCreateNestedOneWithoutTokensInput = {
@@ -546,12 +591,14 @@ export type UserCreateWithoutFichesInput = {
   role?: $Enums.Role
   nom?: string | null
   emailVerifiedAt?: Date | string | null
+  active?: boolean
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenCreateNestedManyWithoutUserInput
   sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  adminActionLogs?: Prisma.AdminActionLogCreateNestedManyWithoutAdminInput
 }
 
 export type UserUncheckedCreateWithoutFichesInput = {
@@ -561,12 +608,14 @@ export type UserUncheckedCreateWithoutFichesInput = {
   role?: $Enums.Role
   nom?: string | null
   emailVerifiedAt?: Date | string | null
+  active?: boolean
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenUncheckedCreateNestedManyWithoutUserInput
   sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  adminActionLogs?: Prisma.AdminActionLogUncheckedCreateNestedManyWithoutAdminInput
 }
 
 export type UserCreateOrConnectWithoutFichesInput = {
@@ -591,12 +640,14 @@ export type UserUpdateWithoutFichesInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUpdateManyWithoutUserNestedInput
   sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  adminActionLogs?: Prisma.AdminActionLogUpdateManyWithoutAdminNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFichesInput = {
@@ -606,8 +657,92 @@ export type UserUncheckedUpdateWithoutFichesInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUncheckedUpdateManyWithoutUserNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutUserNestedInput
+  qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
+  fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  adminActionLogs?: Prisma.AdminActionLogUncheckedUpdateManyWithoutAdminNestedInput
+}
+
+export type UserCreateWithoutAdminActionLogsInput = {
+  email: string
+  passwordHash: string
+  role?: $Enums.Role
+  nom?: string | null
+  emailVerifiedAt?: Date | string | null
+  active?: boolean
+  createdAt?: Date | string
+  tokens?: Prisma.AuthTokenCreateNestedManyWithoutUserInput
+  fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
+  sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutUserInput
+  qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
+  fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutAdminActionLogsInput = {
+  id?: number
+  email: string
+  passwordHash: string
+  role?: $Enums.Role
+  nom?: string | null
+  emailVerifiedAt?: Date | string | null
+  active?: boolean
+  createdAt?: Date | string
+  tokens?: Prisma.AuthTokenUncheckedCreateNestedManyWithoutUserInput
+  fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
+  sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutUserInput
+  qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
+  fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutAdminActionLogsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAdminActionLogsInput, Prisma.UserUncheckedCreateWithoutAdminActionLogsInput>
+}
+
+export type UserUpsertWithoutAdminActionLogsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAdminActionLogsInput, Prisma.UserUncheckedUpdateWithoutAdminActionLogsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAdminActionLogsInput, Prisma.UserUncheckedCreateWithoutAdminActionLogsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAdminActionLogsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAdminActionLogsInput, Prisma.UserUncheckedUpdateWithoutAdminActionLogsInput>
+}
+
+export type UserUpdateWithoutAdminActionLogsInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tokens?: Prisma.AuthTokenUpdateManyWithoutUserNestedInput
+  fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
+  sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutUserNestedInput
+  qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
+  fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAdminActionLogsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tokens?: Prisma.AuthTokenUncheckedUpdateManyWithoutUserNestedInput
+  fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
   sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
@@ -620,12 +755,14 @@ export type UserCreateWithoutTokensInput = {
   role?: $Enums.Role
   nom?: string | null
   emailVerifiedAt?: Date | string | null
+  active?: boolean
   createdAt?: Date | string
   fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
   sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  adminActionLogs?: Prisma.AdminActionLogCreateNestedManyWithoutAdminInput
 }
 
 export type UserUncheckedCreateWithoutTokensInput = {
@@ -635,12 +772,14 @@ export type UserUncheckedCreateWithoutTokensInput = {
   role?: $Enums.Role
   nom?: string | null
   emailVerifiedAt?: Date | string | null
+  active?: boolean
   createdAt?: Date | string
   fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
   sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  adminActionLogs?: Prisma.AdminActionLogUncheckedCreateNestedManyWithoutAdminInput
 }
 
 export type UserCreateOrConnectWithoutTokensInput = {
@@ -665,12 +804,14 @@ export type UserUpdateWithoutTokensInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
   sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  adminActionLogs?: Prisma.AdminActionLogUpdateManyWithoutAdminNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTokensInput = {
@@ -680,12 +821,14 @@ export type UserUncheckedUpdateWithoutTokensInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
   sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  adminActionLogs?: Prisma.AdminActionLogUncheckedUpdateManyWithoutAdminNestedInput
 }
 
 export type UserCreateWithoutPaymentsInput = {
@@ -694,12 +837,14 @@ export type UserCreateWithoutPaymentsInput = {
   role?: $Enums.Role
   nom?: string | null
   emailVerifiedAt?: Date | string | null
+  active?: boolean
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
   sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
+  adminActionLogs?: Prisma.AdminActionLogCreateNestedManyWithoutAdminInput
 }
 
 export type UserUncheckedCreateWithoutPaymentsInput = {
@@ -709,12 +854,14 @@ export type UserUncheckedCreateWithoutPaymentsInput = {
   role?: $Enums.Role
   nom?: string | null
   emailVerifiedAt?: Date | string | null
+  active?: boolean
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenUncheckedCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
   sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
+  adminActionLogs?: Prisma.AdminActionLogUncheckedCreateNestedManyWithoutAdminInput
 }
 
 export type UserCreateOrConnectWithoutPaymentsInput = {
@@ -739,12 +886,14 @@ export type UserUpdateWithoutPaymentsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
   sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
+  adminActionLogs?: Prisma.AdminActionLogUpdateManyWithoutAdminNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPaymentsInput = {
@@ -754,12 +903,14 @@ export type UserUncheckedUpdateWithoutPaymentsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUncheckedUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
   sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
+  adminActionLogs?: Prisma.AdminActionLogUncheckedUpdateManyWithoutAdminNestedInput
 }
 
 export type UserCreateWithoutFichePurchasesInput = {
@@ -768,12 +919,14 @@ export type UserCreateWithoutFichePurchasesInput = {
   role?: $Enums.Role
   nom?: string | null
   emailVerifiedAt?: Date | string | null
+  active?: boolean
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
   sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  adminActionLogs?: Prisma.AdminActionLogCreateNestedManyWithoutAdminInput
 }
 
 export type UserUncheckedCreateWithoutFichePurchasesInput = {
@@ -783,12 +936,14 @@ export type UserUncheckedCreateWithoutFichePurchasesInput = {
   role?: $Enums.Role
   nom?: string | null
   emailVerifiedAt?: Date | string | null
+  active?: boolean
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenUncheckedCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
   sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  adminActionLogs?: Prisma.AdminActionLogUncheckedCreateNestedManyWithoutAdminInput
 }
 
 export type UserCreateOrConnectWithoutFichePurchasesInput = {
@@ -813,12 +968,14 @@ export type UserUpdateWithoutFichePurchasesInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
   sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  adminActionLogs?: Prisma.AdminActionLogUpdateManyWithoutAdminNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFichePurchasesInput = {
@@ -828,12 +985,14 @@ export type UserUncheckedUpdateWithoutFichePurchasesInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUncheckedUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
   sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  adminActionLogs?: Prisma.AdminActionLogUncheckedUpdateManyWithoutAdminNestedInput
 }
 
 export type UserCreateWithoutSectionStickersInput = {
@@ -842,12 +1001,14 @@ export type UserCreateWithoutSectionStickersInput = {
   role?: $Enums.Role
   nom?: string | null
   emailVerifiedAt?: Date | string | null
+  active?: boolean
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  adminActionLogs?: Prisma.AdminActionLogCreateNestedManyWithoutAdminInput
 }
 
 export type UserUncheckedCreateWithoutSectionStickersInput = {
@@ -857,12 +1018,14 @@ export type UserUncheckedCreateWithoutSectionStickersInput = {
   role?: $Enums.Role
   nom?: string | null
   emailVerifiedAt?: Date | string | null
+  active?: boolean
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenUncheckedCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
   qrStyles?: Prisma.QrStyleUncheckedCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  adminActionLogs?: Prisma.AdminActionLogUncheckedCreateNestedManyWithoutAdminInput
 }
 
 export type UserCreateOrConnectWithoutSectionStickersInput = {
@@ -887,12 +1050,14 @@ export type UserUpdateWithoutSectionStickersInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  adminActionLogs?: Prisma.AdminActionLogUpdateManyWithoutAdminNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSectionStickersInput = {
@@ -902,12 +1067,14 @@ export type UserUncheckedUpdateWithoutSectionStickersInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUncheckedUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
   qrStyles?: Prisma.QrStyleUncheckedUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  adminActionLogs?: Prisma.AdminActionLogUncheckedUpdateManyWithoutAdminNestedInput
 }
 
 export type UserCreateWithoutQrStylesInput = {
@@ -916,12 +1083,14 @@ export type UserCreateWithoutQrStylesInput = {
   role?: $Enums.Role
   nom?: string | null
   emailVerifiedAt?: Date | string | null
+  active?: boolean
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheCreateNestedManyWithoutUserInput
   sectionStickers?: Prisma.SectionStickerRequestCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  adminActionLogs?: Prisma.AdminActionLogCreateNestedManyWithoutAdminInput
 }
 
 export type UserUncheckedCreateWithoutQrStylesInput = {
@@ -931,12 +1100,14 @@ export type UserUncheckedCreateWithoutQrStylesInput = {
   role?: $Enums.Role
   nom?: string | null
   emailVerifiedAt?: Date | string | null
+  active?: boolean
   createdAt?: Date | string
   tokens?: Prisma.AuthTokenUncheckedCreateNestedManyWithoutUserInput
   fiches?: Prisma.FicheUncheckedCreateNestedManyWithoutUserInput
   sectionStickers?: Prisma.SectionStickerRequestUncheckedCreateNestedManyWithoutUserInput
   fichePurchases?: Prisma.FichePurchaseUncheckedCreateNestedManyWithoutUserInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  adminActionLogs?: Prisma.AdminActionLogUncheckedCreateNestedManyWithoutAdminInput
 }
 
 export type UserCreateOrConnectWithoutQrStylesInput = {
@@ -961,12 +1132,14 @@ export type UserUpdateWithoutQrStylesInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUpdateManyWithoutUserNestedInput
   sectionStickers?: Prisma.SectionStickerRequestUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  adminActionLogs?: Prisma.AdminActionLogUpdateManyWithoutAdminNestedInput
 }
 
 export type UserUncheckedUpdateWithoutQrStylesInput = {
@@ -976,12 +1149,14 @@ export type UserUncheckedUpdateWithoutQrStylesInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   nom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tokens?: Prisma.AuthTokenUncheckedUpdateManyWithoutUserNestedInput
   fiches?: Prisma.FicheUncheckedUpdateManyWithoutUserNestedInput
   sectionStickers?: Prisma.SectionStickerRequestUncheckedUpdateManyWithoutUserNestedInput
   fichePurchases?: Prisma.FichePurchaseUncheckedUpdateManyWithoutUserNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  adminActionLogs?: Prisma.AdminActionLogUncheckedUpdateManyWithoutAdminNestedInput
 }
 
 
@@ -996,6 +1171,7 @@ export type UserCountOutputType = {
   qrStyles: number
   fichePurchases: number
   payments: number
+  adminActionLogs: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1005,6 +1181,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   qrStyles?: boolean | UserCountOutputTypeCountQrStylesArgs
   fichePurchases?: boolean | UserCountOutputTypeCountFichePurchasesArgs
   payments?: boolean | UserCountOutputTypeCountPaymentsArgs
+  adminActionLogs?: boolean | UserCountOutputTypeCountAdminActionLogsArgs
 }
 
 /**
@@ -1059,6 +1236,13 @@ export type UserCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.PaymentWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAdminActionLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AdminActionLogWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1067,6 +1251,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   role?: boolean
   nom?: boolean
   emailVerifiedAt?: boolean
+  active?: boolean
   createdAt?: boolean
   tokens?: boolean | Prisma.User$tokensArgs<ExtArgs>
   fiches?: boolean | Prisma.User$fichesArgs<ExtArgs>
@@ -1074,6 +1259,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   qrStyles?: boolean | Prisma.User$qrStylesArgs<ExtArgs>
   fichePurchases?: boolean | Prisma.User$fichePurchasesArgs<ExtArgs>
   payments?: boolean | Prisma.User$paymentsArgs<ExtArgs>
+  adminActionLogs?: boolean | Prisma.User$adminActionLogsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1084,6 +1270,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   role?: boolean
   nom?: boolean
   emailVerifiedAt?: boolean
+  active?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["user"]>
 
@@ -1094,6 +1281,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   role?: boolean
   nom?: boolean
   emailVerifiedAt?: boolean
+  active?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["user"]>
 
@@ -1104,10 +1292,11 @@ export type UserSelectScalar = {
   role?: boolean
   nom?: boolean
   emailVerifiedAt?: boolean
+  active?: boolean
   createdAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "role" | "nom" | "emailVerifiedAt" | "createdAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "role" | "nom" | "emailVerifiedAt" | "active" | "createdAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tokens?: boolean | Prisma.User$tokensArgs<ExtArgs>
   fiches?: boolean | Prisma.User$fichesArgs<ExtArgs>
@@ -1115,6 +1304,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   qrStyles?: boolean | Prisma.User$qrStylesArgs<ExtArgs>
   fichePurchases?: boolean | Prisma.User$fichePurchasesArgs<ExtArgs>
   payments?: boolean | Prisma.User$paymentsArgs<ExtArgs>
+  adminActionLogs?: boolean | Prisma.User$adminActionLogsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1129,6 +1319,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     qrStyles: Prisma.$QrStylePayload<ExtArgs>[]
     fichePurchases: Prisma.$FichePurchasePayload<ExtArgs>[]
     payments: Prisma.$PaymentPayload<ExtArgs>[]
+    adminActionLogs: Prisma.$AdminActionLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1137,6 +1328,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     role: $Enums.Role
     nom: string | null
     emailVerifiedAt: Date | null
+    active: boolean
     createdAt: Date
   }, ExtArgs["result"]["user"]>
   composites: {}
@@ -1538,6 +1730,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   qrStyles<T extends Prisma.User$qrStylesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$qrStylesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QrStylePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   fichePurchases<T extends Prisma.User$fichePurchasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$fichePurchasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FichePurchasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   payments<T extends Prisma.User$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  adminActionLogs<T extends Prisma.User$adminActionLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$adminActionLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AdminActionLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1573,6 +1766,7 @@ export interface UserFieldRefs {
   readonly role: Prisma.FieldRef<"User", 'Role'>
   readonly nom: Prisma.FieldRef<"User", 'String'>
   readonly emailVerifiedAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly active: Prisma.FieldRef<"User", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
 }
     
@@ -2108,6 +2302,30 @@ export type User$paymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.PaymentScalarFieldEnum | Prisma.PaymentScalarFieldEnum[]
+}
+
+/**
+ * User.adminActionLogs
+ */
+export type User$adminActionLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AdminActionLog
+   */
+  select?: Prisma.AdminActionLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AdminActionLog
+   */
+  omit?: Prisma.AdminActionLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminActionLogInclude<ExtArgs> | null
+  where?: Prisma.AdminActionLogWhereInput
+  orderBy?: Prisma.AdminActionLogOrderByWithRelationInput | Prisma.AdminActionLogOrderByWithRelationInput[]
+  cursor?: Prisma.AdminActionLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AdminActionLogScalarFieldEnum | Prisma.AdminActionLogScalarFieldEnum[]
 }
 
 /**

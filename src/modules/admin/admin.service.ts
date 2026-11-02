@@ -20,6 +20,7 @@ import type {
   ListFichesQuery,
   ListPaymentsQuery,
   ListSubscriptionsQuery,
+  ListAdminActionLogsQuery,
   ListUsersQuery,
   PatchFicheInput,
   SubscriptionInput,
@@ -630,6 +631,7 @@ export const AdminService = {
           email: true,
           nom: true,
           role: true,
+          active: true,
           emailVerifiedAt: true,
           createdAt: true,
           _count: { select: { fiches: true } }, // withCount('fiches')
@@ -647,10 +649,41 @@ export const AdminService = {
         email: u.email,
         nom: u.nom,
         role: lower(u.role),
+        active: u.active,
         emailVerifie: u.emailVerifiedAt !== null,
         createdAt: u.createdAt,
         nbFiches: u._count.fiches,
       })),
+      pagination: {
+        page: q.page,
+        limit: q.limit,
+        total,
+        totalPages: Math.max(1, Math.ceil(total / q.limit)),
+      },
+    };
+  },
+
+  listActionLogs: async (q: ListAdminActionLogsQuery) => {
+    const [items, total] = await prisma.$transaction([
+      prisma.adminActionLog.findMany({
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        skip: (q.page - 1) * q.limit,
+        take: q.limit,
+        select: {
+          id: true,
+          adminName: true,
+          adminEmail: true,
+          method: true,
+          path: true,
+          statusCode: true,
+          createdAt: true,
+        },
+      }),
+      prisma.adminActionLog.count(),
+    ]);
+
+    return {
+      items,
       pagination: {
         page: q.page,
         limit: q.limit,
@@ -669,6 +702,12 @@ export const AdminService = {
       throw conflict(
         "EMAIL_DEJA_UTILISE",
         "Un compte client utilise déjà cette adresse e-mail."
+      );
+    }
+    if (existing && !existing.active) {
+      throw unprocessable(
+        "ADMIN_DESACTIVE",
+        "Réactivez cet administrateur avant de renvoyer son invitation."
       );
     }
     if (existing?.emailVerifiedAt) {
@@ -698,5 +737,79 @@ export const AdminService = {
       created: !existing,
       message: "Invitation administrateur envoyée.",
     };
+  },
+
+  resendAdminInvitation: async (userId: number) => {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user || user.role !== "ADMIN") throw notFound("Administrateur introuvable");
+    if (!user.active) {
+      throw unprocessable(
+        "ADMIN_DESACTIVE",
+        "Réactivez cet administrateur avant de renvoyer son invitation."
+      );
+    }
+    if (user.emailVerifiedAt) {
+      throw conflict(
+        "ADMIN_DEJA_ACTIVE",
+        "Cet administrateur a déjà activé son compte."
+      );
+    }
+    await prisma.authToken.updateMany({
+      where: { userId: user.id, type: "reset_password", usedAt: null },
+      data: { usedAt: new Date() },
+    });
+    await sendAdminInvitationEmail(user);
+  },
+
+  setAdminStatus: async (
+    userId: number,
+    actingAdminId: number,
+    active: boolean
+  ) => {
+    const target = await prisma.user.findUnique({ where: { id: userId } });
+    if (!target || target.role !== "ADMIN")
+      throw notFound("Administrateur introuvable");
+    if (userId === actingAdminId && !active) {
+      throw unprocessable(
+        "AUTO_DESACTIVATION_INTERDITE",
+        "Vous ne pouvez pas désactiver votre propre compte."
+      );
+    }
+    if (!active && target.active) {
+      const activeAdmins = await prisma.user.count({
+        where: { role: "ADMIN", active: true },
+      });
+      if (activeAdmins <= 1) {
+        throw conflict(
+          "DERNIER_ADMIN",
+          "Le dernier administrateur actif ne peut pas être désactivé."
+        );
+      }
+    }
+    await prisma.user.update({ where: { id: userId }, data: { active } });
+  },
+
+  deleteAdmin: async (userId: number, actingAdminId: number) => {
+    if (userId === actingAdminId) {
+      throw unprocessable(
+        "AUTO_SUPPRESSION_INTERDITE",
+        "Vous ne pouvez pas supprimer votre propre compte."
+      );
+    }
+    const target = await prisma.user.findUnique({ where: { id: userId } });
+    if (!target || target.role !== "ADMIN")
+      throw notFound("Administrateur introuvable");
+    if (target.active) {
+      const activeAdmins = await prisma.user.count({
+        where: { role: "ADMIN", active: true },
+      });
+      if (activeAdmins <= 1) {
+        throw conflict(
+          "DERNIER_ADMIN",
+          "Le dernier administrateur actif ne peut pas être supprimé."
+        );
+      }
+    }
+    await prisma.user.delete({ where: { id: userId } });
   },
 };

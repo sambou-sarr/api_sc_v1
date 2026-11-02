@@ -4,8 +4,10 @@ import type {
   ListFichesQuery,
   ListPaymentsQuery,
   ListSubscriptionsQuery,
+  ListAdminActionLogsQuery,
   ListUsersQuery,
   CreateAdminInput,
+  AdminStatusInput,
 } from "./admin.schemas";
 import { AdminService } from "./admin.service";
 
@@ -77,8 +79,33 @@ export const AdminController = {
     res.json(await AdminService.listUsers(filtres));
   }),
 
+  listActionLogs: asyncHandler(async (req, res) => {
+    const filtres = req.query as unknown as ListAdminActionLogsQuery;
+    res.json(await AdminService.listActionLogs(filtres));
+  }),
+
   createAdmin: asyncHandler(async (req, res) => {
     const result = await AdminService.createAdmin(req.body as CreateAdminInput);
     res.status(result.created ? 201 : 200).json(result);
+  }),
+
+  resendAdminInvitation: asyncHandler(async (req, res) => {
+    await AdminService.resendAdminInvitation(Number(req.params.id));
+    res.json({ ok: true });
+  }),
+
+  setAdminStatus: asyncHandler(async (req, res) => {
+    const body = req.body as AdminStatusInput;
+    await AdminService.setAdminStatus(
+      Number(req.params.id),
+      req.user!.id,
+      body.active
+    );
+    res.json({ ok: true });
+  }),
+
+  deleteAdmin: asyncHandler(async (req, res) => {
+    await AdminService.deleteAdmin(Number(req.params.id), req.user!.id);
+    res.json({ ok: true });
   }),
 };

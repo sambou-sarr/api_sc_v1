@@ -74,9 +74,15 @@ export const listUsersQuery = z.object({
   limit,
 });
 
+export const listAdminActionLogsQuery = z.object({ page, limit });
+
 export const createAdminSchema = z.object({
   email: z.string().trim().toLowerCase().email().max(254),
   nom: z.string().trim().min(2).max(100),
+});
+
+export const adminStatusSchema = z.object({
+  active: z.boolean(),
 });
 
 const listBillingQuery = z.object({
@@ -105,6 +111,10 @@ export type PatchFicheInput = z.infer<typeof patchFicheSchema>;
 export type DeleteFicheQuery = z.infer<typeof deleteFicheQuery>;
 export type SubscriptionInput = z.infer<typeof subscriptionSchema>;
 export type ListUsersQuery = z.infer<typeof listUsersQuery>;
+export type ListAdminActionLogsQuery = z.infer<
+  typeof listAdminActionLogsQuery
+>;
 export type CreateAdminInput = z.infer<typeof createAdminSchema>;
+export type AdminStatusInput = z.infer<typeof adminStatusSchema>;
 export type ListSubscriptionsQuery = z.infer<typeof listSubscriptionsQuery>;
 export type ListPaymentsQuery = z.infer<typeof listPaymentsQuery>;

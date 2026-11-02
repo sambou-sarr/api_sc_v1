@@ -218,6 +218,7 @@ model User {
   role            Role        @default(CLIENT)
   nom             String?
   emailVerifiedAt DateTime?
+  active          Boolean     @default(true)
   createdAt       DateTime    @default(now())
   tokens          AuthToken[]
   fiches          Fiche[]
@@ -225,7 +226,36 @@ model User {
   qrStyles        QrStyle[]
   fichePurchases  FichePurchase[]
   payments        Payment[]
+  adminActionLogs AdminActionLog[]
   @@map("users")
+}
+
+model AdminActionLog {
+  id         Int      @id @default(autoincrement())
+  adminId    Int?
+  adminName  String?
+  adminEmail String
+  method     String
+  path       String
+  statusCode Int
+  createdAt  DateTime @default(now())
+  admin      User?    @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([adminId, createdAt])
+  @@map("admin_action_logs")
+}
+
+model AppSetting {
+  id           Int     @id @default(1)
+  platformName String  @default("Support Connecté")
+  supportEmail String?
+  supportPhone String?
+  socialLinks  Json    @default("{}")
+  maintenance  Boolean @default(false)
+  updatedAt    DateTime @updatedAt
+
+  @@map("app_settings")
 }
 
 model AuthToken {

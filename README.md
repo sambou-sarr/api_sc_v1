@@ -31,7 +31,7 @@ Production : `npm run build && npm run prisma:deploy && npm start` (PM2 + Nginx 
 
 ## Journalisation
 
-Les logs sont produits par Winston sur la console (stdout/stderr), sans fichier local. En développement, ils sont affichés sur une ligne horodatée et colorée, avec les détails dans un format facile à lire (`INFO HTTP request completed | method="GET" statusCode=200`). En production, ils restent en JSON structuré pour les collecteurs de logs. Chaque requête HTTP est journalisée avec un identifiant de corrélation retourné dans l'en-tête `X-Request-Id`, la méthode, la route, le code HTTP et sa durée. Les authentifications, actions sur les fiches, opérations administrateur, erreurs et tâches d'expiration importantes sont également journalisées. Les corps de requête, mots de passe, jetons, adresses e-mail et références de paiement ne sont pas consignés.
+Les logs sont produits par Winston sur la console (stdout/stderr), sans fichier local. En développement, ils sont affichés sur une ligne horodatée et colorée, avec les détails dans un format facile à lire (`INFO HTTP request completed | method="GET" statusCode=200`). En production, ils restent en JSON structuré pour les collecteurs de logs. Chaque requête HTTP est journalisée avec un identifiant de corrélation retourné dans l'en-tête `X-Request-Id`, la méthode, la route, le code HTTP et sa durée. Les authentifications, actions sur les fiches, opérations administrateur, erreurs et tâches d'expiration importantes sont également journalisées. Les corps de requête, mots de passe, jetons et références de paiement ne sont pas consignés. Le journal d'activité persistant conserve l'identifiant, le nom et l'adresse e-mail de l'administrateur auteur, ainsi que la méthode, la route et le résultat HTTP des modifications réussies ; il n'enregistre aucun contenu de formulaire.
 
 ## Médias
 
@@ -66,6 +66,7 @@ scripts/create-admin.ts
 | POST | `/auth/register` | public | crée un compte CLIENT (+ e-mail de confirmation) |
 | POST | `/auth/login` | public | retourne `{ user, token }` |
 | GET | `/auth/me` | connecté | profil |
+| PATCH | `/auth/me` · `/auth/me/password` | connecté | met à jour le profil (vérification e-mail si l’adresse change) ou modifie le mot de passe avec confirmation de l’ancien |
 | POST | `/auth/verify-email` · `/auth/resend-verification` | public · connecté | confirmation d'e-mail |
 | POST | `/auth/forgot-password` · `/auth/reset-password` | public | mot de passe oublié |
 | GET | `/plans` | public | formules et limites |
@@ -82,6 +83,9 @@ scripts/create-admin.ts
 | GET | `/admin/subscriptions` | admin | liste paginée des abonnements, filtrée par recherche, formule, statut, période et état de la fiche (`ficheSupprimee=oui|non`, `subscriptionId` pour cibler un abonnement) |
 | GET | `/admin/payments` | admin | liste paginée des paiements, filtrée par recherche, formule, statut, période et état de la fiche (`ficheSupprimee=oui|non`, `paymentId` pour cibler un paiement) |
 | POST | `/admin/users/admin` | admin | crée un compte administrateur et envoie un lien à usage unique pour définir son mot de passe |
+| GET · PATCH | `/admin/settings` | admin | lit/modifie les paramètres publics de la plateforme et son mode maintenance |
+| GET | `/admin/action-logs?page=1&limit=25` | admin | journal paginé des modifications admin réussies, sans corps de requête |
+| GET | `/public/settings` | public | paramètres publics nécessaires au site et à l’écran de maintenance |
 | GET | `/fiches/:id` | propriétaire / admin | une fiche |
 | PATCH | `/fiches/:id` | propriétaire / admin | modifie l'identité et `data` (limites de la formule vérifiées) |
 | PATCH | `/admin/fiches/:id` | admin | `slug` avant création du compte client, `statut` (`active`/`suspendue`) |

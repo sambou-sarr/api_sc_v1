@@ -3,8 +3,13 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import { errorHandler, notFoundHandler } from "./middlewares/errorHandler";
+import { adminActionLogger } from "./middlewares/adminActionLogger";
 import { requestLogger } from "./middlewares/requestLogger";
 import { adminRouter } from "./modules/admin/admin.routes";
+import {
+  adminAppSettingsRouter,
+  publicAppSettingsRouter,
+} from "./modules/admin/app-settings.routes";
 import { authRouter } from "./modules/auth/auth.routes";
 import clientRoute from "./modules/client/client.route";
 import { fichesRouter } from "./modules/fiches/fiches.routes";
@@ -39,6 +44,7 @@ app.use(cors({ origin: env.CORS_ORIGIN.split(",").map(o => o.trim()) }));
 // app.use(cors({ origin: "*" }));
 
 app.use(express.json({ limit: "1mb" }));
+app.use("/api", adminActionLogger);
 
 // Redirection publique des QR dynamiques (les stickers imprimés pointent ici).
 app.use("/q", qrPublicRouter);
@@ -73,6 +79,8 @@ app.use("/api/scans", scansRouter); // route publique : pas de connexion
 
 // Routes admin spécialisées : avant app.use("/api/admin", adminRouter)
 app.use("/api/admin/formules", formulesRouter);
+app.use("/api/admin/settings", adminAppSettingsRouter);
+app.use("/api/public/settings", publicAppSettingsRouter);
 app.use("/api/client/parametres", parametresClientRouter);
 app.use("/api/admin/relances", relancesRouter);
 app.use("/api/admin/revenus", revenusRouter);

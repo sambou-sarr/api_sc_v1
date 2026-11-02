@@ -21,3 +21,17 @@ export const resetPasswordSchema = z.object({
   token: z.string().min(20).max(200),
   password: z.string().min(8).max(128),
 });
+
+export const updateProfileSchema = z
+  .object({
+    nom: z.string().trim().min(2).max(100),
+    email: z.string().trim().toLowerCase().email().max(254),
+  })
+  .strict();
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1).max(128),
+    password: z.string().min(8).max(128),
+  })
+  .strict();

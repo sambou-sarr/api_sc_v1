@@ -83,6 +83,16 @@ export type BienPhoto = Prisma.BienPhotoModel
  */
 export type User = Prisma.UserModel
 /**
+ * Model AdminActionLog
+ * 
+ */
+export type AdminActionLog = Prisma.AdminActionLogModel
+/**
+ * Model AppSetting
+ * 
+ */
+export type AppSetting = Prisma.AppSettingModel
+/**
  * Model AuthToken
  * 
  */

@@ -3,11 +3,13 @@ import { requireAuth } from "../../middlewares/auth";
 import { validate } from "../../middlewares/validate";
 import { AuthController } from "./auth.controller";
 import {
+  changePasswordSchema,
   emailOnlySchema,
   loginSchema,
   registerSchema,
   resetPasswordSchema,
   tokenSchema,
+  updateProfileSchema,
 } from "./auth.schemas";
 
 export const authRouter = Router();
@@ -48,3 +50,15 @@ authRouter.post(
 );
 
 authRouter.get("/me", requireAuth, AuthController.me);
+authRouter.patch(
+  "/me",
+  requireAuth,
+  validate({ body: updateProfileSchema }),
+  AuthController.updateProfile
+);
+authRouter.patch(
+  "/me/password",
+  requireAuth,
+  validate({ body: changePasswordSchema }),
+  AuthController.changePassword
+);

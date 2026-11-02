@@ -1,7 +1,13 @@
 import type { User } from "../../database/prisma/generated/prisma/client";
 import { prisma } from "../../database/prisma/prisma-client";
 import { consumeAuthToken } from "../../lib/authTokens";
-import { badRequest, conflict, unauthorized } from "../../lib/httpError";
+import {
+  badRequest,
+  conflict,
+  notFound,
+  unauthorized,
+  unprocessable,
+} from "../../lib/httpError";
 import { signToken } from "../../lib/jwt";
 import { logger } from "../../lib/logger";
 import {
@@ -62,7 +68,7 @@ export const AuthService = {
       input.password,
       user?.passwordHash ?? DUMMY_HASH
     );
-    if (!user || !ok) {
+    if (!user || !user.active || !ok) {
       logger.warn("Authentication failed", { reason: "invalid_credentials" });
       throw unauthorized("E-mail ou mot de passe incorrect");
     }
@@ -101,6 +107,58 @@ export const AuthService = {
     }
     await sendVerificationEmail(user);
     logger.info("Verification email resent", { userId });
+  },
+
+  updateProfile: async (
+    userId: number,
+    input: { nom: string; email: string }
+  ) => {
+    const current = await prisma.user.findUnique({ where: { id: userId } });
+    if (!current) throw notFound("Compte introuvable");
+    const emailChanged = current.email !== input.email;
+    if (emailChanged) {
+      const emailOwner = await prisma.user.findUnique({
+        where: { email: input.email },
+        select: { id: true },
+      });
+      if (emailOwner && emailOwner.id !== userId) {
+        throw conflict(
+          "EMAIL_DEJA_UTILISE",
+          "Cette adresse e-mail est déjà associée à un compte."
+        );
+      }
+    }
+
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        nom: input.nom,
+        ...(emailChanged
+          ? { email: input.email, emailVerifiedAt: null }
+          : {}),
+      },
+    });
+    if (emailChanged) await sendVerificationEmail(user);
+    return publicUser(user);
+  },
+
+  changePassword: async (
+    userId: number,
+    input: { currentPassword: string; password: string }
+  ) => {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw notFound("Compte introuvable");
+    if (!(await verifyPassword(input.currentPassword, user.passwordHash))) {
+      throw unprocessable(
+        "MOT_DE_PASSE_INCORRECT",
+        "Le mot de passe actuel est incorrect."
+      );
+    }
+    await prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash: await hashPassword(input.password) },
+    });
+    logger.info("User password changed", { userId });
   },
 
   forgotPassword: async (email: string) => {

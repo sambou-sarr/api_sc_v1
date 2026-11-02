@@ -51,4 +51,14 @@ export const AuthController = {
     });
     res.json({ user: publicUser(user) });
   }),
+
+  updateProfile: asyncHandler(async (req: Request, res: Response) => {
+    const user = await auth.updateProfile(req.user!.id, req.body);
+    res.json({ user });
+  }),
+
+  changePassword: asyncHandler(async (req: Request, res: Response) => {
+    await auth.changePassword(req.user!.id, req.body);
+    res.json({ ok: true });
+  }),
 };

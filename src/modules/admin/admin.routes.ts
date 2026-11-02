@@ -4,9 +4,11 @@ import { validate } from "../../middlewares/validate";
 import { idParam } from "../fiches/fiches.schemas";
 import { AdminController } from "./admin.controller";
 import {
+  adminStatusSchema,
   deleteFicheQuery,
   createAdminSchema,
   listFichesQuery,
+  listAdminActionLogsQuery,
   listPaymentsQuery,
   listSubscriptionsQuery,
   listUsersQuery,
@@ -90,8 +92,28 @@ adminRouter.get(
   validate({ query: listUsersQuery }),
   AdminController.listUsers
 );
+adminRouter.get(
+  "/action-logs",
+  validate({ query: listAdminActionLogsQuery }),
+  AdminController.listActionLogs
+);
 adminRouter.post(
   "/users/admin",
   validate({ body: createAdminSchema }),
   AdminController.createAdmin
+);
+adminRouter.post(
+  "/users/:id/invitation",
+  validate({ params: idParam }),
+  AdminController.resendAdminInvitation
+);
+adminRouter.patch(
+  "/users/:id/status",
+  validate({ params: idParam, body: adminStatusSchema }),
+  AdminController.setAdminStatus
+);
+adminRouter.delete(
+  "/users/:id",
+  validate({ params: idParam }),
+  AdminController.deleteAdmin
 );

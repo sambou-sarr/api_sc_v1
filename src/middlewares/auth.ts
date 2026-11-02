@@ -46,11 +46,15 @@ export async function requireAuth(
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user)
       return rejectAuthentication("user_not_found", "Compte introuvable");
+    if (!user.active)
+      return rejectAuthentication("user_disabled", "Ce compte est désactivé");
 
     req.user = {
       id: user.id,
       role: user.role,
       emailVerified: user.emailVerifiedAt !== null,
+      email: user.email,
+      name: user.nom,
     };
     next();
   } catch (e) {
@@ -84,11 +88,13 @@ export async function optionalAuth(
 
       const user = await prisma.user.findUnique({ where: { id: userId } });
 
-      if (user) {
+      if (user?.active) {
         req.user = {
           id: user.id,
           role: user.role,
           emailVerified: user.emailVerifiedAt !== null,
+          email: user.email,
+          name: user.nom,
         };
       }
     } catch {

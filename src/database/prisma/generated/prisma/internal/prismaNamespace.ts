@@ -410,6 +410,8 @@ export const ModelName = {
   Bien: 'Bien',
   BienPhoto: 'BienPhoto',
   User: 'User',
+  AdminActionLog: 'AdminActionLog',
+  AppSetting: 'AppSetting',
   AuthToken: 'AuthToken',
   Plan: 'Plan',
   PlanLimit: 'PlanLimit',
@@ -444,7 +446,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "fiche" | "ficheOnglet" | "ficheReseau" | "ficheLien" | "ficheHoraire" | "ficheMedia" | "catalogueSection" | "catalogueArticle" | "menuSection" | "menuPlat" | "bien" | "bienPhoto" | "user" | "authToken" | "plan" | "planLimit" | "subscription" | "payment" | "fichePurchase" | "demandeRappel" | "fichePassage" | "cardModel" | "printJob" | "stickerOrder" | "sectionStickerRequest" | "qrLink" | "planDuree" | "planRemise" | "emplacementConfig" | "emplacementPack" | "qrStyle" | "leadRequest"
+    modelProps: "fiche" | "ficheOnglet" | "ficheReseau" | "ficheLien" | "ficheHoraire" | "ficheMedia" | "catalogueSection" | "catalogueArticle" | "menuSection" | "menuPlat" | "bien" | "bienPhoto" | "user" | "adminActionLog" | "appSetting" | "authToken" | "plan" | "planLimit" | "subscription" | "payment" | "fichePurchase" | "demandeRappel" | "fichePassage" | "cardModel" | "printJob" | "stickerOrder" | "sectionStickerRequest" | "qrLink" | "planDuree" | "planRemise" | "emplacementConfig" | "emplacementPack" | "qrStyle" | "leadRequest"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1407,6 +1409,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    AdminActionLog: {
+      payload: Prisma.$AdminActionLogPayload<ExtArgs>
+      fields: Prisma.AdminActionLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AdminActionLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminActionLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AdminActionLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminActionLogPayload>
+        }
+        findFirst: {
+          args: Prisma.AdminActionLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminActionLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AdminActionLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminActionLogPayload>
+        }
+        findMany: {
+          args: Prisma.AdminActionLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminActionLogPayload>[]
+        }
+        create: {
+          args: Prisma.AdminActionLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminActionLogPayload>
+        }
+        createMany: {
+          args: Prisma.AdminActionLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AdminActionLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminActionLogPayload>[]
+        }
+        delete: {
+          args: Prisma.AdminActionLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminActionLogPayload>
+        }
+        update: {
+          args: Prisma.AdminActionLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminActionLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.AdminActionLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AdminActionLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AdminActionLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminActionLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.AdminActionLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminActionLogPayload>
+        }
+        aggregate: {
+          args: Prisma.AdminActionLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAdminActionLog>
+        }
+        groupBy: {
+          args: Prisma.AdminActionLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdminActionLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AdminActionLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdminActionLogCountAggregateOutputType> | number
+        }
+      }
+    }
+    AppSetting: {
+      payload: Prisma.$AppSettingPayload<ExtArgs>
+      fields: Prisma.AppSettingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AppSettingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AppSettingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>
+        }
+        findFirst: {
+          args: Prisma.AppSettingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AppSettingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>
+        }
+        findMany: {
+          args: Prisma.AppSettingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>[]
+        }
+        create: {
+          args: Prisma.AppSettingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>
+        }
+        createMany: {
+          args: Prisma.AppSettingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AppSettingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>[]
+        }
+        delete: {
+          args: Prisma.AppSettingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>
+        }
+        update: {
+          args: Prisma.AppSettingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>
+        }
+        deleteMany: {
+          args: Prisma.AppSettingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AppSettingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AppSettingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>[]
+        }
+        upsert: {
+          args: Prisma.AppSettingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingPayload>
+        }
+        aggregate: {
+          args: Prisma.AppSettingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAppSetting>
+        }
+        groupBy: {
+          args: Prisma.AppSettingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AppSettingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AppSettingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AppSettingCountAggregateOutputType> | number
         }
       }
     }
@@ -3035,10 +3185,38 @@ export const UserScalarFieldEnum = {
   role: 'role',
   nom: 'nom',
   emailVerifiedAt: 'emailVerifiedAt',
+  active: 'active',
   createdAt: 'createdAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const AdminActionLogScalarFieldEnum = {
+  id: 'id',
+  adminId: 'adminId',
+  adminName: 'adminName',
+  adminEmail: 'adminEmail',
+  method: 'method',
+  path: 'path',
+  statusCode: 'statusCode',
+  createdAt: 'createdAt'
+} as const
+
+export type AdminActionLogScalarFieldEnum = (typeof AdminActionLogScalarFieldEnum)[keyof typeof AdminActionLogScalarFieldEnum]
+
+
+export const AppSettingScalarFieldEnum = {
+  id: 'id',
+  platformName: 'platformName',
+  supportEmail: 'supportEmail',
+  supportPhone: 'supportPhone',
+  socialLinks: 'socialLinks',
+  maintenance: 'maintenance',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AppSettingScalarFieldEnum = (typeof AppSettingScalarFieldEnum)[keyof typeof AppSettingScalarFieldEnum]
 
 
 export const AuthTokenScalarFieldEnum = {
@@ -3383,19 +3561,19 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const NullableJsonNullValueInput = {
   DbNull: DbNull,
   JsonNull: JsonNull
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
-
-
-export const JsonNullValueInput = {
-  JsonNull: JsonNull
-} as const
-
-export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -3619,6 +3797,20 @@ export type ListEnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
  * Reference to a field of type 'PlanType'
  */
 export type EnumPlanTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PlanType'>
@@ -3699,20 +3891,6 @@ export type EnumFichePassageSourceFieldRefInput<$PrismaModel> = FieldRefInputTyp
  * Reference to a field of type 'FichePassageSource[]'
  */
 export type ListEnumFichePassageSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FichePassageSource[]'>
-    
-
-
-/**
- * Reference to a field of type 'Json'
- */
-export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-/**
- * Reference to a field of type 'QueryMode'
- */
-export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -3991,6 +4169,8 @@ export type GlobalOmitConfig = {
   bien?: Prisma.BienOmit
   bienPhoto?: Prisma.BienPhotoOmit
   user?: Prisma.UserOmit
+  adminActionLog?: Prisma.AdminActionLogOmit
+  appSetting?: Prisma.AppSettingOmit
   authToken?: Prisma.AuthTokenOmit
   plan?: Prisma.PlanOmit
   planLimit?: Prisma.PlanLimitOmit

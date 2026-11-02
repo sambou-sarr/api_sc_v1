@@ -21,6 +21,8 @@ const mocks = vi.hoisted(() => ({
   subscriptionCount: vi.fn(),
   paymentFindMany: vi.fn(),
   paymentCount: vi.fn(),
+  actionLogFindMany: vi.fn(),
+  actionLogCount: vi.fn(),
   transaction: vi.fn(),
   toFicheDto: vi.fn(() => ({ id: 12 })),
 }));
@@ -50,6 +52,10 @@ vi.mock("../../database/prisma/prisma-client", () => ({
     },
     printJob: { count: mocks.printJobCount },
     user: { count: mocks.userCount },
+    adminActionLog: {
+      findMany: mocks.actionLogFindMany,
+      count: mocks.actionLogCount,
+    },
     sectionStickerRequest: { count: mocks.sectionStickerCount },
     $transaction: mocks.transaction,
   },
@@ -171,6 +177,39 @@ describe("AdminService.updateFiche", () => {
       expect.objectContaining({
         where: { id: 12 },
         data: { statut: "SUSPENDUE" },
+      })
+    );
+  });
+});
+
+describe("AdminService.listActionLogs", () => {
+  it("returns recent action logs with pagination", async () => {
+    const items = [
+      {
+        id: 21,
+        adminName: "Root",
+        adminEmail: "root@example.com",
+        method: "PATCH",
+        path: "/admin/settings",
+        statusCode: 200,
+        createdAt: new Date("2026-11-02T14:00:00Z"),
+      },
+    ];
+    mocks.actionLogFindMany.mockResolvedValue(items);
+    mocks.actionLogCount.mockResolvedValue(26);
+
+    await expect(
+      AdminService.listActionLogs({ page: 2, limit: 25 })
+    ).resolves.toEqual({
+      items,
+      pagination: { page: 2, limit: 25, total: 26, totalPages: 2 },
+    });
+
+    expect(mocks.actionLogFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        skip: 25,
+        take: 25,
       })
     );
   });
