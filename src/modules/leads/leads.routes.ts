@@ -1,6 +1,7 @@
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
 import { requireAuth, requireRole } from "../../middlewares/auth";
+import { rateLimitHandler } from "../../middlewares/errorHandler";
 import { validate } from "../../middlewares/validate";
 import { LeadsController } from "./leads.controller";
 import {
@@ -18,6 +19,7 @@ publicLeadsRouter.post(
     limit: 20,
     standardHeaders: true,
     legacyHeaders: false,
+    handler: rateLimitHandler,
   }),
   validate({ body: createLeadSchema }),
   LeadsController.create

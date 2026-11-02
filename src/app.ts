@@ -2,7 +2,11 @@ import cors from "cors";
 import express from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
-import { errorHandler, notFoundHandler } from "./middlewares/errorHandler";
+import {
+  errorHandler,
+  notFoundHandler,
+  rateLimitHandler,
+} from "./middlewares/errorHandler";
 import { adminActionLogger } from "./middlewares/adminActionLogger";
 import { requestLogger } from "./middlewares/requestLogger";
 import { adminRouter } from "./modules/admin/admin.routes";
@@ -57,6 +61,7 @@ app.use(
     limit: 120,
     standardHeaders: true,
     legacyHeaders: false,
+    handler: rateLimitHandler,
   })
 );
 app.use(
@@ -66,6 +71,7 @@ app.use(
     limit: 30,
     standardHeaders: true,
     legacyHeaders: false,
+    handler: rateLimitHandler,
   })
 );
 

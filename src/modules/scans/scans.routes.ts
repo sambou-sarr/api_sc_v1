@@ -1,5 +1,6 @@
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
+import { rateLimitHandler } from "../../middlewares/errorHandler";
 import { validate } from "../../middlewares/validate";
 import { ScansController } from "./scans.controller";
 import { scanParams } from "./scans.schemas";
@@ -12,6 +13,7 @@ const limite = rateLimit({
   limit: 60,
   standardHeaders: true,
   legacyHeaders: false,
+  handler: rateLimitHandler,
 });
 
 // POST /api/scans/:slug  → 204 (compté ou ignoré) · 404 (fiche inconnue ou suspendue)

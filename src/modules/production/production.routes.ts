@@ -1,6 +1,7 @@
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
 import { requireAuth, requireRole } from "../../middlewares/auth";
+import { rateLimitHandler } from "../../middlewares/errorHandler";
 import { validate } from "../../middlewares/validate";
 import { idParam } from "../fiches/fiches.schemas";
 import { raw } from "express";
@@ -65,6 +66,12 @@ productionRouter.patch("/qr/:code", validate({ params: codeParams, body: patchQr
 // ───────────────── Public — monté sur /q ─────────────────
 // Les stickers imprimés pointent ici ; la cible se change à distance sans réimprimer.
 export const qrPublicRouter = Router();
-const limite = rateLimit({ windowMs: 60_000, limit: 120, standardHeaders: true, legacyHeaders: false });
+const limite = rateLimit({
+  windowMs: 60_000,
+  limit: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: rateLimitHandler,
+});
 // GET /q/:code  → 302 vers la cible · 404 si inconnu, désactivé ou sans cible
 qrPublicRouter.get("/:code", limite, validate({ params: codeParams }), ProductionController.redirect);
