@@ -2,21 +2,25 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   ficheFindFirst: vi.fn(),
+  ficheFindUnique: vi.fn(),
   printFindFirst: vi.fn(),
   printFindUnique: vi.fn(),
   printUpdate: vi.fn(),
   printCreate: vi.fn(),
+  cardModelFindFirst: vi.fn(),
   transaction: vi.fn(),
 }));
 
 vi.mock("../../database/prisma/prisma-client", () => ({
   prisma: {
-    fiche: { findFirst: mocks.ficheFindFirst },
+    fiche: { findFirst: mocks.ficheFindFirst, findUnique: mocks.ficheFindUnique },
     printJob: {
       findFirst: mocks.printFindFirst,
       findUnique: mocks.printFindUnique,
+      create: mocks.printCreate,
       update: mocks.printUpdate,
     },
+    cardModel: { findFirst: mocks.cardModelFindFirst },
     $transaction: mocks.transaction,
   },
 }));
@@ -74,6 +78,7 @@ const tx = {
     create: mocks.printCreate,
     update: mocks.printUpdate,
   },
+  cardModel: { findFirst: mocks.cardModelFindFirst },
 };
 
 beforeEach(() => {
@@ -82,7 +87,12 @@ beforeEach(() => {
     (callback: (transaction: typeof tx) => unknown) => callback(tx)
   );
   mocks.ficheFindFirst.mockResolvedValue(fiche);
+  mocks.ficheFindUnique.mockResolvedValue(fiche);
   mocks.printFindFirst.mockResolvedValue(null);
+  mocks.cardModelFindFirst.mockResolvedValue({
+    rectoUrl: "/api/media/cartes/0a1b2c3d-0000-4000-8000-000000000001.webp",
+    versoUrl: "/api/media/cartes/0a1b2c3d-0000-4000-8000-000000000002.webp",
+  });
   mocks.printFindUnique.mockResolvedValue({
     statut: "A_IMPRIMER",
     printedAt: null,
@@ -122,6 +132,8 @@ describe("ProductionService.requestClientCarte", () => {
         data: expect.objectContaining({
           ficheId: fiche.id,
           tier: "PRO",
+          rectoUrl: "/api/media/cartes/0a1b2c3d-0000-4000-8000-000000000001.webp",
+          versoUrl: "/api/media/cartes/0a1b2c3d-0000-4000-8000-000000000002.webp",
           amountFcfa: 12_000,
           deliveryAddress: input.adresseLivraison,
           deliveryTelephone: input.telephoneLivraison,
@@ -133,7 +145,20 @@ describe("ProductionService.requestClientCarte", () => {
       tier: "pro",
       montantFcfa: 12_000,
       statut: "a_imprimer",
+      rectoUrl: "http://localhost:4000/api/media/cartes/0a1b2c3d-0000-4000-8000-000000000001.webp",
     });
+  });
+
+  it("keeps no card-model images when the formula has no active model", async () => {
+    mocks.cardModelFindFirst.mockResolvedValue(null);
+
+    await ProductionService.requestClientCarte(user, fiche.id, input);
+
+    expect(mocks.printCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ rectoUrl: null, versoUrl: null }),
+      })
+    );
   });
 
   describe("ProductionService.updateCarte", () => {
@@ -180,6 +205,43 @@ describe("ProductionService.requestClientCarte", () => {
     });
   });
 
+  describe("ProductionService.updateCarte : image persistence", () => {
+    it("normalizes an uploaded image URL before storing it", async () => {
+      await ProductionService.updateCarte(31, {
+        rectoUrl: "http://localhost:4000/api/media/cartes/0a1b2c3d-0000-4000-8000-000000000001.webp",
+      });
+
+      expect(mocks.printUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 31 },
+          data: { rectoUrl: "/api/media/cartes/0a1b2c3d-0000-4000-8000-000000000001.webp" },
+        })
+      );
+    });
+
+    it("refuses image changes after printing has started", async () => {
+      mocks.printFindUnique.mockResolvedValue({
+        statut: "IMPRIMEE",
+        printedAt: new Date("2026-01-02T00:00:00.000Z"),
+        encodedAt: null,
+        testedAt: null,
+        deliveredAt: null,
+        nfcUrl: `${env.PUBLIC_SITE_URL}/f/awa-ndiaye`,
+        fiche: { slug: "awa-ndiaye" },
+      });
+
+      await expect(
+        ProductionService.updateCarte(31, {
+          rectoUrl: "https://cdn.example/recto.webp",
+        })
+      ).rejects.toMatchObject({
+        status: 422,
+        code: "FICHIERS_CARTE_VERROUILLES",
+      });
+      expect(mocks.printUpdate).not.toHaveBeenCalled();
+    });
+  });
+
   it("rejects unpublished fiches before creating a job", async () => {
     mocks.ficheFindFirst.mockResolvedValue({ ...fiche, statut: "BROUILLON" });
 
@@ -202,5 +264,25 @@ describe("ProductionService.requestClientCarte", () => {
       code: "CARTE_DEJA_EN_COURS",
     });
     expect(mocks.printCreate).not.toHaveBeenCalled();
+  });
+});
+
+describe("ProductionService.createCarte : modèle figé sur la commande", () => {
+  it("uses the active model of the selected formula", async () => {
+    await ProductionService.createCarte({ ficheId: fiche.id, tier: "signature" });
+
+    expect(mocks.cardModelFindFirst).toHaveBeenCalledWith({
+      where: { tier: "SIGNATURE", actif: true },
+      select: { rectoUrl: true, versoUrl: true },
+    });
+    expect(mocks.printCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          tier: "SIGNATURE",
+          rectoUrl: "/api/media/cartes/0a1b2c3d-0000-4000-8000-000000000001.webp",
+          versoUrl: "/api/media/cartes/0a1b2c3d-0000-4000-8000-000000000002.webp",
+        }),
+      })
+    );
   });
 });

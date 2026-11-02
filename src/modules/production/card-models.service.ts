@@ -1,8 +1,7 @@
 import { Prisma } from "../../database/prisma/generated/prisma/client";
 import type { CardModel, PlanType } from "../../database/prisma/generated/prisma/client";
 import { prisma } from "../../database/prisma/prisma-client";
-import { conflict, notFound, unprocessable } from "../../lib/httpError";
-import { normalizeMediaUrl } from "../../lib/media";
+import { conflict, notFound } from "../../lib/httpError";
 import { CardImageService, isCardImageRef } from "../media/card-images.service";
 import type { CreateModeleCarteInput, PatchModeleCarteInput } from "./card-models.schemas";
 
@@ -20,18 +19,25 @@ const upper = (t: string) => t.toUpperCase() as PlanType;
  * Valeur à persister : référence relative pour nos propres images (indépendante de l'origine de l'API),
  * adresse https pour un lien externe. Tout le reste est refusé.
  */
-const storedRef = (value: string): string => {
-  const ref = normalizeMediaUrl(value.trim())!;
-  if (isCardImageRef(ref) || ref.startsWith("https://")) return ref;
-  throw unprocessable("IMAGE_INVALIDE", "Image invalide : téléversez un fichier ou indiquez une adresse https");
-};
-
 /** Supprime les fichiers qui ne sont plus référencés par aucun modèle (au mieux, sans bloquer l'administrateur). */
 const releaseImages = async (refs: string[]) => {
   for (const ref of new Set(refs)) {
     if (!isCardImageRef(ref)) continue;
-    const stillUsed = await prisma.cardModel.count({ where: { OR: [{ rectoUrl: ref }, { versoUrl: ref }] } });
-    if (stillUsed === 0) await CardImageService.deleteRef(ref);
+    const absoluteRef = CardImageService.toAbsolute(ref);
+    const [modelCount, jobCount] = await Promise.all([
+      prisma.cardModel.count({ where: { OR: [{ rectoUrl: ref }, { versoUrl: ref }] } }),
+      prisma.printJob.count({
+        where: {
+          OR: [
+            { rectoUrl: ref },
+            { versoUrl: ref },
+            { rectoUrl: absoluteRef },
+            { versoUrl: absoluteRef },
+          ],
+        },
+      }),
+    ]);
+    if (modelCount === 0 && jobCount === 0) await CardImageService.deleteRef(ref);
   }
 };
 
@@ -63,6 +69,10 @@ const ACTIF_EXISTANT = () =>
   conflict("MODELE_ACTIF_EXISTANT", "Un autre modèle est déjà actif pour cette formule. Réessayez.");
 
 export const CardModelService = {
+  async releaseUnusedImages(refs: string[]) {
+    await releaseImages(refs);
+  },
+
   async list() {
     const rows = await prisma.cardModel.findMany({
       orderBy: [{ tier: "asc" }, { actif: "desc" }, { createdAt: "desc" }],
@@ -72,8 +82,8 @@ export const CardModelService = {
 
   async create(input: CreateModeleCarteInput) {
     const tier = upper(input.tier);
-    const rectoUrl = storedRef(input.rectoUrl);
-    const versoUrl = storedRef(input.versoUrl);
+    const rectoUrl = CardImageService.toStoredRef(input.rectoUrl);
+    const versoUrl = CardImageService.toStoredRef(input.versoUrl);
     try {
       return await prisma.$transaction(async tx => {
         if (input.actif) {
@@ -97,8 +107,8 @@ export const CardModelService = {
   },
 
   async update(id: number, input: PatchModeleCarteInput) {
-    const rectoUrl = input.rectoUrl !== undefined ? storedRef(input.rectoUrl) : undefined;
-    const versoUrl = input.versoUrl !== undefined ? storedRef(input.versoUrl) : undefined;
+    const rectoUrl = input.rectoUrl !== undefined ? CardImageService.toStoredRef(input.rectoUrl) : undefined;
+    const versoUrl = input.versoUrl !== undefined ? CardImageService.toStoredRef(input.versoUrl) : undefined;
     try {
       const result = await prisma.$transaction(async tx => {
         const existant = await tx.cardModel.findUnique({ where: { id } });
@@ -130,7 +140,7 @@ export const CardModelService = {
   },
 
   /**
-   * Suppression : les demandes déjà passées ne sont pas touchées (elles ne référencent pas le modèle).
+   * Suppression : les commandes déjà passées conservent leurs propres références d'images.
    * Supprimer le modèle actif laisse la formule sans modèle : le client voit alors l'aperçu par défaut.
    */
   async remove(id: number) {

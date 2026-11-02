@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   storageDelete: vi.fn(),
   count: vi.fn(),
+  printJobCount: vi.fn(),
   transaction: vi.fn(),
   findMany: vi.fn(),
   findFirst: vi.fn(),
@@ -15,11 +16,11 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("../../config/env", () => ({ env: { SERVER: "http://localhost:4000/api" } }));
 vi.mock("../../infrastructure/storage/s3.storage", () => ({
-  S3StorageProvider: class {
-    put = vi.fn();
-    get = vi.fn();
-    delete = mocks.storageDelete;
-  },
+  s3Storage: () => ({
+    put: vi.fn(),
+    get: vi.fn(),
+    delete: mocks.storageDelete,
+  }),
 }));
 vi.mock("../../database/prisma/prisma-client", () => {
   const cardModel = {
@@ -32,7 +33,13 @@ vi.mock("../../database/prisma/prisma-client", () => {
     updateMany: mocks.updateMany,
     deleteMany: mocks.deleteMany,
   };
-  return { prisma: { cardModel, $transaction: mocks.transaction } };
+  return {
+    prisma: {
+      cardModel,
+      printJob: { count: mocks.printJobCount },
+      $transaction: mocks.transaction,
+    },
+  };
 });
 
 import { Prisma } from "../../database/prisma/generated/prisma/client";
@@ -59,6 +66,7 @@ const refB = `/api/media/cartes/${UUID_B}.webp`;
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.count.mockResolvedValue(0);
+  mocks.printJobCount.mockResolvedValue(0);
   mocks.storageDelete.mockResolvedValue(undefined);
   const tx = {
     cardModel: {
@@ -146,6 +154,19 @@ describe("CardModelService.remove / activeFor", () => {
   it("supprime un modèle", async () => {
     mocks.deleteMany.mockResolvedValue({ count: 1 });
     await expect(CardModelService.remove(1)).resolves.toEqual({ ok: true });
+  });
+
+  it("keeps images referenced by an existing print job", async () => {
+    mocks.findUnique.mockResolvedValue(row({ rectoUrl: refA, versoUrl: refB }));
+    mocks.deleteMany.mockResolvedValue({ count: 1 });
+    mocks.printJobCount.mockResolvedValueOnce(1).mockResolvedValueOnce(0);
+
+    await CardModelService.remove(1);
+
+    expect(mocks.storageDelete).toHaveBeenCalledTimes(1);
+    expect(mocks.storageDelete).toHaveBeenCalledWith(
+      `card-models/${UUID_B}.webp`
+    );
   });
 
   it("modèle inconnu : 404", async () => {

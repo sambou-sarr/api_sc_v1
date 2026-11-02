@@ -27,6 +27,11 @@ export const urlImage = z
   .max(2000)
   .url()
   .refine(u => /^https:\/\//i.test(u), "l'adresse doit commencer par https://");
+const uploadedCardImage = z
+  .string()
+  .trim()
+  .regex(/^(https?:\/\/[^\s/]+)?\/api\/media\/cartes\/[0-9a-f-]{36}\.webp$/i, "image invalide");
+export const cardImageRef = z.union([urlImage, uploadedCardImage]);
 
 export const codeParams = z.object({ code: z.string().regex(/^[a-z0-9]{4,12}$/, "code invalide") });
 
@@ -37,8 +42,8 @@ export const createCarteSchema = z
   .object({
     ficheId: z.number().int().positive(),
     tier: tier.optional(), // par défaut : la formule en cours de la fiche
-    rectoUrl: urlImage.optional(),
-    versoUrl: urlImage.optional(),
+    rectoUrl: cardImageRef.optional(),
+    versoUrl: cardImageRef.optional(),
     design: z.record(z.string(), z.unknown()).refine(jsonLeger(20_000), "design trop volumineux").optional(),
   })
   .strict();
@@ -60,8 +65,8 @@ export const patchCarteSchema = z
   .object({
     statut: statutCarte.optional(),
     notes: z.string().trim().max(1000).nullable().optional(),
-    rectoUrl: urlImage.nullable().optional(), // null = retirer le fichier
-    versoUrl: urlImage.nullable().optional(),
+    rectoUrl: cardImageRef.nullable().optional(), // null = retirer le fichier
+    versoUrl: cardImageRef.nullable().optional(),
     design: z.record(z.string(), z.unknown()).refine(jsonLeger(20_000), "design trop volumineux").optional(),
   })
   .strict()

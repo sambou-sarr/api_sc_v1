@@ -3,6 +3,7 @@ import { env } from "../../config/env";
 import { s3Storage } from "../../infrastructure/storage/s3.storage";
 import { notFound, unprocessable } from "../../lib/httpError";
 import { logger } from "../../lib/logger";
+import { normalizeMediaUrl } from "../../lib/media";
 import { optimizeMedia } from "./media.processor";
 import {
   MEDIA_FORMATS,
@@ -30,8 +31,15 @@ export const isCardImageRef = (value: string) =>
 const getStorage = s3Storage;
 
 const apiOrigin = () => env.SERVER.replace(/\/api\/?$/, "").replace(/\/$/, "");
+const toStoredRef = (value: string) => {
+  const ref = normalizeMediaUrl(value.trim())!;
+  if (isCardImageRef(ref) || ref.startsWith("https://")) return ref;
+  throw unprocessable("IMAGE_INVALIDE", "Image invalide : téléversez un fichier ou indiquez une adresse https");
+};
 
 export const CardImageService = {
+  toStoredRef,
+
   async upload(body: Buffer, rawMime?: string) {
     if (!Buffer.isBuffer(body) || body.length === 0) {
       throw unprocessable("FICHIER_VIDE", "Le fichier envoyé est vide");

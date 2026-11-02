@@ -7,6 +7,7 @@ import type {
   StickerStatus,
 } from "../../database/prisma/generated/prisma/client";
 import { prisma } from "../../database/prisma/prisma-client";
+import { CardImageService } from "../media/card-images.service";
 import { CardModelService } from "./card-models.service";
 import { conflict, forbidden, notFound, unprocessable } from "../../lib/httpError";
 import type { AuthUser } from "../../types/user";
@@ -109,8 +110,8 @@ const carteDto = (j: CarteRow) => ({
   nfcUrl: j.nfcUrl,
   // vrai si l'adresse de la fiche a changé depuis l'écriture dans la puce : la carte imprimée ne marcherait plus
   adresseChangee: j.fiche ? j.nfcUrl !== ficheUrl(j.fiche.slug) : false,
-  rectoUrl: j.rectoUrl,
-  versoUrl: j.versoUrl,
+  rectoUrl: j.rectoUrl ? CardImageService.toAbsolute(j.rectoUrl) : null,
+  versoUrl: j.versoUrl ? CardImageService.toAbsolute(j.versoUrl) : null,
   design: j.design,
   statut: lower(j.statut),
   notes: j.notes,
@@ -291,6 +292,10 @@ export const ProductionService = {
               "Une demande de carte est déjà en cours pour cette fiche.",
             );
 
+          const modele = await tx.cardModel.findFirst({
+            where: { tier: plan, actif: true },
+            select: { rectoUrl: true, versoUrl: true },
+          });
           const job = await tx.printJob.create({
             data: {
               ficheId,
@@ -299,6 +304,8 @@ export const ProductionService = {
               slug: fiche.slug,
               nfcUrl: ficheUrl(fiche.slug),
               ...instantane(fiche),
+              rectoUrl: modele?.rectoUrl ?? null,
+              versoUrl: modele?.versoUrl ?? null,
               deliveryAddress: input.adresseLivraison,
               deliveryTelephone: input.telephoneLivraison,
               clientNotes: input.notesClient || null,
@@ -338,6 +345,10 @@ export const ProductionService = {
     if (enCours) throw conflict("409", "Une carte est déjà en production pour cette fiche");
 
     const tier: PlanType = input.tier ? upper<PlanType>(input.tier) : (fiche.subscriptions[0]?.plan.type ?? "ESSENTIELLE");
+    const modele = await prisma.cardModel.findFirst({
+      where: { tier, actif: true },
+      select: { rectoUrl: true, versoUrl: true },
+    });
     const job = await prisma.printJob.create({
       data: {
         ficheId: fiche.id,
@@ -346,8 +357,12 @@ export const ProductionService = {
         slug: fiche.slug,
         nfcUrl: ficheUrl(fiche.slug),
         ...instantane(fiche),
-        ...(input.rectoUrl && { rectoUrl: input.rectoUrl }),
-        ...(input.versoUrl && { versoUrl: input.versoUrl }),
+        rectoUrl: input.rectoUrl
+          ? CardImageService.toStoredRef(input.rectoUrl)
+          : modele?.rectoUrl ?? null,
+        versoUrl: input.versoUrl
+          ? CardImageService.toStoredRef(input.versoUrl)
+          : modele?.versoUrl ?? null,
         ...(input.design && { design: input.design as Prisma.InputJsonValue }),
       },
       include: { fiche: { select: FICHE_SELECT } },
@@ -360,11 +375,31 @@ export const ProductionService = {
       where: { id },
       select: {
         statut: true, printedAt: true, encodedAt: true, testedAt: true, deliveredAt: true,
-        nfcUrl: true, fiche: { select: { slug: true } },
+        nfcUrl: true, rectoUrl: true, versoUrl: true, fiche: { select: { slug: true } },
       },
     });
     if (!actuel) throw notFound("Carte introuvable");
+    if (
+      actuel.statut !== "A_IMPRIMER" &&
+      (input.rectoUrl !== undefined || input.versoUrl !== undefined)
+    )
+      throw unprocessable(
+        "FICHIERS_CARTE_VERROUILLES",
+        "Les fichiers de la carte ne peuvent être modifiés qu'avant impression.",
+      );
 
+    const rectoUrl =
+      input.rectoUrl === undefined
+        ? undefined
+        : input.rectoUrl === null
+          ? null
+          : CardImageService.toStoredRef(input.rectoUrl);
+    const versoUrl =
+      input.versoUrl === undefined
+        ? undefined
+        : input.versoUrl === null
+          ? null
+          : CardImageService.toStoredRef(input.versoUrl);
     const statut = input.statut ? upper<PrintStatus>(input.statut) : undefined;
     if (statut && statut !== actuel.statut) {
       if (!TRANSITIONS[actuel.statut].includes(statut))
@@ -384,12 +419,21 @@ export const ProductionService = {
         ...(statut === "TESTEE" && !actuel.testedAt && { testedAt: now }),
         ...(statut === "LIVREE" && !actuel.deliveredAt && { deliveredAt: now }),
         ...(input.notes !== undefined && { notes: input.notes }),
-        ...(input.rectoUrl !== undefined && { rectoUrl: input.rectoUrl }),
-        ...(input.versoUrl !== undefined && { versoUrl: input.versoUrl }),
+        ...(rectoUrl !== undefined && { rectoUrl }),
+        ...(versoUrl !== undefined && { versoUrl }),
         ...(input.design && { design: input.design as Prisma.InputJsonValue }),
       },
       include: { fiche: { select: FICHE_SELECT } },
     });
+    const replaced = [
+      ...(rectoUrl !== undefined && actuel.rectoUrl !== rectoUrl && actuel.rectoUrl
+        ? [actuel.rectoUrl]
+        : []),
+      ...(versoUrl !== undefined && actuel.versoUrl !== versoUrl && actuel.versoUrl
+        ? [actuel.versoUrl]
+        : []),
+    ];
+    if (replaced.length) await CardModelService.releaseUnusedImages(replaced);
     return { carte: carteDto(job) };
   },
 
