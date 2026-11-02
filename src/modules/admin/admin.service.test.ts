@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   ficheUpdateMany: vi.fn(),
   printJobCount: vi.fn(),
   userCount: vi.fn(),
+  userFindMany: vi.fn(),
   sectionStickerCount: vi.fn(),
   transactionFicheFindUnique: vi.fn(),
   transactionFicheDelete: vi.fn(),
@@ -51,7 +52,7 @@ vi.mock("../../database/prisma/prisma-client", () => ({
       updateMany: mocks.paymentUpdateMany,
     },
     printJob: { count: mocks.printJobCount },
-    user: { count: mocks.userCount },
+    user: { count: mocks.userCount, findMany: mocks.userFindMany },
     adminActionLog: {
       findMany: mocks.actionLogFindMany,
       count: mocks.actionLogCount,
@@ -219,6 +220,8 @@ describe("AdminService.stats", () => {
   it("counts card requests in production but excludes delivered and cancelled cards", async () => {
     mocks.printJobCount.mockResolvedValue(3);
     mocks.ficheAggregate.mockResolvedValue({ _sum: { scansTotal: 0 } });
+    mocks.userFindMany.mockResolvedValue([]);
+    mocks.subscriptionFindMany.mockResolvedValue([]);
 
     const result = await AdminService.stats();
 
@@ -228,6 +231,52 @@ describe("AdminService.stats", () => {
       },
     });
     expect(result.demandesCarte).toBe(3);
+    expect(result.derniersClients).toEqual([]);
+    expect(result.derniersAbonnements).toEqual([]);
+  });
+
+  it("returns the ten most recent clients and subscriptions", async () => {
+    const createdAt = new Date("2026-11-02T10:00:00Z");
+    mocks.userFindMany.mockResolvedValue([
+      { id: 21, nom: "Awa Ndiaye", email: "awa@example.sn", createdAt },
+    ]);
+    mocks.subscriptionFindMany.mockResolvedValue([
+      {
+        id: 31,
+        status: "ACTIVE",
+        createdAt,
+        amountFcfa: 25000,
+        plan: { type: "PRO", nom: "Pro" },
+        fiche: {
+          id: 12,
+          slug: "chez-awa",
+          prenom: "Awa",
+          nom: "Ndiaye",
+          entreprise: "Chez Awa",
+        },
+      },
+    ]);
+
+    const result = await AdminService.stats();
+
+    expect(mocks.userFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({ take: 10, orderBy: [{ createdAt: "desc" }, { id: "desc" }] })
+    );
+    expect(mocks.subscriptionFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({ take: 10, orderBy: [{ createdAt: "desc" }, { id: "desc" }] })
+    );
+    expect(result.derniersClients[0]).toEqual({
+      id: 21,
+      nom: "Awa Ndiaye",
+      email: "awa@example.sn",
+      createdAt,
+    });
+    expect(result.derniersAbonnements[0]).toMatchObject({
+      id: 31,
+      formule: "pro",
+      statut: "active",
+      fiche: { id: 12, slug: "chez-awa", nom: "Awa Ndiaye" },
+    });
   });
 });
 

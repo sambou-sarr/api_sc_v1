@@ -85,6 +85,8 @@ scripts/create-admin.ts
 | POST | `/admin/users/admin` | admin | crée un compte administrateur et envoie un lien à usage unique pour définir son mot de passe |
 | GET · PATCH | `/admin/settings` | admin | lit/modifie les paramètres publics de la plateforme et son mode maintenance |
 | GET | `/admin/action-logs?page=1&limit=25` | admin | journal paginé des modifications admin réussies, sans corps de requête |
+| GET | `/admin/stats` | admin | indicateurs du back-office et les dix derniers clients inscrits / abonnements |
+| GET | `/admin/revenus?from=2026-10-01&to=2026-10-31` | admin | encaissements et nouvelles fiches par période (jour, semaine ou mois selon la plage) |
 | GET | `/public/settings` | public | paramètres publics nécessaires au site et à l’écran de maintenance |
 | GET | `/fiches/:id` | propriétaire / admin | une fiche |
 | PATCH | `/fiches/:id` | propriétaire / admin | modifie l'identité et `data` (limites de la formule vérifiées) |

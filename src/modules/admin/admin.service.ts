@@ -123,6 +123,8 @@ export const AdminService = {
       clients,
       demandesSticker,
       demandesCarte,
+      derniersClients,
+      derniersAbonnements,
     ] = await Promise.all([
       prisma.fiche.count(),
       prisma.fiche.count({ where: { statut: "SUSPENDUE" } }),
@@ -138,6 +140,32 @@ export const AdminService = {
       prisma.sectionStickerRequest.count({ where: { statut: "DEMANDE" } }),
       prisma.printJob.count({
         where: { statut: { in: ["A_IMPRIMER", "IMPRIMEE", "ENCODEE", "TESTEE"] } },
+      }),
+      prisma.user.findMany({
+        where: { role: "CLIENT" },
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        take: 10,
+        select: { id: true, nom: true, email: true, createdAt: true },
+      }),
+      prisma.subscription.findMany({
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        take: 10,
+        select: {
+          id: true,
+          status: true,
+          createdAt: true,
+          amountFcfa: true,
+          plan: { select: { type: true, nom: true } },
+          fiche: {
+            select: {
+              id: true,
+              slug: true,
+              prenom: true,
+              nom: true,
+              entreprise: true,
+            },
+          },
+        },
       }),
     ]);
 
@@ -155,6 +183,27 @@ export const AdminService = {
       clients,
       demandesSticker: demandesSticker,
       demandesCarte,
+      derniersClients: derniersClients.map(client => ({
+        id: client.id,
+        nom: client.nom,
+        email: client.email,
+        createdAt: client.createdAt,
+      })),
+      derniersAbonnements: derniersAbonnements.map(subscription => ({
+        id: subscription.id,
+        formule: lower(subscription.plan.type),
+        statut: lower(subscription.status),
+        createdAt: subscription.createdAt,
+        montantFcfa: subscription.amountFcfa,
+        fiche: subscription.fiche
+          ? {
+              id: subscription.fiche.id,
+              slug: subscription.fiche.slug,
+              nom: `${subscription.fiche.prenom} ${subscription.fiche.nom}`.trim(),
+              entreprise: subscription.fiche.entreprise ?? "",
+            }
+          : null,
+      })),
     };
   },
 
