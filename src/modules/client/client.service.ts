@@ -15,6 +15,7 @@ export const ClientService = {
           orderBy: { startsAt: "desc" },
           take: 1,
           select: {
+            startsAt: true,
             endsAt: true,
             status: true,
             plan: { select: { type: true } },
@@ -33,6 +34,7 @@ export const ClientService = {
           distinct: ["ficheId"],
           select: {
             ficheId: true,
+            startsAt: true,
             endsAt: true,
             status: true,
             // Formule du dernier abonnement : permet de proposer le renouvellement de la même formule.
