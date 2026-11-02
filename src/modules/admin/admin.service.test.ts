@@ -6,9 +6,12 @@ const mocks = vi.hoisted(() => ({
   ficheFindMany: vi.fn(),
   ficheCount: vi.fn(),
   ficheUpdate: vi.fn(),
+  ficheUpdateMany: vi.fn(),
   transactionFicheFindUnique: vi.fn(),
   transactionFicheDelete: vi.fn(),
   subscriptionUpdateMany: vi.fn(),
+  subscriptionFindFirst: vi.fn(),
+  subscriptionUpdate: vi.fn(),
   paymentUpdateMany: vi.fn(),
   subscriptionFindMany: vi.fn(),
   subscriptionCount: vi.fn(),
@@ -26,10 +29,13 @@ vi.mock("../../database/prisma/prisma-client", () => ({
       findMany: mocks.ficheFindMany,
       count: mocks.ficheCount,
       update: mocks.ficheUpdate,
+      updateMany: mocks.ficheUpdateMany,
     },
     subscription: {
       findMany: mocks.subscriptionFindMany,
       count: mocks.subscriptionCount,
+      findFirst: mocks.subscriptionFindFirst,
+      update: mocks.subscriptionUpdate,
       updateMany: mocks.subscriptionUpdateMany,
     },
     payment: {
@@ -82,8 +88,34 @@ describe("AdminService.updateFiche", () => {
       code: "SLUG_IMMUABLE",
       status: 409,
     });
+
     expect(mocks.ficheFindFirst).not.toHaveBeenCalled();
     expect(mocks.ficheUpdate).not.toHaveBeenCalled();
+  });
+
+  it("persists a slug change for a fiche without a client account", async () => {
+    mocks.ficheFindUnique
+      .mockResolvedValueOnce({ id: 12 })
+      .mockResolvedValueOnce({ userId: null })
+      .mockResolvedValueOnce({
+        id: 12,
+        userId: null,
+        slug: "nouvelle-adresse",
+        subscriptions: [],
+      });
+    mocks.ficheFindFirst.mockResolvedValue(null);
+    mocks.ficheUpdateMany.mockResolvedValue({ count: 1 });
+
+    await AdminService.updateFiche(12, { slug: "nouvelle-adresse" });
+
+    expect(mocks.ficheUpdateMany).toHaveBeenCalledWith({
+      where: { id: 12, userId: null },
+      data: { slug: "nouvelle-adresse", statut: undefined },
+    });
+    expect(mocks.toFicheDto).toHaveBeenCalledWith(
+      expect.objectContaining({ slug: "nouvelle-adresse" }),
+      undefined
+    );
   });
 
   it("updates status without changing client ownership", async () => {
@@ -109,6 +141,63 @@ describe("AdminService.updateFiche", () => {
       expect.objectContaining({ userId: 9 }),
       undefined
     );
+  });
+
+  it("persists a fiche suspension as SUSPENDUE", async () => {
+    mocks.ficheFindUnique
+      .mockResolvedValueOnce({ id: 12 })
+      .mockResolvedValueOnce({
+        id: 12,
+        userId: 9,
+        subscriptions: [],
+      });
+    mocks.ficheUpdate.mockResolvedValue({
+      id: 12,
+      userId: 9,
+      subscriptions: [],
+    });
+
+    await AdminService.updateFiche(12, { statut: "suspendue" });
+
+    expect(mocks.ficheUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 12 },
+        data: { statut: "SUSPENDUE" },
+      })
+    );
+  });
+});
+
+describe("AdminService.cancelSubscription", () => {
+  it("persists cancellation for a subscription belonging to the selected fiche", async () => {
+    mocks.subscriptionFindFirst.mockResolvedValue({
+      id: 18,
+      ficheId: 12,
+      status: "ACTIVE",
+    });
+    mocks.subscriptionUpdate.mockImplementation(({ data }) =>
+      Promise.resolve({ id: 18, ficheId: 12, ...data })
+    );
+
+    const result = await AdminService.cancelSubscription(12, 18);
+
+    expect(mocks.subscriptionFindFirst).toHaveBeenCalledWith({
+      where: { id: 18, ficheId: 12 },
+    });
+    expect(mocks.subscriptionUpdate).toHaveBeenCalledWith({
+      where: { id: 18 },
+      data: { status: "CANCELED", canceledAt: expect.any(Date) },
+    });
+    expect(result).toMatchObject({ status: "CANCELED" });
+  });
+
+  it("does not cancel a subscription belonging to another fiche", async () => {
+    mocks.subscriptionFindFirst.mockResolvedValue(null);
+
+    await expect(AdminService.cancelSubscription(12, 18)).rejects.toMatchObject(
+      { status: 404 }
+    );
+    expect(mocks.subscriptionUpdate).not.toHaveBeenCalled();
   });
 });
 

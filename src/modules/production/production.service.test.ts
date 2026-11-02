@@ -3,6 +3,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   ficheFindFirst: vi.fn(),
   printFindFirst: vi.fn(),
+  printFindUnique: vi.fn(),
+  printUpdate: vi.fn(),
   printCreate: vi.fn(),
   transaction: vi.fn(),
 }));
@@ -10,7 +12,11 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../../database/prisma/prisma-client", () => ({
   prisma: {
     fiche: { findFirst: mocks.ficheFindFirst },
-    printJob: { findFirst: mocks.printFindFirst },
+    printJob: {
+      findFirst: mocks.printFindFirst,
+      findUnique: mocks.printFindUnique,
+      update: mocks.printUpdate,
+    },
     $transaction: mocks.transaction,
   },
 }));
@@ -62,7 +68,12 @@ const job = {
 
 const tx = {
   fiche: { findFirst: mocks.ficheFindFirst },
-  printJob: { findFirst: mocks.printFindFirst, create: mocks.printCreate },
+  printJob: {
+    findFirst: mocks.printFindFirst,
+    findUnique: mocks.printFindUnique,
+    create: mocks.printCreate,
+    update: mocks.printUpdate,
+  },
 };
 
 beforeEach(() => {
@@ -72,7 +83,19 @@ beforeEach(() => {
   );
   mocks.ficheFindFirst.mockResolvedValue(fiche);
   mocks.printFindFirst.mockResolvedValue(null);
+  mocks.printFindUnique.mockResolvedValue({
+    statut: "A_IMPRIMER",
+    printedAt: null,
+    encodedAt: null,
+    testedAt: null,
+    deliveredAt: null,
+    nfcUrl: `${env.PUBLIC_SITE_URL}/f/awa-ndiaye`,
+    fiche: { slug: "awa-ndiaye" },
+  });
   mocks.printCreate.mockImplementation(({ data }) =>
+    Promise.resolve({ ...job, ...data, fiche })
+  );
+  mocks.printUpdate.mockImplementation(({ data }) =>
     Promise.resolve({ ...job, ...data, fiche })
   );
 });
@@ -93,6 +116,7 @@ describe("ProductionService.requestClientCarte", () => {
     expect(mocks.transaction).toHaveBeenCalledWith(expect.any(Function), {
       isolationLevel: "Serializable",
     });
+
     expect(mocks.printCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
@@ -109,6 +133,50 @@ describe("ProductionService.requestClientCarte", () => {
       tier: "pro",
       montantFcfa: 12_000,
       statut: "a_imprimer",
+    });
+  });
+
+  describe("ProductionService.updateCarte", () => {
+    it("persists the selected status and its transition timestamp", async () => {
+      const result = await ProductionService.updateCarte(31, {
+        statut: "imprimee",
+      });
+
+      expect(mocks.printUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 31 },
+          data: expect.objectContaining({
+            statut: "IMPRIMEE",
+            printedAt: expect.any(Date),
+          }),
+        })
+      );
+      expect(result.carte.statut).toBe("imprimee");
+    });
+
+    it("rejects a status that skips production steps without writing it", async () => {
+      await expect(
+        ProductionService.updateCarte(31, { statut: "livree" })
+      ).rejects.toMatchObject({ status: 422 });
+
+      expect(mocks.printUpdate).not.toHaveBeenCalled();
+    });
+
+    it("does not deliver a card if the fiche address changed", async () => {
+      mocks.printFindUnique.mockResolvedValue({
+        statut: "TESTEE",
+        printedAt: new Date("2026-01-02T00:00:00.000Z"),
+        encodedAt: new Date("2026-01-03T00:00:00.000Z"),
+        testedAt: new Date("2026-01-04T00:00:00.000Z"),
+        deliveredAt: null,
+        nfcUrl: `${env.PUBLIC_SITE_URL}/f/old-slug`,
+        fiche: { slug: "new-slug" },
+      });
+
+      await expect(
+        ProductionService.updateCarte(31, { statut: "livree" })
+      ).rejects.toMatchObject({ status: 422 });
+      expect(mocks.printUpdate).not.toHaveBeenCalled();
     });
   });
 
