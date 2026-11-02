@@ -79,6 +79,8 @@ scripts/create-admin.ts
 | POST | `/leads` | public, limité en débit | enregistre un devis, une question, une demande de démonstration ou de maquette |
 | GET | `/admin/leads` | admin | recherche et filtre les demandes, avec pagination |
 | PATCH | `/admin/leads/:id` | admin | modifie le statut (`NEW`, `CONTACTED`, `CLOSED`) |
+| GET | `/admin/subscriptions` | admin | liste paginée des abonnements, filtrée par recherche, formule, statut, période et état de la fiche (`ficheSupprimee=oui|non`, `subscriptionId` pour cibler un abonnement) |
+| GET | `/admin/payments` | admin | liste paginée des paiements, filtrée par recherche, formule, statut, période et état de la fiche (`ficheSupprimee=oui|non`, `paymentId` pour cibler un paiement) |
 | GET | `/fiches/:id` | propriétaire / admin | une fiche |
 | PATCH | `/fiches/:id` | propriétaire / admin | modifie l'identité et `data` (limites de la formule vérifiées) |
 | PATCH | `/admin/fiches/:id` | admin | `slug` avant création du compte client, `statut` (`active`/`suspendue`) |

@@ -74,9 +74,31 @@ export const listUsersQuery = z.object({
   limit,
 });
 
+const listBillingQuery = z.object({
+  search: z.string().trim().min(1).max(100).optional(),
+  formule: z.enum(FORMULES).optional(),
+  ficheSupprimee: z.enum(["oui", "non"]).optional(),
+  from: dateIso.optional(),
+  to: dateIso.optional(),
+  page,
+  limit,
+});
+
+export const listSubscriptionsQuery = listBillingQuery.extend({
+  statut: z.enum(["pending", "active", "expired", "canceled"]).optional(),
+  subscriptionId: z.coerce.number().int().positive().optional(),
+});
+
+export const listPaymentsQuery = listBillingQuery.extend({
+  statut: z.enum(["pending", "succeeded", "failed", "cancelled"]).optional(),
+  paymentId: z.coerce.number().int().positive().optional(),
+});
+
 // Types déduits : le service sait exactement ce qu'il reçoit.
 export type ListFichesQuery = z.infer<typeof listFichesQuery>;
 export type PatchFicheInput = z.infer<typeof patchFicheSchema>;
 export type DeleteFicheQuery = z.infer<typeof deleteFicheQuery>;
 export type SubscriptionInput = z.infer<typeof subscriptionSchema>;
 export type ListUsersQuery = z.infer<typeof listUsersQuery>;
+export type ListSubscriptionsQuery = z.infer<typeof listSubscriptionsQuery>;
+export type ListPaymentsQuery = z.infer<typeof listPaymentsQuery>;

@@ -2,6 +2,8 @@ import { asyncHandler } from "../../lib/asyncHandler";
 import type {
   DeleteFicheQuery,
   ListFichesQuery,
+  ListPaymentsQuery,
+  ListSubscriptionsQuery,
   ListUsersQuery,
 } from "./admin.schemas";
 import { AdminService } from "./admin.service";
@@ -15,6 +17,16 @@ export const AdminController = {
   // ───── Tableau de bord ─────
   stats: asyncHandler(async (_req, res) => {
     res.json(await AdminService.stats());
+  }),
+
+  listSubscriptions: asyncHandler(async (req, res) => {
+    const filtres = req.query as unknown as ListSubscriptionsQuery;
+    res.json(await AdminService.listSubscriptions(filtres));
+  }),
+
+  listPayments: asyncHandler(async (req, res) => {
+    const filtres = req.query as unknown as ListPaymentsQuery;
+    res.json(await AdminService.listPayments(filtres));
   }),
 
   // ───── Fiches ─────

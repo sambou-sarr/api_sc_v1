@@ -1,8 +1,10 @@
 import type {
   PlanType,
+  PaymentStatus,
   Prisma,
   Role,
   StatutFiche,
+  SubscriptionStatus,
 } from "../../database/prisma/generated/prisma/client";
 import { prisma } from "../../database/prisma/prisma-client";
 import { conflict, notFound, unprocessable } from "../../lib/httpError";
@@ -13,6 +15,8 @@ import {
 } from "../subscriptions/subscriptions.service";
 import type {
   ListFichesQuery,
+  ListPaymentsQuery,
+  ListSubscriptionsQuery,
   ListUsersQuery,
   PatchFicheInput,
   SubscriptionInput,
@@ -29,6 +33,30 @@ const addMonths = (d: Date, n: number) => {
   const r = new Date(d);
   r.setMonth(r.getMonth() + n);
   return r;
+};
+
+const dateRange = (from?: string, to?: string) => {
+  const createdAt: Prisma.DateTimeFilter = {};
+  if (from) createdAt.gte = new Date(from);
+  if (to) {
+    const until = new Date(to);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(to)) until.setUTCDate(until.getUTCDate() + 1);
+    createdAt.lt = until;
+  }
+  return Object.keys(createdAt).length ? createdAt : undefined;
+};
+
+const ficheSearch = (search: string): Prisma.FicheWhereInput => {
+  const contains = { contains: search, mode: "insensitive" as const };
+  return {
+    OR: [
+      { slug: contains },
+      { prenom: contains },
+      { nom: contains },
+      { entreprise: contains },
+      { user: { email: contains } },
+    ],
+  };
 };
 
 // « Abonnement valable » = ACTIVE et pas encore arrivé à échéance.
@@ -117,6 +145,184 @@ export const AdminService = {
       scansTotal: scans._sum.scansTotal ?? 0,
       clients,
       demandesSticker: demandesSticker,
+    };
+  },
+
+  listSubscriptions: async (q: ListSubscriptionsQuery) => {
+    const contains = q.search
+      ? { contains: q.search, mode: "insensitive" as const }
+      : undefined;
+    const where: Prisma.SubscriptionWhereInput = {
+      id: q.subscriptionId,
+      ficheId:
+        q.ficheSupprimee === "oui"
+          ? null
+          : q.ficheSupprimee === "non"
+            ? { not: null }
+            : undefined,
+      status: q.statut ? upper<SubscriptionStatus>(q.statut) : undefined,
+      plan: q.formule ? { type: upper<PlanType>(q.formule) } : undefined,
+      createdAt: dateRange(q.from, q.to),
+      ...(q.search
+        ? {
+            OR: [
+              { paymentRef: contains },
+              { ficheNomSnapshot: contains },
+              { ficheSlugSnapshot: contains },
+              { fiche: ficheSearch(q.search) },
+            ],
+          }
+        : {}),
+    };
+    const [subscriptions, total] = await prisma.$transaction([
+      prisma.subscription.findMany({
+        where,
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        skip: (q.page - 1) * q.limit,
+        take: q.limit,
+        include: {
+          plan: { select: { type: true, nom: true } },
+          fiche: {
+            select: {
+              id: true,
+              slug: true,
+              prenom: true,
+              nom: true,
+              entreprise: true,
+              user: { select: { email: true } },
+            },
+          },
+          payments: {
+            orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+            take: 1,
+            select: { id: true },
+          },
+        },
+      }),
+      prisma.subscription.count({ where }),
+    ]);
+
+    return {
+      items: subscriptions.map(subscription => ({
+        id: subscription.id,
+        formule: lower(subscription.plan.type),
+        statut: lower(subscription.status),
+        debut: subscription.startsAt,
+        fin: subscription.endsAt,
+        montantFcfa: subscription.amountFcfa,
+        referencePaiement: subscription.paymentRef,
+        createdAt: subscription.createdAt,
+        fiche: subscription.fiche
+          ? {
+              id: subscription.fiche.id,
+              slug: subscription.fiche.slug,
+              nom: `${subscription.fiche.prenom} ${subscription.fiche.nom}`.trim(),
+              entreprise: subscription.fiche.entreprise ?? "",
+              email: subscription.fiche.user?.email ?? null,
+            }
+          : {
+              id: null,
+              slug: subscription.ficheSlugSnapshot ?? "",
+              nom: subscription.ficheNomSnapshot ?? "Fiche supprimée",
+              entreprise: "",
+              email: null,
+            },
+        paiementId: subscription.payments[0]?.id ?? null,
+      })),
+      pagination: {
+        page: q.page,
+        limit: q.limit,
+        total,
+        totalPages: Math.max(1, Math.ceil(total / q.limit)),
+      },
+    };
+  },
+
+  listPayments: async (q: ListPaymentsQuery) => {
+    const contains = q.search
+      ? { contains: q.search, mode: "insensitive" as const }
+      : undefined;
+    const where: Prisma.PaymentWhereInput = {
+      id: q.paymentId,
+      ficheId:
+        q.ficheSupprimee === "oui"
+          ? null
+          : q.ficheSupprimee === "non"
+            ? { not: null }
+            : undefined,
+      status: q.statut ? upper<PaymentStatus>(q.statut) : undefined,
+      plan: q.formule ? { type: upper<PlanType>(q.formule) } : undefined,
+      createdAt: dateRange(q.from, q.to),
+      ...(q.search
+        ? {
+            OR: [
+              { providerReference: contains },
+              { ficheNomSnapshot: contains },
+              { ficheSlugSnapshot: contains },
+              { fiche: ficheSearch(q.search) },
+            ],
+          }
+        : {}),
+    };
+    const [payments, total] = await prisma.$transaction([
+      prisma.payment.findMany({
+        where,
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        skip: (q.page - 1) * q.limit,
+        take: q.limit,
+        include: {
+          plan: { select: { type: true, nom: true } },
+          fiche: {
+            select: {
+              id: true,
+              slug: true,
+              prenom: true,
+              nom: true,
+              entreprise: true,
+              user: { select: { email: true } },
+            },
+          },
+          subscription: { select: { id: true } },
+        },
+      }),
+      prisma.payment.count({ where }),
+    ]);
+
+    return {
+      items: payments.map(payment => ({
+        id: payment.id,
+        formule: lower(payment.plan.type),
+        statut: lower(payment.status),
+        fournisseur: lower(payment.provider),
+        montantFcfa: payment.amountFcfa,
+        devise: payment.currency,
+        reference: payment.providerReference,
+        motifEchec: payment.failureReason,
+        createdAt: payment.createdAt,
+        payeLe: payment.paidAt,
+        fiche: payment.fiche
+          ? {
+              id: payment.fiche.id,
+              slug: payment.fiche.slug,
+              nom: `${payment.fiche.prenom} ${payment.fiche.nom}`.trim(),
+              entreprise: payment.fiche.entreprise ?? "",
+              email: payment.fiche.user?.email ?? null,
+            }
+          : {
+              id: null,
+              slug: payment.ficheSlugSnapshot ?? "",
+              nom: payment.ficheNomSnapshot ?? "Fiche supprimée",
+              entreprise: "",
+              email: null,
+            },
+        abonnementId: payment.subscription?.id ?? null,
+      })),
+      pagination: {
+        page: q.page,
+        limit: q.limit,
+        total,
+        totalPages: Math.max(1, Math.ceil(total / q.limit)),
+      },
     };
   },
 
@@ -328,20 +534,34 @@ export const AdminService = {
   },
 
   // ───────── Supprimer une fiche (définitif) ─────────
-  // Contenus, médias et abonnements partent avec elle (onDelete: Cascade dans le schéma).
+  // Les snapshots gardent l'identité dans l'historique financier après ON DELETE SET NULL.
   deleteFiche: async (id: number, confirmer: string) => {
-    const fiche = await prisma.fiche.findUnique({
-      where: { id },
-      select: { slug: true },
-    });
-    if (!fiche) throw notFound("Fiche introuvable");
-    if (confirmer !== fiche.slug)
-      throw unprocessable(
-        "CONFIRMATION_INVALIDE",
-        "Pour supprimer, renvoie le slug exact de la fiche dans ?confirmer="
-      );
+    await prisma.$transaction(async tx => {
+      const fiche = await tx.fiche.findUnique({
+        where: { id },
+        select: { id: true, prenom: true, nom: true, slug: true },
+      });
+      if (!fiche) throw notFound("Fiche introuvable");
+      if (confirmer !== fiche.slug)
+        throw unprocessable(
+          "CONFIRMATION_INVALIDE",
+          "Pour supprimer, renvoie le slug exact de la fiche dans ?confirmer="
+        );
 
-    await prisma.fiche.delete({ where: { id } });
+      const ficheNom =
+        [fiche.prenom, fiche.nom].filter(Boolean).join(" ").trim() ||
+        fiche.slug;
+
+      await tx.subscription.updateMany({
+        where: { ficheId: fiche.id },
+        data: { ficheNomSnapshot: ficheNom, ficheSlugSnapshot: fiche.slug },
+      });
+      await tx.payment.updateMany({
+        where: { ficheId: fiche.id },
+        data: { ficheNomSnapshot: ficheNom, ficheSlugSnapshot: fiche.slug },
+      });
+      await tx.fiche.delete({ where: { id: fiche.id } });
+    });
   },
 
   // ───────── Abonnements ─────────

@@ -6,6 +6,14 @@ const mocks = vi.hoisted(() => ({
   ficheFindMany: vi.fn(),
   ficheCount: vi.fn(),
   ficheUpdate: vi.fn(),
+  transactionFicheFindUnique: vi.fn(),
+  transactionFicheDelete: vi.fn(),
+  subscriptionUpdateMany: vi.fn(),
+  paymentUpdateMany: vi.fn(),
+  subscriptionFindMany: vi.fn(),
+  subscriptionCount: vi.fn(),
+  paymentFindMany: vi.fn(),
+  paymentCount: vi.fn(),
   transaction: vi.fn(),
   toFicheDto: vi.fn(() => ({ id: 12 })),
 }));
@@ -18,6 +26,16 @@ vi.mock("../../database/prisma/prisma-client", () => ({
       findMany: mocks.ficheFindMany,
       count: mocks.ficheCount,
       update: mocks.ficheUpdate,
+    },
+    subscription: {
+      findMany: mocks.subscriptionFindMany,
+      count: mocks.subscriptionCount,
+      updateMany: mocks.subscriptionUpdateMany,
+    },
+    payment: {
+      findMany: mocks.paymentFindMany,
+      count: mocks.paymentCount,
+      updateMany: mocks.paymentUpdateMany,
     },
     $transaction: mocks.transaction,
   },
@@ -37,9 +55,19 @@ import { AdminService } from "./admin.service";
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mocks.transaction.mockImplementation((queries: Promise<unknown>[]) =>
-    Promise.all(queries)
-  );
+  mocks.transaction.mockImplementation((operation: unknown) => {
+    if (typeof operation === "function") {
+      return operation({
+        fiche: {
+          findUnique: mocks.transactionFicheFindUnique,
+          delete: mocks.transactionFicheDelete,
+        },
+        subscription: { updateMany: mocks.subscriptionUpdateMany },
+        payment: { updateMany: mocks.paymentUpdateMany },
+      });
+    }
+    return Promise.all(operation as Promise<unknown>[]);
+  });
 });
 
 describe("AdminService.updateFiche", () => {
@@ -135,6 +163,155 @@ describe("AdminService.listFiches", () => {
         },
       ],
       pagination: { total: 1 },
+    });
+  });
+
+  describe("AdminService billing lists", () => {
+    it("filters subscriptions and payments linked to deleted fiches", async () => {
+      mocks.subscriptionFindMany.mockResolvedValue([]);
+      mocks.subscriptionCount.mockResolvedValue(0);
+      mocks.paymentFindMany.mockResolvedValue([]);
+      mocks.paymentCount.mockResolvedValue(0);
+
+      await AdminService.listSubscriptions({
+        ficheSupprimee: "oui",
+        page: 1,
+        limit: 20,
+      });
+      await AdminService.listPayments({
+        ficheSupprimee: "non",
+        page: 1,
+        limit: 20,
+      });
+
+      expect(mocks.subscriptionFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: expect.objectContaining({ ficheId: null }) })
+      );
+      expect(mocks.paymentFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ ficheId: { not: null } }),
+        })
+      );
+    });
+
+    it("returns filtered subscriptions with their associated payment id", async () => {
+      const createdAt = new Date("2026-10-12T10:00:00Z");
+      mocks.subscriptionFindMany.mockResolvedValue([
+        {
+          id: 31,
+          status: "ACTIVE",
+          startsAt: createdAt,
+          endsAt: null,
+          amountFcfa: 75000,
+          paymentRef: "PAY-31",
+          createdAt,
+          ficheNomSnapshot: null,
+          ficheSlugSnapshot: null,
+          plan: { type: "SIGNATURE", nom: "Signature" },
+          fiche: {
+            id: 12,
+            slug: "chez-awa",
+            prenom: "Awa",
+            nom: "Ndiaye",
+            entreprise: "Chez Awa",
+            user: { email: "awa@example.sn" },
+          },
+          payments: [{ id: 71 }],
+        },
+      ]);
+      mocks.subscriptionCount.mockResolvedValue(1);
+
+      const result = await AdminService.listSubscriptions({
+        statut: "active",
+        formule: "signature",
+        from: "2026-10-01",
+        to: "2026-10-31",
+        page: 1,
+        limit: 20,
+      });
+
+      expect(mocks.subscriptionFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            status: "ACTIVE",
+            plan: { type: "SIGNATURE" },
+            createdAt: {
+              gte: new Date("2026-10-01"),
+              lt: new Date("2026-11-01"),
+            },
+          }),
+        })
+      );
+      expect(result.items[0]).toMatchObject({
+        id: 31,
+        formule: "signature",
+        fiche: { id: 12, nom: "Awa Ndiaye", email: "awa@example.sn" },
+        paiementId: 71,
+      });
+    });
+
+    describe("AdminService.deleteFiche", () => {
+      it("snapshots financial identity transactionally before deleting the fiche", async () => {
+        mocks.transactionFicheFindUnique.mockResolvedValue({
+          id: 12,
+          prenom: "Awa",
+          nom: "Ndiaye",
+          slug: "chez-awa",
+        });
+
+        await AdminService.deleteFiche(12, "chez-awa");
+
+        expect(mocks.subscriptionUpdateMany).toHaveBeenCalledWith({
+          where: { ficheId: 12 },
+          data: { ficheNomSnapshot: "Awa Ndiaye", ficheSlugSnapshot: "chez-awa" },
+        });
+        expect(mocks.paymentUpdateMany).toHaveBeenCalledWith({
+          where: { ficheId: 12 },
+          data: { ficheNomSnapshot: "Awa Ndiaye", ficheSlugSnapshot: "chez-awa" },
+        });
+        expect(mocks.transactionFicheDelete).toHaveBeenCalledWith({
+          where: { id: 12 },
+        });
+      });
+    });
+
+    it("can focus a payment and return its associated subscription", async () => {
+      const createdAt = new Date("2026-10-12T10:00:00Z");
+      mocks.paymentFindMany.mockResolvedValue([
+        {
+          id: 71,
+          status: "SUCCEEDED",
+          provider: "WAVE",
+          amountFcfa: 75000,
+          currency: "XOF",
+          providerReference: "PAY-71",
+          failureReason: null,
+          createdAt,
+          paidAt: createdAt,
+          ficheNomSnapshot: null,
+          ficheSlugSnapshot: null,
+          plan: { type: "SIGNATURE", nom: "Signature" },
+          fiche: null,
+          subscription: { id: 31 },
+        },
+      ]);
+      mocks.paymentCount.mockResolvedValue(1);
+
+      const result = await AdminService.listPayments({
+        paymentId: 71,
+        page: 1,
+        limit: 20,
+      });
+
+      expect(mocks.paymentFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: expect.objectContaining({ id: 71 }) })
+      );
+      expect(result.items[0]).toMatchObject({
+        id: 71,
+        statut: "succeeded",
+        fournisseur: "wave",
+        abonnementId: 31,
+      });
     });
   });
 });

@@ -6,6 +6,8 @@ import { AdminController } from "./admin.controller";
 import {
   deleteFicheQuery,
   listFichesQuery,
+  listPaymentsQuery,
+  listSubscriptionsQuery,
   listUsersQuery,
   patchFicheSchema,
   subscriptionParams,
@@ -23,6 +25,18 @@ adminRouter.use(requireAuth, requireRole("ADMIN"));
 // ───────── Tableau de bord ─────────
 // GET /api/admin/stats
 adminRouter.get("/stats", AdminController.stats);
+
+// ───────── Abonnements et paiements ─────────
+adminRouter.get(
+  "/subscriptions",
+  validate({ query: listSubscriptionsQuery }),
+  AdminController.listSubscriptions
+);
+adminRouter.get(
+  "/payments",
+  validate({ query: listPaymentsQuery }),
+  AdminController.listPayments
+);
 
 // ───────── Fiches ─────────
 // GET    /api/admin/fiches?search=&statut=&formule=&expiration=&userId=&sticker=demande&tri=&page=&limit=
