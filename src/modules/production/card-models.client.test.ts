@@ -7,7 +7,7 @@ const mocks = vi.hoisted(() => ({
   cardModelFindFirst: vi.fn(),
 }));
 vi.mock("../../config/env", () => ({ env: { SERVER: "http://localhost:4000/api" } }));
-vi.mock("../../infrastructure/storage/s3.storage", () => ({ S3StorageProvider: class {} }));
+vi.mock("../../infrastructure/storage/s3.storage", () => ({ s3Storage: vi.fn() }));
 vi.mock("../../database/prisma/prisma-client", () => ({
   prisma: {
     fiche: { findFirst: mocks.ficheFindFirst },
